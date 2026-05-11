@@ -40,22 +40,10 @@ export default function Login() {
     navigate("/forget-password"); // ✅ redirect to login
   };
 
-
-
-
-
-
   return (
     <main className="flex h-screen w-full items-center justify-center">
 
       {/* Header */}
-
-
-
-
-
-
-
 
       {/* Card */}
       <div className="block-form space-y-5 w-3/12">
@@ -74,11 +62,6 @@ export default function Login() {
             <label className="text-xs font-bold uppercase text-on-surface-variant">
               Username
             </label>
-
-
-
-
-
 
             <div className="relative mt-1">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
