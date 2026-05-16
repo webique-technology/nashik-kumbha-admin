@@ -30,7 +30,7 @@ export default function Login() {
         password: formData.password
       });
 
-      console.log("admin credentials:", response.data);
+      console.log("admin credentials:", response);
 
 
       // 2. Extract token (adjust based on your API structure)

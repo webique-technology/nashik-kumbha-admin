@@ -20,7 +20,7 @@ const menuItems = [
     name: "Tour Packages",
     icon: <FiCompass />,
     children: [
-      { name: "Tour Manager", path: "/dashboard/add-tour" },
+      { name: "Tour Manager", path: "/dashboard/tour-manager" },
       { name: "Tour Enquiry", path: "/dashboard/tour-enquriy" }, // keep same as route OR fix both
     ],
   },

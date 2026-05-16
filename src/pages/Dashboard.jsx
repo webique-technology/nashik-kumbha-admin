@@ -209,7 +209,7 @@ const Dashboard = () => {
 
             {/* Hotels */}
             <div className="hotel-list">
-              <h4 class="text-sm font-bold text-on-surface mb-4">Recent Hotel Updates</h4>
+              <h4 className="text-sm font-bold text-on-surface mb-4">Recent Hotel Updates</h4>
               <div className='hotels-wrap'>
                 {dashboardData.hotels.map((hotel) => (
                   <div key={hotel.id} className="hotel-card">
