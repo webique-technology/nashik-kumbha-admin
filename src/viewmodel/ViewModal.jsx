@@ -9,14 +9,23 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
 
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
 
-        {(data.image || data.images?.[0]) && (
+        {/* {(data.image || data.images?.[0]) && (
           <img
             src={data.image || data.images[0]}
             className="w-full h-40 object-cover rounded mb-3 border border-gray-200 p-1 bg-white"
             alt="preview"
           />
+        )} */}
+
+        {(data.image_url || data.image || data.images?.[0]) && (
+          <img
+            src={data.image_url || data.image || data.images?.[0]}
+            className="w-full h-40 object-cover rounded mb-3 border border-gray-200 p-1 bg-white"
+            alt="preview"
+          />
         )}
-        <div className="space-y-2">
+
+        {/* <div className="space-y-2">
           {fields.map((field) => (
             <p key={field.key}>
               <strong>{field.label}:</strong>{" "}
@@ -24,6 +33,20 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
                 ? field.render(data[field.key], data)
                 : data[field.key]}
             </p>
+          ))}
+        </div> */}
+
+        <div className="space-y-2">
+          {fields.map((field) => (
+            <div key={field.key}>
+              <strong>{field.label}:</strong>
+
+              {field.render ? (
+                field.render(data[field.key], data)
+              ) : (
+                <p>{data[field.key]}</p>
+              )}
+            </div>
           ))}
         </div>
 

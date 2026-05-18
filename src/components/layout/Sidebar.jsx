@@ -29,7 +29,7 @@ const menuItems = [
 
   { name: "Hotel Listings", icon: <FiHotel />, path: "/dashboard/hotels" },
 
-  { name: "Blog", icon: <FiEdit />, path: "/dashboard/blog-table" },
+  { name: "Blog", icon: <FiEdit />, path: "/dashboard/blogs" },
 
 
     {

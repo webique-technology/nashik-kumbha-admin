@@ -12,7 +12,9 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
   const itemsPerPage = 7;
 
   // 👉 Use blogs OR fallback dummy
-  const data = blogs.length > 0 ? blogs : dummyBlogs;
+  // const data = blogs.length > 0 ? blogs : dummyBlogs;
+  // const data = blogs;
+  const data = Array.isArray(blogs) ? blogs : [];
 
   // 👉 Pagination logic
   const totalItems = data.length;
@@ -20,10 +22,14 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  const currentData = data.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // const currentData = data.slice(
+  //   startIndex,
+  //   startIndex + itemsPerPage  
+  // );
+
+  const currentData = Array.isArray(data)
+    ? data.slice(startIndex, startIndex + itemsPerPage)
+    : [];
 
   // 👉 Showing text
   const startItem = totalItems === 0 ? 0 : startIndex + 1;
@@ -107,7 +113,7 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                     <div className="flex items-center gap-3">
 
                       {/* Image */}
-                      <img className="tour-img" src={blog.image} width="50" alt="" />
+                      <img className="tour-img" src={blog.image_url} width="50" alt="" />
 
                       {/* Title + Description */}
                       <div>
@@ -120,7 +126,13 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                   {/* <td className="td">{blog.title}</td> */}
 
-                  <td className="td">{blog.description}</td>
+                  {/* <td className="td">{blog.description}</td> */}
+                  <td className="td">
+                    {(blog.description || "")
+                      .replace(/<[^>]+>/g, "")
+                      .substring(0, 120)}
+                    ...
+                  </td>
 
                   <td>
                     <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">

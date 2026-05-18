@@ -50,7 +50,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
     total_seats: 12,
     highlights: [],
     itinerary: [], // Fixed spelling consistency
-    features: [],  // This maps to your "inclusions" selected items
+    inclusions: [],  // This maps to your "inclusions" selected items
     seo_meta: {
       title: "",
       desc: ""
@@ -77,7 +77,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       setFormData({
         ...editData,
         itinerary: editData.itinerary || editData.itineary || [], // Handle potential spelling variants
-        features: editData.features || [],
+        inclusions: editData.inclusions || [],
       });
       setIsOn(editData.tax_inclusive || false);
     }
@@ -98,13 +98,21 @@ const TourForm = ({ onSave, editData, onCancel }) => {
   };
 
   const handleMainBannerUpload = (e) => {
-    // alert("image")
+    
     const file = e.target.files[0];
 
+    // if (file) {
+    //   // setFormData((prev) => ({ ...prev, main_banner: file.name }));
+    //   setFormData((prev) => ({ ...prev, preview: URL.createObjectURL(file) }));
+    //   console.log("file image:", file);
+    // }
+
     if (file) {
-      // setFormData((prev) => ({ ...prev, main_banner: file.name }));
-      setFormData((prev) => ({ ...prev, preview: URL.createObjectURL(file) }));
-      console.log("file image:", file);
+      setFormData((prev) => ({ ...prev,
+        main_banner: file, // actual file object
+        preview: URL.createObjectURL(file), // preview url
+      }));
+
     }
     console.log("formdata.mainbanner:", formData.main_banner);
   };
@@ -166,14 +174,14 @@ const TourForm = ({ onSave, editData, onCancel }) => {
   ];
 
   const handleToggleAmenity = (option) => {
-    const exists = formData.features.find((item) => item.id === option.id);
+    const exists = formData.inclusions.find((item) => item.id === option.id);
     let updated;
     if (exists) {
-      updated = formData.features.filter((item) => item.id !== option.id);
+      updated = formData.inclusions.filter((item) => item.id !== option.id);
     } else {
-      updated = [...formData.features, option];
+      updated = [...formData.inclusions, option];
     }
-    setFormData({ ...formData, features: updated });
+    setFormData({ ...formData, inclusions: updated });
   };
 
   // --- FINAL SUBMIT ---
@@ -181,8 +189,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
     e.preventDefault();
     console.log("submit data image", formData);
 
-    const cleanedFeatures = formData.features.map(feature => ({
-      id: feature.id,
+    const cleanedinclusions = formData.inclusions.map(feature => ({
       label: feature.label
       // We EXCLUDE the 'icon' property here
     }));
@@ -191,7 +198,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       ...formData,
       base_price: Number(formData.base_price),
       offer_price: Number(formData.offer_price),
-      features: cleanedFeatures,
+      inclusions: cleanedinclusions,
       tax_inclusive: isOn,
       // Ensure specific field mapping required by your backend
       images: [formData.main_banner]
@@ -383,13 +390,13 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                     <div className="flex gap-4 flex-wrap mb-6">
                       {options.map((opt) => (
                         <label key={opt.id} className="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
-                          <input type="checkbox" checked={formData.features.some(i => i.id === opt.id)} onChange={() => handleToggleAmenity(opt)} />
+                          <input type="checkbox" checked={formData.inclusions.some(i => i.id === opt.id)} onChange={() => handleToggleAmenity(opt)} />
                           <span className="flex items-center gap-2">{opt.icon} {opt.label}</span>
                         </label>
                       ))}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {formData.features.map((item) => (
+                      {formData.inclusions.map((item) => (
                         <div key={item.id} className="flex items-center justify-between bg-green-50 text-green-800 px-3 py-2 rounded-lg">
                           <div className="flex items-center gap-2"><FiCheckCircle />{item.icon} {item.label}</div>
                           <button type="button" onClick={() => handleToggleAmenity(item)} className="text-red-500"><FiTrash2 /></button>
