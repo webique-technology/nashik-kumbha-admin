@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../../services/axiosInstance'; // Import your custom instance
-
+import { FiEye, FiEyeOff } from "react-icons/fi";
 export default function Login() {
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ export default function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Track loading state
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (error) setError(""); // Clear error when user types
@@ -85,22 +85,40 @@ export default function Login() {
           {/* Password */}
           <div>
             <div className="flex justify-between">
-              <label className="text-xs font-bold uppercase text-gray-600">Password</label>
-              <p className="text-xs font-bold uppercase text-blue-600 cursor-pointer hover:underline" onClick={goToForgotPassword}>
+              <label className="text-xs font-bold uppercase text-gray-600">
+                Password
+              </label>
+
+              <p
+                className="text-xs font-bold uppercase text-blue-600 cursor-pointer hover:underline"
+                onClick={goToForgotPassword}
+              >
                 Forgot password
               </p>
             </div>
+
             <div className="relative mt-1">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                lock
+              </span>
+
               <input
                 required
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter password"
-                className="w-full pl-10 pr-4 py-3 block-input bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full pl-10 pr-12 py-3 block-input bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -115,7 +133,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className={`btn-primary-packages w-full py-3 flex justify-center items-center font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            className={`btn-primary-packages w-full py-3 flex justify-center items-center font-bold cursor-pointer text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
             {loading ? (
               <span className="flex items-center gap-2">
@@ -125,12 +143,12 @@ export default function Login() {
                 </svg>
                 Connecting...
               </span>
-            ) : "Initialize Session"}
+            ) : "Login"}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
-          Need help? <span className="text-blue-500 cursor-pointer">Contact Support</span>
+        <div className="mt-6 text-center text-xs text-gray-500 cursor-pointer">
+          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">mahakumbhtourstravelsnashik.com/</a>
         </div>
       </div>
     </main>
