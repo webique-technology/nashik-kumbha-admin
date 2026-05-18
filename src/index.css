@@ -968,3 +968,13 @@
 } */
 }
   
+.model-width{
+  max-width: 600px;
+  width:100%;
+}
+.content-height{
+  max-height: 600px;
+  height:100%;
+  overflow-x: auto;
+  padding-right: 10px;
+}

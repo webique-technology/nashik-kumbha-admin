@@ -1,13 +1,19 @@
 import React from "react";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
   if (!isOpen || !data) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-[400px]">
+      <div className="bg-white p-6 rounded-xl shadow-lg model-width">
 
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+
+       <div className="w-full flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold ">{title}</h3>
+          <RiCloseCircleLine onClick={onClose} className="cursor-pointer text-xl"/>
+        </div>
+
 
         {/* {(data.image || data.images?.[0]) && (
           <img
@@ -16,6 +22,7 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
             alt="preview"
           />
         )} */}
+    <div className="content-height">
 
         {(data.image_url || data.image || data.images?.[0]) && (
           <img
@@ -24,7 +31,7 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
             alt="preview"
           />
         )}
-
+    
         {/* <div className="space-y-2">
           {fields.map((field) => (
             <p key={field.key}>
@@ -50,10 +57,6 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
           ))}
         </div>
 
-        <div className="flex justify-end mt-4">
-          <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded hover:bg-amber-800 transition-all duration-300 hover:text-white cursor-pointer">
-            Close
-          </button>
         </div>
 
       </div>
