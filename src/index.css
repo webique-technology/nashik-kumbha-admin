@@ -646,7 +646,7 @@
   /* Layout */
   .page-container {
     @apply flex-1 overflow-y-auto p-8 space-y-8  ;
-    background-color: rgb(var(--page-background));
+    /* background-color: rgb(var(--page-background)); */
   }
 
   .inner-page-container{
@@ -968,3 +968,13 @@
 } */
 }
   
+.model-width{
+  max-width: 600px;
+  width:100%;
+}
+.content-height{
+  max-height: 600px;
+  height:100%;
+  overflow-x: auto;
+  padding-right: 10px;
+}

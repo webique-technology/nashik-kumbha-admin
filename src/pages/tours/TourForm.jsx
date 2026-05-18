@@ -1,141 +1,169 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { FaSnowflake, FaFan, FaUtensils, FaCrown } from "react-icons/fa";
-import { FiTrash2, FiCheckCircle, FiEdit2 } from "react-icons/fi";
-import { FiUpload } from "react-icons/fi";
-import { IoCloudUploadOutline } from "react-icons/io5";
-
+import { FiTrash2, FiCheckCircle, FiEdit2, FiUpload } from "react-icons/fi";
+import { IoCloudUploadOutline, IoFastFoodOutline, IoTrainOutline } from "react-icons/io5";
 import { RiHotelLine } from "react-icons/ri";
-import { IoFastFoodOutline } from "react-icons/io5";
-import { PiAirplaneTakeoffLight } from "react-icons/pi";
+import { PiAirplaneTakeoffLight, PiVanLight } from "react-icons/pi";
 import { LuTrees } from "react-icons/lu";
-import { PiVanLight } from "react-icons/pi";
-import { IoTrainOutline } from "react-icons/io5";
+
+
+// --- REUSABLE COMPONENTS (Logic Inside) ---
+const InputComp = ({ name, onChange, label, value, placeholder, formClass, inputClass = "form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20", type = "text" }) => (
+  <div className={`form-group ${formClass}`}>
+    <label className="form-label">{label}</label>
+    <input name={name} value={value} onChange={onChange} className={`${inputClass}`} type={type} placeholder={placeholder} />
+  </div>
+);
+
+const TextArea = ({ name, value, onChange, label, formClass, placeholder = "Enter Description", inputClass = "form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20 " }) => (
+  <div className={`form-group ${formClass}`}>
+    <label className="form-label">{label}</label>
+    <textarea name={name} value={value} onChange={onChange} className={`${inputClass}`} placeholder={placeholder} />
+  </div>
+);
+
+const SelectOption = ({ child, formClass, label, name, value, onChange }) => (
+  <div className={`form-group ${formClass}`}>
+    <label className="form-label">{label}</label>
+    <select name={name} value={value} onChange={onChange} className="form-input bg-surface-container-low">
+      {child}
+    </select>
+  </div>
+);
+
+// Main Form Component
 const TourForm = ({ onSave, editData, onCancel }) => {
+  // --- UI STATE ---
+  const [activeTab, setActiveTab] = useState("itinerary");
+  const [isOn, setIsOn] = useState(false); // Tax toggle
 
-  const [isOn, setIsOn] = useState(false);
-  const [count, setCount] = useState(12);
-
-  const increase = () => setCount((prev) => prev + 1);
-  const decrease = () => setCount((prev) => (prev > 0 ? prev - 1 : 0));
-
-  const handleChangeNum = (e) => {
-    const val = Number(e.target.value);
-    if (val >= 0) setCount(val);
-  };
-
-  // 🔥 MAIN FORM STATE
+  // --- MAIN FORM STATE ---
   const [formData, setFormData] = useState({
+    main_banner: [],
     title: "",
     description: "",
-    rating: "",
-    status: "",
+    category: "",
+    status: "active",
     location: "",
-    price: "",
-    offerPrice: "",
-    image: "",
-    features: {
-      wifi: false,
-      parking: false,
-      pool: false,
-      ac: false,
+    base_price: "",
+    offer_price: "",
+    total_seats: 12,
+    highlights: [],
+    itinerary: [], // Fixed spelling consistency
+    inclusions: [],  // This maps to your "inclusions" selected items
+    seo_meta: {
+      title: "",
+      desc: ""
     },
   });
 
-  // 🔥 IMAGE STATE
-  const [image, setImage] = useState("");
-  const [featured, setFeatured] = useState(null);
-  const topUploadRef = useRef();
+  // --- LOCAL COMPONENT STATES (For temporary input handling) ---
+  const [highlightInput, setHighlightInput] = useState("");
+  const [highlightEditIndex, setHighlightEditIndex] = useState(null);
+  const [itineraryForm, setItineraryForm] = useState({
+    title: "",
+    description: "",
+    preview: "",
+  });
+  const [currentEditItineraryIdx, setCurrentEditItineraryIdx] = useState(null);
 
-  // 🔥 PREFILL EDIT
+  // --- REFS ---
+  const topUploadRef = useRef();
+  const itineraryFileRef = useRef();
+
+  // --- PREFILL DATA ---
   useEffect(() => {
     if (editData) {
-      setFormData(editData);
-      setImage(editData.image || editData.images?.[0] || "");
-
-      // ✅ Load amenities into selected
-      setSelected(editData.features || []);
+      setFormData({
+        ...editData,
+        itinerary: editData.itinerary || editData.itineary || [], // Handle potential spelling variants
+        inclusions: editData.inclusions || [],
+      });
+      setIsOn(editData.tax_inclusive || false);
     }
   }, [editData]);
 
-  // 🔥 INPUT CHANGE
+  // --- BASIC INPUT HANDLERS ---
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔥 FEATURES
-  const handleFeatureChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(o => o.value);
+  const handleSEOChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      seo_meta: { ...prev.seo_meta, [name]: value }
+    }));
+  };
 
+  const handleMainBannerUpload = (e) => {
+    
+    const file = e.target.files[0];
+
+    // if (file) {
+    //   // setFormData((prev) => ({ ...prev, main_banner: file.name }));
+    //   setFormData((prev) => ({ ...prev, preview: URL.createObjectURL(file) }));
+    //   console.log("file image:", file);
+    // }
+
+    if (file) {
+      setFormData((prev) => ({ ...prev,
+        main_banner: file, // actual file object
+        preview: URL.createObjectURL(file), // preview url
+      }));
+
+    }
+    console.log("formdata.mainbanner:", formData.main_banner);
+  };
+
+  // --- HIGHLIGHTS LOGIC ---
+  const handleSaveHighlight = () => {
+    if (!highlightInput.trim()) return;
+    const updatedHighlights = [...formData.highlights];
+
+    if (highlightEditIndex !== null) {
+      updatedHighlights[highlightEditIndex] = highlightInput;
+      setHighlightEditIndex(null);
+    } else {
+      updatedHighlights.push(highlightInput);
+    }
+
+    setFormData({ ...formData, highlights: updatedHighlights });
+    setHighlightInput("");
+  };
+
+  const removeHighlight = (index) => {
     setFormData({
       ...formData,
-      features: {
-        wifi: selected.includes("Wifi"),
-        parking: selected.includes("Parking"),
-        pool: selected.includes("Pool"),
-        ac: selected.includes("A/c"),
-      }
+      highlights: formData.highlights.filter((_, i) => i !== index)
     });
   };
 
-  // 🔥 IMAGE UPLOAD
-  const handleUpload = (e) => {
+  // --- ITINERARY LOGIC ---
+  const handleItineraryImage = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-
-      if (file) {
-        const url = URL.createObjectURL(file);
-
-        setImage(url);
-        setFormData({
-          ...formData,
-          image: url,
-        });
-      }
+      setItineraryForm({ ...itineraryForm, preview: URL.createObjectURL(file) });
     }
   };
 
-  // 🔥 DELETE IMAGE
-  const handleRemoveImage = () => {
-    setImage("");
-    setFormData({
-      ...formData,
-      image: "",
-    });
+  const submitItineraryData = () => {
+    if (!itineraryForm.title.trim() || !itineraryForm.description.trim()) return;
+
+    const updatedList = [...formData.itinerary];
+    if (currentEditItineraryIdx !== null) {
+      updatedList[currentEditItineraryIdx] = itineraryForm;
+      setCurrentEditItineraryIdx(null);
+    } else {
+      updatedList.push(itineraryForm);
+    }
+
+    setFormData({ ...formData, itinerary: updatedList });
+    setItineraryForm({ title: "", description: "", preview: "" });
   };
 
-  // 🔥 FINAL SUBMIT
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const hotelData = {
-      ...formData,
-      features: formData.features || [],
-      id: editData?.id,
-      rating: Number(formData.rating),
-      price: Number(formData.price),
-
-      // ✅ IMPORTANT: Table expects array
-      images: formData.image
-        ? [formData.image]
-        : ["https://picsum.photos/200"],
-    };
-
-    onSave(hotelData);
-  };
-
-  //----- this is for tabs
-
-  const [activeTab, setActiveTab] = useState("itinerary");
-  const tabs = [
-    { id: "itinerary", label: "Itinerary" },
-    { id: "inclusions", label: "Inclusions" },
-    { id: "seo", label: "SEO Meta" },
-  ];
-  // --------end----------
-  // ---------- for checkbox amenities -------
-  const [selected, setSelected] = useState([]);
-  const [savedItems, setSavedItems] = useState([]);
+  // --- AMENITIES / INCLUSIONS LOGIC ---
   const options = [
     { id: "hotel", label: "Hotel", icon: <RiHotelLine /> },
     { id: "meals", label: "Meals", icon: <IoFastFoodOutline /> },
@@ -145,173 +173,43 @@ const TourForm = ({ onSave, editData, onCancel }) => {
     { id: "train", label: "Train", icon: <IoTrainOutline /> },
   ];
 
-  const handleToggle = (option) => {
+  const handleToggleAmenity = (option) => {
+    const exists = formData.inclusions.find((item) => item.id === option.id);
     let updated;
-
-    const exists = selected.find((item) => item.id === option.id);
-
     if (exists) {
-      updated = selected.filter((item) => item.id !== option.id);
+      updated = formData.inclusions.filter((item) => item.id !== option.id);
     } else {
-      updated = [...selected, option];
+      updated = [...formData.inclusions, option];
     }
+    setFormData({ ...formData, inclusions: updated });
+  };
 
-    setSelected(updated);
+  // --- FINAL SUBMIT ---
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("submit data image", formData);
 
-    // ✅ Sync with formData
-    setFormData((prev) => ({
-      ...prev,
-      features: updated,
+    const cleanedinclusions = formData.inclusions.map(feature => ({
+      label: feature.label
+      // We EXCLUDE the 'icon' property here
     }));
-  };
 
-  const handleSubmitCheck = () => {
-    const filtered = options.filter((opt) => selected.includes(opt.id));
-    setSavedItems(filtered);
-  };
-
-  const handleDeleteAmenity = (id) => {
-    setSelected(prev => prev.filter(item => item.id !== id));
-  };
-  const fileInputRef = useRef(null);
-
-  const handleBoxClick = () => {
-    fileInputRef.current.click();
-  };
-
-  // ---------- end -------
-
-
-  const fileRef = useRef(null);
-
-  const [itineraryForm, setItineraryForm] = useState({
-    title: "",
-    description: "",
-    image: null,
-    preview: "",
-  });
-
-  const [itineraryList, setItineraryList] = useState([]);
-  const [currentEditIndex, setCurrentEditIndex] = useState(null);
-
-  // Handle text input
-  const handleItineraryInput = (e) => {
-    setItineraryForm({
-      ...itineraryForm,
-      [e.target.name]: e.target.value,
+    onSave({
+      ...formData,
+      base_price: Number(formData.base_price),
+      offer_price: Number(formData.offer_price),
+      inclusions: cleanedinclusions,
+      tax_inclusive: isOn,
+      // Ensure specific field mapping required by your backend
+      images: [formData.main_banner]
     });
   };
-
-  // Handle image upload
-  const handleItineraryImage = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setItineraryForm({
-        ...itineraryForm,
-        image: file,
-        preview: URL.createObjectURL(file),
-      });
-    }
-  };
-
-  // Open file picker
-  const openImagePicker = () => {
-    fileRef.current.click();
-  };
-
-  // Submit (Add / Update)
-  const submitItineraryData = () => {
-    if (
-      !itineraryForm.title.trim() ||
-      !itineraryForm.description.trim()
-    ) return;
-
-    if (currentEditIndex !== null) {
-      const updatedList = [...itineraryList];
-      updatedList[currentEditIndex] = itineraryForm;
-      setItineraryList(updatedList);
-      setCurrentEditIndex(null);
-    } else {
-      setItineraryList((prev) => [itineraryForm, ...prev]);
-    }
-
-    setItineraryForm({
-      title: "",
-      description: "",
-      image: null,
-      preview: "",
-    });
-
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-  };
-
-  // Delete
-  const removeItineraryItem = (index) => {
-    setItineraryList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Edit
-  const editItineraryItem = (index) => {
-    const selectedItem = itineraryList[index];
-    setItineraryForm(selectedItem);
-    setCurrentEditIndex(index);
-  };
-
-  //---------End------------
-  //----------- add edit Tour Highlights --------------
-  const [text, setText] = useState("");
-  const [savedList, setSavedList] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const [editText, setEditText] = useState("");
-
-  const handleSave = () => {
-    if (!text.trim()) return;
-    setSavedList((prev) => [...prev, text]);
-    setText("");
-  };
-
-  const handleDelete = (index) => {
-    setSavedList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-
-
-  const handleEdit = (index) => {
-    const item = savedList[index];
-    if (!item) return;
-
-    setEditIndex(index);
-    setEditText(item);
-  };
-
-  const handleEditKeyDown = (e, index) => {
-    if (e.key === "Enter") {
-      if (!editText.trim()) return;
-
-      const updated = [...savedList];
-      updated[index] = editText;
-      setSavedList(updated);
-      setEditIndex(null);
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSave();
-    }
-  };
-  // ---------- end -------
-
   return (
     <main className="page-container">
-
       <form onSubmit={handleSubmit}>
         <div className="p-8 max-w-[1400px] mx-auto w-full grid grid-cols-12 gap-8">
 
-          {/* LEFT */}
+          {/* LEFT SIDE */}
           <div className="col-span-12 lg:col-span-8 space-y-8">
 
             <section className="card bg-surface-container-lowest">
@@ -321,79 +219,66 @@ const TourForm = ({ onSave, editData, onCancel }) => {
               </div>
 
               <div className="form-grid">
+                <InputComp
+                  label="Tour Title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  formClass="full"
+                  placeholder="Tour Package Name"
+                />
 
-                <div className="form-group full">
-                  <label className="form-label">Tour Title</label>
-                  <input
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
-                    type="text"
-                  />
-                </div>
+                <TextArea
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  formClass="full"
+                />
 
-                <div className="form-group full">
-                  <label className="form-label">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
-                    placeholder="Enter Description"
-                  />
-                </div>
-
-
-                <div className="form-group">
-                  <label className="form-label">Category</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low"
-                  >
-                    <option>Religious Tourism</option>
-                    <option>Eco-Tourism</option>
-                    <option>Culinary Tourism</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Status</label>
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low"
-                  >
-                    <option>Active</option>
-                    <option>Inactivewww</option>
-
-                  </select>
-                </div>
-
-
-
-                <div className="form-group">
-                  <label className="form-label">Location</label>
-                  <select
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low"
-                  >
-                    <option value="">Select Location</option>
-                    <option>Mumbai</option>
-                    <option>Delhi</option>
-                    <option>Pune</option>
-                    <option>Goa</option>
-                  </select>
-                </div>
-
+                <SelectOption
+                  label="Category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  child={
+                    <>
+                      <option value="">Select Category</option>
+                      <option value="Religious Tourism">Religious Tourism</option>
+                      <option value="Eco-Tourism">Eco-Tourism</option>
+                      <option value="Culinary Tourism">Culinary Tourism</option>
+                    </>
+                  }
+                />
+                <SelectOption
+                  label="Status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  child={
+                    <>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </>
+                  }
+                />
+                <SelectOption
+                  label="Location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  child={
+                    <>
+                      <option value="">Select Location</option>
+                      <option>Mumbai</option>
+                      <option>Delhi</option>
+                      <option>Pune</option>
+                      <option>Goa</option>
+                    </>
+                  }
+                />
               </div>
             </section>
-
 
             <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
               <div className="flex justify-between items-center mb-6">
@@ -401,527 +286,182 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                   <span className="material-symbols-outlined text-primary">auto_awesome</span>
                   <h2 className="text-lg font-bold tracking-tight">Tour Highlights</h2>
                 </div>
-                <button className="text-xs font-bold bg-primary/10 text-primary px-4 py-2 rounded hover:bg-primary/20 transition-all flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm">add</span> Add Point
-                </button>
               </div>
+
               <div className="space-y-3">
-
-
-
                 <div className="space-y-2 mb-4">
-                  {savedList.map((item, index) => (
-                    <div key={index}>
-
-                      {editIndex === index ? (
-                        // ✏️ Edit Mode
-                        <input
-                          type="text"
-                          value={editText}
-                          placeholder='press enter after edit'
-                          autoFocus
-                          onChange={(e) => setEditText(e.target.value)}
-                          onKeyDown={(e) => handleEditKeyDown(e, index)}
-                          className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-primary/20"
-                        />
-                      ) : (
-                        // ✅ Normal View
-                        <div className="flex items-center group justify-between bg-surface-container-low px-3 py-2 rounded-lg">
-
-                          <div className="flex items-center gap-3">
-                            <FiCheckCircle className="text-green-600" />
-                            <span>{item}</span>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-
-                            {/* Edit */}
-                            <button type='button'
-                              onClick={() => handleEdit(index)}
-                              className="text-blue-500 hover:text-blue-700"
-                            >
-                              <FiEdit2 />
-                            </button>
-
-                            {/* Delete */}
-                            <button type='button'
-                              onClick={() => handleDeleteAmenity(index)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FiTrash2 />
-                            </button>
-
-                          </div>
-                        </div>
-                      )}
-
+                  {formData.highlights.map((item, index) => (
+                    <div key={index} className="flex items-center group justify-between bg-surface-container-low px-3 py-2 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <FiCheckCircle className="text-green-600" />
+                        <span>{item}</span>
+                      </div>
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                        <button type='button' onClick={() => { setHighlightInput(item); setHighlightEditIndex(index) }} className="text-blue-500 hover:text-blue-700"><FiEdit2 /></button>
+                        <button type='button' onClick={() => removeHighlight(index)} className="text-red-500 hover:text-red-700"><FiTrash2 /></button>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Input */}
                 <div className="w-full flex gap-2">
                   <input
                     type="text"
-                    value={text}
-                    onKeyDown={handleKeyDown}
-                    onChange={(e) => setText(e.target.value)}
+                    value={highlightInput}
+                    onChange={(e) => setHighlightInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleSaveHighlight())}
                     placeholder="Enter something..."
                     className="w-full px-4 py-3 bg-surface-container-low rounded-lg focus:ring-2 focus:ring-primary/20 text-sm"
                   />
-
-                  <button
-                    onClick={handleSave} type='button'
-                    className="bg-primary w-[120px] text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Save
+                  <button onClick={handleSaveHighlight} type='button' className="bg-primary w-[120px] text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                    {highlightEditIndex !== null ? "Update" : "Save"}
                   </button>
                 </div>
-
-
               </div>
             </section>
 
             <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
-
-              {/* Tabs Buttons */}
               <div className="flex gap-2 mb-6 border-b pb-2">
-                {tabs.map((tab) => (
-                  <button type='button'
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition 
-                          ${activeTab === tab.id
-                        ? "bg-primary text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                      }`}
-                  >
-                    {tab.label}
+                {["itinerary", "inclusions", "seo"].map((tab) => (
+                  <button type='button' key={tab} onClick={() => setActiveTab(tab)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition capitalize ${activeTab === tab ? "bg-primary text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                    {tab}
                   </button>
                 ))}
               </div>
 
-              {/* Tab Content */}
               <div>
                 {activeTab === "itinerary" && (
                   <div className="max-w-4xl mx-auto bg-white">
-
-                    {/* OUTPUT */}
                     <div className="space-y-3 mb-6">
-                      {itineraryList.map((data, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl group"
-                        >
+                      {formData.itinerary.map((data, idx) => (
+                        <div key={idx} className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl group">
                           <div className="flex items-center gap-4">
-                            {data.preview && (
-                              <img
-                                src={data.preview}
-                                alt="preview"
-                                className="w-20 h-20 object-cover rounded-lg"
-                              />
-                            )}
-
+                            {data.preview && <img src={data.preview} alt="preview" className="w-20 h-20 object-cover rounded-lg" />}
                             <div>
-                              <h2>Day: {idx + 1}</h2>
+                              <h2 className="text-xs font-bold text-primary">Day: {idx + 1}</h2>
                               <h3 className="font-semibold">{data.title}</h3>
                               <p className="text-sm text-gray-600">{data.description}</p>
                             </div>
                           </div>
-
-                          {/* Actions */}
                           <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                            <button type='button'
-                              onClick={() => editItineraryItem(idx)}
-                              className="text-blue-500 hover:text-blue-700"
-                            >
-                              <FiEdit2 />
-                            </button>
-
-                            <button type="button"
-                              onClick={() => removeItineraryItem(idx)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <FiTrash2 />
-                            </button>
+                            <button type='button' onClick={() => { setItineraryForm(data); setCurrentEditItineraryIdx(idx) }} className="text-blue-500"><FiEdit2 /></button>
+                            <button type="button" onClick={() => setFormData({ ...formData, itinerary: formData.itinerary.filter((_, i) => i !== idx) })} className="text-red-500"><FiTrash2 /></button>
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    {/* FORM */}
-                    <div
-                      onSubmit={submitItineraryData}
-                    >
-                      <div className='flex w-full gap-5 items-stretch'>
-                        {/* left */}
-                        <div className='w-1/2 flex'>
-                          <div
-                            onClick={openImagePicker}
-                            className="flex flex-1 items-center justify-center bg-surface-container-low border-2 border-dashed rounded-xl cursor-pointer h-[220px] overflow-hidden"
-                          >
-                            {itineraryForm.preview ? (
-                              <img
-                                src={itineraryForm.preview}
-                                alt="preview"
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="text-center">
-                                <FiUpload className="text-3xl mb-2 text-gray-500 mx-auto" />
-                                <p className="text-sm text-gray-500">
-                                  Click to upload image
-                                </p>
-                              </div>
-                            )}
-                          </div>
-
-                          <input
-                            type="file"
-                            ref={fileRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleItineraryImage}
-                          />
+                    <div className='flex w-full gap-5 items-stretch'>
+                      <div className='w-1/2 flex'>
+                        <div onClick={() => itineraryFileRef.current.click()} className="flex flex-1 items-center justify-center bg-surface-container-low border-2 border-dashed rounded-xl cursor-pointer h-[220px] overflow-hidden">
+                          {itineraryForm.preview ? <img src={itineraryForm.preview} alt="preview" className="w-full h-full object-cover" /> :
+                            <div className="text-center"><FiUpload className="text-3xl mb-2 text-gray-500 mx-auto" /><p className="text-sm text-gray-500">Click to upload image</p></div>}
                         </div>
-
-                        {/* right */}
-                        <div className='w-1/2 flex flex-col h-[220px]'>
-                          <div className="mb-4">
-                            <input
-                              type="text"
-                              name="title"
-                              placeholder='Enter Itinerary Title'
-                              value={itineraryForm.title}
-                              onChange={handleItineraryInput}
-                              className="w-full px-4 py-3 bg-surface-container-low rounded-lg"
-                            />
-                          </div>
-
-                          <div className="flex-1">
-                            <textarea
-                              name="description"
-                              placeholder='Enter Itinerary Description'
-                              value={itineraryForm.description}
-                              onChange={handleItineraryInput}
-                              className="w-full h-full px-4 py-3 bg-surface-container-low rounded-lg resize-none"
-                            />
-                          </div>
-                        </div>
+                        <input type="file" ref={itineraryFileRef} className="hidden" accept="image/*" onChange={handleItineraryImage} />
                       </div>
 
-
-                      {/* Submit */}
-                      <div className="col-span-2">
-                        <button
-                          type="button"
-                          onClick={submitItineraryData}
-                          className="w-[200px] bg-primary text-white py-2 rounded-lg mt-4"
-                        >
-                          {currentEditIndex !== null
-                            ? "Update Itinerary"
-                            : "Add Itinerary"}
-                        </button>
+                      <div className='w-1/2 flex flex-col'>
+                        <InputComp
+                          placeholder="Enter Itinerary Title"
+                          value={itineraryForm.title}
+                          onChange={(e) => setItineraryForm({ ...itineraryForm, title: e.target.value })}
+                          formClass="mb-4"
+                          inputClass="w-full px-4 py-3 bg-surface-container-low rounded-lg"
+                        />
+                        <TextArea
+                          placeholder='Enter Itinerary Description'
+                          value={itineraryForm.description}
+                          onChange={(e) => setItineraryForm({ ...itineraryForm, description: e.target.value })}
+                          formClass="flex-1"
+                          inputClass='w-full h-full px-4 py-3 bg-surface-container-low rounded-lg resize-none'
+                        />
                       </div>
                     </div>
+                    <button type="button" onClick={submitItineraryData} className="w-[200px] bg-primary text-white py-2 rounded-lg mt-4">
+                      {currentEditItineraryIdx !== null ? "Update Itinerary" : "Add Itinerary"}
+                    </button>
                   </div>
                 )}
 
                 {activeTab === "inclusions" && (
-                  <div className="w-full mx-auto bg-white ">
+                  <div className="w-full mx-auto bg-white">
                     <h2 className="text-lg font-semibold mb-4">Select Amenities</h2>
-
-                    <div>
-                      {/* CHECKBOXES */}
-                      <div className="space-x-1 mb-3 flex gap-4 flex-wrap">
-                        {options.map((opt) => (
-                          <label key={opt.id} className="flex items-center gap-1 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={selected.some((item) => item.id === opt.id)}
-                              onChange={() => handleToggle(opt)}
-                            />
-                            <span>{opt.label}</span>
-                          </label>
-                        ))}
-                      </div>
-
-
-
-                      {/* SELECTED LIST */}
-                      <div className="flex max-w-fit gap-3 mb-4 flex-wrap">
-                        {selected.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 rounded-lg group gap-3"
-                          >
-                            <div className="flex items-center gap-2">
-                              <FiCheckCircle className="text-green-600" />
-                              <span className="flex items-center gap-2">
-                                {item.icon}
-                                {item.label}
-                              </span>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(item.id)}
-                              className="text-red-500 opacity-0 group-hover:opacity-100 transition"
-                            >
-                              <FiTrash2 />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="flex gap-4 flex-wrap mb-6">
+                      {options.map((opt) => (
+                        <label key={opt.id} className="flex items-center gap-2 cursor-pointer p-2 border rounded-lg hover:bg-gray-50">
+                          <input type="checkbox" checked={formData.inclusions.some(i => i.id === opt.id)} onChange={() => handleToggleAmenity(opt)} />
+                          <span className="flex items-center gap-2">{opt.icon} {opt.label}</span>
+                        </label>
+                      ))}
                     </div>
-
-
-                    {/* Saved Output */}
-                    <div className="mt-6">
-                      {savedItems.length > 0 && (
-                        <>
-                          <h3 className="font-semibold mb-3">Selected Amenities</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {savedItems.map((item) => (
-                              <div
-                                key={item.id}
-                                className="flex items-center gap-2 p-3 border rounded-lg"
-                              >
-                                <span className="text-xl">{item.icon}</span>
-                                <span>{item.label}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                    <div className="grid grid-cols-2 gap-4">
+                      {formData.inclusions.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between bg-green-50 text-green-800 px-3 py-2 rounded-lg">
+                          <div className="flex items-center gap-2"><FiCheckCircle />{item.icon} {item.label}</div>
+                          <button type="button" onClick={() => handleToggleAmenity(item)} className="text-red-500"><FiTrash2 /></button>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
 
-
-
                 {activeTab === "seo" && (
                   <div>
-                    <h3 className="font-semibold mb-3">SEO Meta</h3>
-
-                    <div className="max-full mx-auto bg-white rounded-2xl ">
-
-
-                      {/* Title */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">Title</label>
-                        <input
-                          type="text"
-                          placeholder="Enter title"
-                          className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-medium"
-                        />
-                      </div>
-
-                      {/* Description */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium mb-2">Description</label>
-                        <textarea
-                          placeholder="Enter description"
-                          rows="4"
-                          className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-medium"
-                        ></textarea>
-                      </div>
-
-
-
-                      {/* Submit Button */}
-                      <button className="w-[200px] btn-primary flex items-center gap-2 justify-center hover:bg-blue-700 transition">
-                        Submit
-                      </button>
-                    </div>
+                    <InputComp label="SEO Title" name="title" value={formData.seo_meta.title} onChange={handleSEOChange} placeholder="Enter title" formClass="mb-4" />
+                    <TextArea label="SEO Description" name="desc" value={formData.seo_meta.desc} onChange={handleSEOChange} placeholder="Enter description" />
                   </div>
                 )}
               </div>
             </div>
-
-
-
-            {/* FEATURES */}
-            {/* <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
-              <h2 className="text-lg font-bold mb-4">Features</h2>
-              <select
-                multiple
-                onChange={handleFeatureChange}
-                className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20 w-full min-h-[120px] rounded-lg px-3 py-2"
-              >
-                <option>Wifi</option>
-                <option>Parking</option>
-                <option>Pool</option>
-                <option>A/c</option>
-              </select>
-            </section> */}
-
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT SIDE */}
           <div className="col-span-12 lg:col-span-4 space-y-8">
-
-            {/* PRICING */}
-
-
-
-
             <section className='bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]'>
-
               <div className="flex items-center gap-3 mb-6">
                 <span className="material-symbols-outlined text-primary">payments</span>
-                <h2 className="text-lg font-bold tracking-tight">Pricing &amp; Rules</h2>
+                <h2 className="text-lg font-bold tracking-tight">Pricing & Rules</h2>
               </div>
-              <div className="space-y-5">
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <InputComp label="Base Price" name="base_price" type="number" value={formData.base_price} onChange={handleChange} />
+                <InputComp label="Offer Price" name="offer_price" type="number" value={formData.offer_price || 999} onChange={handleChange} />
+              </div>
 
-                <div className='grid grid-cols-2 gap-4'>
-                  <div>
-                    <label className="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Base Price ($)</label>
-                    <input
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-black"
-                      type="number"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Offer Price ($)</label>
-                    <input
-                      name="offerPrice"
-                      value={formData.offerPrice || "200"}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-black"
-                      type="number"
-                    />
+              <div className="pt-4 border-t space-y-4">
+                <div className="flex justify-between items-center">
+                  <div><p className="text-xs font-bold">Total Seats</p></div>
+                  <div className="flex items-center gap-2">
+                    <button type='button' onClick={() => setFormData({ ...formData, total_seats: Math.max(0, formData.total_seats - 1) })} className="px-2 bg-gray-200 rounded">−</button>
+                    <span className="text-xs font-black">{formData.total_seats}</span>
+                    <button type='button' onClick={() => setFormData({ ...formData, total_seats: formData.total_seats + 1 })} className="px-2 bg-gray-200 rounded">+</button>
                   </div>
                 </div>
-
-                <div className="pt-4 border-t border-outline-variant/20 space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xs font-bold">Inclusive of Taxes</p>
-                      <p className="text-[10px] text-outline">VAT / GST applied automatically</p>
-                    </div>
-                    <div
-                      onClick={() => setIsOn(!isOn)}
-                      className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-all duration-300 ${isOn ? "bg-primary" : "bg-gray-300"
-                        }`}
-                    >
-                      <div
-                        className={`w-3 h-3 bg-white rounded-full shadow-md transform transition-all duration-300 ${isOn ? "translate-x-5" : "translate-x-0"
-                          }`}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xs font-bold">Total Seats</p>
-                      <p className="text-[10px] text-outline">Max capacity per departure</p>
-                    </div>
-                    <div className="flex items-center gap-1">
-
-                      {/* Down Button */}
-                      <button
-                        onClick={decrease} type='button'
-                        className="px-2 py-1 bg-gray-200 rounded text-xs"
-                      >
-                        −
-                      </button>
-
-                      {/* Input */}
-                      <input
-                        type="number"
-                        value={count}
-                        onChange={handleChangeNum}
-                        className="w-16 px-2 py-1 bg-surface-container-low border-none rounded text-center text-xs font-black appearance-none"
-                      />
-
-                      {/* Up Button */}
-                      <button
-                        onClick={increase} type='button'
-                        className="px-2 py-1 bg-gray-200 rounded text-xs"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            {/* VISUAL MEDIA */}
             <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]">
               <div className="flex items-center gap-3 mb-6">
                 <span className="material-symbols-outlined text-primary">collections</span>
                 <h2 className="text-lg font-bold tracking-tight">Main Banner</h2>
               </div>
-              <label className="block-label">{editData ? "Update Image" : "Upload Image"}</label>
-              <div
-                onClick={() => topUploadRef.current.click()}
-                className="group relative flex items-center justify-center bg-surface-container-low border-2 border-gray-300 border-dashed rounded-xl h-[250px] w-full cursor-pointer overflow-hidden"
-              >
-                <img
-                  src={
-                    image ||
-                    "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
-                  }
-                  alt="preview"
-                  className="w-full h-full object-cover"
-                />
-
-                {/* Optional overlay text */}
-                {!image && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white text-sm">
-                    Click to upload
-                  </div>
-                )}
+              <div onClick={() => topUploadRef.current.click()} className="group relative flex items-center justify-center bg-surface-container-low border-2 border-dashed rounded-xl h-[250px] cursor-pointer overflow-hidden">
+                {formData.main_banner ? <img src={formData.main_banner} alt="banner" className="w-full h-full object-cover" /> : <div className="text-center text-sm text-gray-500">Click to upload</div>}
               </div>
-
-              <input
-                type="file"
-                hidden
-                ref={topUploadRef}
-                onChange={handleUpload}
-              />
+              <input type="file" hidden ref={topUploadRef} onChange={handleMainBannerUpload} />
             </section>
-
           </div>
-
         </div>
-        <div className="flex gap-4 px-8 max-w-[1400px] mx-auto">
-          <button type="submit" className="bg-primary text-white px-6 py-3 rounded-lg">
+
+        <div className="flex gap-4 px-8 max-w-[1400px] mx-auto pb-10">
+          <button type="submit" className="bg-primary text-white px-6 py-3 rounded-lg font-bold">
             {editData ? "Update Hotel" : "Submit Hotel"}
           </button>
-
-          <button type="button" onClick={onCancel}>
-            Cancel
-          </button>
+          <button type="button" onClick={onCancel} className="px-6 py-3 border rounded-lg">Cancel</button>
         </div>
-
-
       </form>
     </main>
-  )
+  );
 }
 
-export default TourForm
+export default TourForm;

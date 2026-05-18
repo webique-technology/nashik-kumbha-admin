@@ -20,7 +20,7 @@ const menuItems = [
     name: "Tour Packages",
     icon: <FiCompass />,
     children: [
-      { name: "Tour Manager", path: "/dashboard/add-tour" },
+      { name: "Tour Manager", path: "/dashboard/tour-manager" },
       { name: "Tour Enquiry", path: "/dashboard/tour-enquriy" }, // keep same as route OR fix both
     ],
   },
@@ -29,7 +29,7 @@ const menuItems = [
 
   { name: "Hotel Listings", icon: <FiHotel />, path: "/dashboard/hotels" },
 
-  { name: "Blog", icon: <FiEdit />, path: "/dashboard/blog-table" },
+  { name: "Blog", icon: <FiEdit />, path: "/dashboard/blogs" },
 
 
     {
