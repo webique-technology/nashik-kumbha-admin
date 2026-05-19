@@ -4,6 +4,7 @@
 # Allow dist folder
 !dist/
 !dist/**
+.env*
 
 # Allow gitignore itself
 !.gitignore
