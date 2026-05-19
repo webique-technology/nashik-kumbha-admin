@@ -132,9 +132,9 @@ const TourTable = ({ tourData = [], onAdd, onEdit, onDelete, loading, error, onV
                     <td className="td p-3">{tour.category}</td>
                     <td className="p-3">
                       <div className="flex flex-wrap gap-2">
-                        {tour.inclusions?.map((f) => (
-                          <span key={f + 1} className="flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-                            {f}
+                        {tour.inclusions?.map((f,i) => (
+                          <span key={i} className="flex items-center gap-1 bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
+                            {f.label}
                           </span>
                         ))}
                       </div>

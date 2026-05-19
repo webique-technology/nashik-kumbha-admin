@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
+import { useParams, useNavigate } from "react-router-dom";
+
 const BlogForm = ({ onSave, editData, onCancel }) => {
   const editorRef = useRef();
 
@@ -9,6 +11,8 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
     description: "",
   });
 
+  const { id } = useParams();
+
   // 👉 PREFILL (EDIT MODE)
   useEffect(() => {
     if (editData) {
@@ -16,7 +20,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
       if (editorRef.current) {
         editorRef.current.innerHTML = editData.description || "";
-      }
+      } 
     }
   }, [editData]);
 
@@ -39,11 +43,23 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
   };
 
   // FEATURED IMAGE UPLOAD
+  // const handleImageUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const url = URL.createObjectURL(file);
+  //     setFormData({ ...formData, image: url });
+  //   }
+  // };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
-      const url = URL.createObjectURL(file);
-      setFormData({ ...formData, image: url });
+      setFormData({
+        ...formData,
+        image: file,
+        preview: URL.createObjectURL(file),
+      });
     }
   };
 
@@ -56,21 +72,35 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
   };
 
   // 👉 PUBLISH (ADD + EDIT)
+  // const handlePublish = () => {
+  //   const contentHTML = editorRef.current.innerHTML;
+
+  //   // 👉 Convert HTML → Plain Text
+  //   const tempDiv = document.createElement("div");
+  //   tempDiv.innerHTML = contentHTML;
+  //   const plainText = tempDiv.innerText;
+
+  //   // 👉 Take first 120 characters as description
+  //   const description = plainText.substring(0, 120) + "...";
+
+  //   const finalData = {
+  //     ...formData,
+  //     description: contentHTML,
+  //     description, // ✅ ADDED
+  //     id: editData?.id,
+  //   };
+
+  //   onSave(finalData);
+  // };
+
   const handlePublish = () => {
+
     const contentHTML = editorRef.current.innerHTML;
 
-    // 👉 Convert HTML → Plain Text
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = contentHTML;
-    const plainText = tempDiv.innerText;
-
-    // 👉 Take first 120 characters as description
-    const description = plainText.substring(0, 120) + "...";
-
     const finalData = {
-      ...formData,
+      title: formData.title,
+      image: formData.image,
       description: contentHTML,
-      description, // ✅ ADDED
       id: editData?.id,
     };
 
@@ -90,10 +120,10 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-bold">
-                  {editData ? "Edit Blog" : "Add New Blog"}
+                  {id ? "Edit Blog" : "Add New Blog"}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {editData
+                  {id
                     ? "Update your blog details below"
                     : "Create a new blog article"}
                 </p>
@@ -119,15 +149,16 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
                 {/* FEATURED IMAGE */}
                 <div>
-                  <label className="block-label">{editData ? "Update Image" : "Upload Image"}</label>
+                  <label className="block-label">{id ? "Update Image" : "Upload Image"}</label>
 
                   <label className="group relative flex items-center justify-center bg-surface-container-low border-2 border-gray-300 border-dashed rounded-xl h-[250px] w-full cursor-pointer overflow-hidden">
 
                     <img
-                      src={
-                        formData.image ||
-                        "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
-                      }
+                      // src={
+                      //   formData.image ||
+                      //   "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
+                      // }
+                      src={formData.preview ||formData.image_url ||"https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"}
                       alt="featured"
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                     />
@@ -204,7 +235,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                     onClick={handlePublish}
                     className="bg-primary text-white px-6 py-3 rounded-lg font-semibold cursor-pointer"
                   >
-                    {editData ? "Update Article" : "Publish Article"}
+                    {id ? "Update Article" : "Publish Article"}
                   </button>
 
                    <button

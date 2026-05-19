@@ -1,8 +1,32 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import BlogTable from "./BlogTable";
 import BlogForm from "./BlogForm";
 import img1 from '../../assets/images/hoelOne.jpg'
 import ViewModal from "../../viewmodel/ViewModal";
+import api from "../../services/axiosInstance";
+import { Routes, Route, useNavigate, useParams } from "react-router-dom";
+
+
+const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate }) => {
+  const { id } = useParams();
+  useEffect(() => {
+    if (id && !editData) {
+      fetchSingleBlog(id);
+    }
+  }, [id]);
+  // WAIT UNTIL DATA LOADS
+  if (!editData) {
+    return <div className="p-5">Loading...</div>;
+  }
+  return (
+    <BlogForm
+      onSave={handleSave}
+      editData={editData}
+      onCancel={() => navigate("/dashboard/blogs")}
+    />
+  );
+};
+
 const BlogManager = () => {
 
   const [viewModal, setViewModal] = useState(false);
@@ -12,89 +36,112 @@ const BlogManager = () => {
       setViewModal(true);
     };
 
-  // 👉 Dummy JSON (NOW REAL STATE)
-  const initialBlogs = [
-    {
-      id: 1,
-      title: "Travel in Paris",
-      description: "Explore the beauty of Paris streets...",
-      image: img1,
-      status: true,
-      content: "<p>Paris blog...</p>",
-    },
-    {
-      id: 2,
-      title: "Mountains of Alps",
-      description: "A journey through snowy mountains...",
-      image: "https://picsum.photos/200?2",
-      status: false,
-      content: "<p>Alps blog...</p>",
-    },
-    {
-      id: 3,
-      title: "Goa Beaches",
-      description: "Sun, sand and sea vibes...",
-      image: "https://picsum.photos/200?3",
-      status: true,
-      content: "<p>Goa blog...</p>",
-    },
-    {
-      id: 4,
-      title: "Desert Safari",
-      description: "Adventure in the desert...",
-      image: "https://picsum.photos/200?4",
-      status: true,
-      content: "<p>Desert blog...</p>",
-    },
-    {
-      id: 5,
-      title: "Kerala Backwaters",
-      description: "Peaceful houseboat experience...",
-      image: "https://picsum.photos/200?5",
-      status: false,
-      content: "<p>Kerala blog...</p>",
-    },
-    {
-      id: 6,
-      title: "Tokyo Nights",
-      description: "City lights and culture...",
-      image: "https://picsum.photos/200?6",
-      status: true,
-      content: "<p>Tokyo blog...</p>",
-    },
-    {
-      id: 7,
-      title: "Swiss Villages",
-      description: "Charming European villages...",
-      image: "https://picsum.photos/200?7",
-      status: true,
-      content: "<p>Swiss blog...</p>",
-    },
-    {
-      id: 8,
-      title: "New York Life",
-      description: "Fast life in NYC...",
-      image: "https://picsum.photos/200?8",
-      status: false,
-      content: "<p>NY blog...</p>",
-    },
-  ];
-
-
-
-
-
-  const [blogs, setBlogs] = useState(initialBlogs);
-  const [page, setPage] = useState("table");
+  const [blogs, setBlogs] = useState([]);
+  // const [page, setPage] = useState("table");
   const [editData, setEditData] = useState(null);
+  const navigate = useNavigate();
 
+    const fetchBlogs = async () => {
+    try {
+        const response = await api.get("/blogs");
 
+        console.log("blogs:", response.data);
 
+        setBlogs(response.data.data.data);
+
+      } catch (error) {
+        console.log("Blog fetch error:", error);
+      }
+    };
+
+    useEffect(() => {
+      fetchBlogs();
+    }, []);
+
+  // 👉 Dummy JSON (NOW REAL STATE)
+  // const initialBlogs = [
+  //   {
+  //     id: 1,
+  //     title: "Travel in Paris",
+  //     description: "Explore the beauty of Paris streets...",
+  //     image: img1,
+  //     status: true,
+  //     content: "<p>Paris blog...</p>",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Mountains of Alps",
+  //     description: "A journey through snowy mountains...",
+  //     image: "https://picsum.photos/200?2",
+  //     status: false,
+  //     content: "<p>Alps blog...</p>",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Goa Beaches",
+  //     description: "Sun, sand and sea vibes...",
+  //     image: "https://picsum.photos/200?3",
+  //     status: true,
+  //     content: "<p>Goa blog...</p>",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Desert Safari",
+  //     description: "Adventure in the desert...",
+  //     image: "https://picsum.photos/200?4",
+  //     status: true,
+  //     content: "<p>Desert blog...</p>",
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Kerala Backwaters",
+  //     description: "Peaceful houseboat experience...",
+  //     image: "https://picsum.photos/200?5",
+  //     status: false,
+  //     content: "<p>Kerala blog...</p>",
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "Tokyo Nights",
+  //     description: "City lights and culture...",
+  //     image: "https://picsum.photos/200?6",
+  //     status: true,
+  //     content: "<p>Tokyo blog...</p>",
+  //   },
+  //   {
+  //     id: 7,
+  //     title: "Swiss Villages",
+  //     description: "Charming European villages...",
+  //     image: "https://picsum.photos/200?7",
+  //     status: true,
+  //     content: "<p>Swiss blog...</p>",
+  //   },
+  //   {
+  //     id: 8,
+  //     title: "New York Life",
+  //     description: "Fast life in NYC...",
+  //     image: "https://picsum.photos/200?8",
+  //     status: false,
+  //     content: "<p>NY blog...</p>",
+  //   },
+  // ];
+
+  // const [blogs, setBlogs] = useState(initialBlogs);
   
 const blogFields = [
   { key: "title", label: "Title" },
+  // { key: "description", label: "Description" },
 
-  { key: "description", label: "Description" },
+  {
+    key: "description",
+    label: "Description",
+    render: (value) => (
+      <div
+        className="prose max-w-full text-sm"
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+    ),
+  },
 
   // {
   //   key: "status",
@@ -118,62 +165,204 @@ const blogFields = [
   // },
 ];
 
-  // 👉 ADD / EDIT
-const handleSave = (data) => {
-  const placeholderImage = "https://picsum.photos/80"; // small image
+//   // 👉 ADD / EDIT
+// const handleSave = (data) => {
+//   const placeholderImage = "https://picsum.photos/80"; // small image
 
-  if (editData) {
-    // UPDATE
-    setBlogs((prev) =>
-      prev.map((item) => (item.id === data.id ? data : item))
-    );
-  } else {
-    // ADD (with fallback image)
-    setBlogs((prev) => [
-      {
-        ...data,
-        id: Date.now(),
-        status: true,
-        image: data.image || placeholderImage, // ✅ fix
-      },
-      ...prev, // ✅ also fixing 2nd requirement here
-    ]);
-  }
+//   if (editData) {
+//     // UPDATE
+//     setBlogs((prev) =>
+//       prev.map((item) => (item.id === data.id ? data : item))
+//     );
+//   } else {
+//     // ADD (with fallback image)
+//     setBlogs((prev) => [
+//       {
+//         ...data,
+//         id: Date.now(),
+//         status: true,
+//         image: data.image || placeholderImage, // ✅ fix
+//       },
+//       ...prev, // ✅ also fixing 2nd requirement here
+//     ]);
+//   }
 
-  setPage("table");
-  setEditData(null);
-};
+//   setPage("table");
+//   setEditData(null);
+// };
 
+  const handleSave = async (data) => {
+      try {
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("description", data.description);
+
+        if (data.image instanceof File) {
+          formData.append("image", data.image);
+        }
+
+        let response;
+        // UPDATE
+        if (editData) {
+
+          response = await api.post(
+            `/blogs/${editData.id}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+        } else {
+          // ADD
+          response = await api.post(
+            "/blogs",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+        }
+
+        console.log("response:", response.data);
+
+        // REFRESH BLOGS
+        fetchBlogs();
+
+        // BACK TO TABLE
+        // setPage("table");
+        navigate("/dashboard/blogs");
+
+        setEditData(null);
+
+      } catch (error) {
+
+        console.log("save error:", error);
+
+      }
+  };
+
+  const fetchSingleBlog = async (id) => {
+    try {
+      const response = await api.get(`/blogs/${id}`);
+      setEditData(response.data.data);
+    } catch (error) {
+      console.log("single blog error:", error);
+    }
+  };
   // EDIT
-  const handleEdit = (blog) => {
-    setEditData(blog);
-    setPage("form");
+  // const handleEdit = (blog) => {
+  //   setEditData(blog);
+  //   setPage("form");
+  // };
+  
+  const handleEdit = async (blog) => {
+    await fetchSingleBlog(blog.id);
+    navigate(`/dashboard/blogs/edit/${blog.id}`);
   };
 
   // DELETE (WORKS ON DUMMY TOO NOW)
-  const handleDelete = (id) => {
-    setBlogs((prev) => prev.filter((b) => b.id !== id));
+  // const handleDelete = (id) => {
+  //   setBlogs((prev) => prev.filter((b) => b.id !== id));
+  // };
+  
+  const handleDelete = async (id) => {
+    try {
+      const response = await api.delete(`/blogs/${id}`);
+      console.log("delete response:", response.data);
+      fetchBlogs();
+    } catch (error) {
+      console.log("delete error:", error);
+    }
   };
+
+  // return (
+  //   <div>
+  //     {page === "table" ? (
+  //       // <BlogTable
+  //       //   blogs={blogs}
+  //       //   // onAdd={() => setPage("form")}
+  //       //   onAdd={() => navigate("/dashboard/blogs/add")}
+  //       //   onEdit={handleEdit}
+  //       //   onDelete={handleDelete}
+  //       //   setBlogs={setBlogs}
+  //       //   onView={handleView}
+  //       // />
+  //       <BlogTable
+  //         blogs={blogs}
+  //         onAdd={() => navigate("/dashboard/blogs/add")}
+  //         onEdit={handleEdit}
+  //         onDelete={handleDelete}
+  //         setBlogs={setBlogs}
+  //         onView={handleView}
+  //       />
+  //     ) : (
+  //       <BlogForm
+  //         onSave={handleSave}
+  //         editData={editData}
+  //         onCancel={() => setPage("table")}
+  //       />
+  //     )}
+  //     <ViewModal
+  //       isOpen={viewModal}
+  //       onClose={() => setViewModal(false)}
+  //       data={selectedTour}
+  //       fields={blogFields}
+  //       title="Blog Details"
+  //     />
+  //   </div>
+  // );
 
   return (
     <div>
 
-      {page === "table" ? (
-        <BlogTable
-          blogs={blogs}
-          onAdd={() => setPage("form")}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          setBlogs={setBlogs}
-          onView={handleView}
+      <Routes>
+
+        {/* LISTING */}
+        <Route
+          path="/"
+          element={
+            <BlogTable
+              blogs={blogs}
+              onAdd={() => navigate("/dashboard/blogs/add")}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              setBlogs={setBlogs}
+              onView={handleView}
+            />
+          }
         />
-      ) : (
-        <BlogForm
-          onSave={handleSave}
-          editData={editData}
-          onCancel={() => setPage("table")}
+
+        {/* ADD */}
+        <Route
+          path="/add"
+          element={
+            <BlogForm
+              onSave={handleSave}
+              onCancel={() => navigate("/dashboard/blogs")}
+            />
+          }
         />
-      )}
+
+        {/* EDIT */}
+        <Route
+          path="/edit/:id"
+          element={
+            <EditBlogWrapper
+              fetchSingleBlog={fetchSingleBlog}
+              editData={editData}
+              handleSave={handleSave}
+              navigate={navigate}
+            />
+          }
+        />
+
+      </Routes>
+
       <ViewModal
         isOpen={viewModal}
         onClose={() => setViewModal(false)}
@@ -181,6 +370,7 @@ const handleSave = (data) => {
         fields={blogFields}
         title="Blog Details"
       />
+
     </div>
   );
 };
