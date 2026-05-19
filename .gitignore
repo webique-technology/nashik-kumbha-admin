@@ -1,18 +1,11 @@
-# dependencies
-node_modules/
+# Ignore env files
+.env*
 
-# build files
+# Ignore build folder
 dist/
 
-# env files
-.env
-.env.*
+# Ignore node modules
+node_modules/
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS files
-.DS_Store
-Thumbs.db
+# Allow gitignore itself
+!.gitignore

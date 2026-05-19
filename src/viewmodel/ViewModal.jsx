@@ -6,6 +6,7 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      
       <div className="bg-white p-6 rounded-xl shadow-lg model-width">
 
 
