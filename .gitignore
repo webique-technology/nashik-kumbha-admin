@@ -1,12 +1,11 @@
-# Ignore everything
-*
+# Ignore env files
+.env*
 
-# Allow dist folder
-!dist/
-!dist/**
+# Ignore build folder
+dist/
+
+# Ignore node modules
+node_modules/
 
 # Allow gitignore itself
 !.gitignore
-
-# Ignore env files
-.env*
