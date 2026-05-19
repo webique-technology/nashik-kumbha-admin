@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FiTrash2, FiEdit2, FiEye } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
-const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
+// const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
+const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,10 +15,22 @@ const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
 
   const itemsPerPage = 7;
 
-  const filteredData = hotels.filter((hotel) =>
-    hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
-    hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
-    hotel.category.toLowerCase().includes(search.category.toLowerCase())
+  // const filteredData = hotels.filter((hotel) =>
+  //   hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
+  //   hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
+  //   hotel.category.toLowerCase().includes(search.category.toLowerCase())
+  // );
+
+  const filteredData = vehicles.filter((vehicle) =>
+    (vehicle.name || "")
+      .toLowerCase()
+      .includes(search.name.toLowerCase()) &&
+    (vehicle.location || "")
+      .toLowerCase()
+      .includes(search.location.toLowerCase()) &&
+    (vehicle.category || "")
+      .toLowerCase()
+      .includes(search.category.toLowerCase())
   );
 
   const totalItems = filteredData.length;
@@ -127,96 +140,92 @@ const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
             </thead>
 
             <tbody className="tbody">
-              {currentData.map((hotel) => (
-                <tr key={hotel.id} className="tr group">
+              {currentData.map((vehicle) => (
+                <tr key={vehicle.id} className="tr group">
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <img
                         src={
-                          hotel.image ||               // ✅ new correct field
-                          (hotel.images && hotel.images[0]) || // ✅ fallback old data
-                          "https://picsum.photos/200"  // ✅ fallback image
+                          vehicle.car_image_url ||              
+                          (vehicle.car_image_url && vehicle.imagesl[0]) || 
+                          "https://picsum.photos/200"  //
                         }
-                        alt={hotel.name}
+                        alt={vehicle.name}
                         className="w-16 h-16 object-cover rounded"
                       />
-
-
-
-
                       <div>
-                        <div className="font-semibold">{hotel.name}</div>
+                        <div className="font-semibold">{vehicle.name}</div>
                         <div className="text-sm text-gray-500">
-                          {hotel.description}
+                          {vehicle.description}
                         </div>
                       </div>
                     </div>
                   </td>
 
-                  <td className="td">{hotel.category}</td>
-                  <td className="td">{hotel.price}</td>
+                  <td className="td">{vehicle.category}</td>
+                  <td className="td">{vehicle.base_price}</td>
 
                   <td className="td">
                     <span
                       className={
-                        hotel.status === "AVAILABLE"
+                        vehicle.status === "AVAILABLE"
                           ? "text-green-600"
-                          : hotel.status === "RENTED"
+                          : vehicle.status === "RENTED"
                             ? "text-red-500"
                             : "text-yellow-500"
                       }
                     >
-                      {hotel.status}
+                      {vehicle.status}
                     </span>
                   </td>
 
                   <td>
-                                     <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">
-                 
-                                       {/* VIEW */}
-                                       <button
-                                         onClick={() => onView(hotel)}
-                                         className="relative group/btn p-1 cursor-pointer"
-                                       >
-                                         <FiEye size={18} />
-                                         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+                    <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">
+
+                      {/* VIEW */}
+                      <button
+                        onClick={() => onView(vehicle)}
+                        className="relative group/btn p-1 cursor-pointer"
+                      >
+                        <FiEye size={18} />
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
                                          opacity-0 group-hover/btn:opacity-100 transition-all duration-200
                                          bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap
                                          pointer-events-none">
-                                           View
-                                         </span>
-                                       </button>
-                 
-                                       {/* EDIT */}
-                                       <button
-                                         onClick={() => onEdit(hotel)}
-                                         className="relative group/btn p-1 text-gray-500 hover:text-blue-700 cursor-pointer"
-                                       >
-                                         <FiEdit2 size={18} />
-                                         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+                          View
+                        </span>
+                      </button>
+
+                      {/* EDIT */}
+                      <button
+                        onClick={() => onEdit(vehicle)}
+                        className="relative group/btn p-1 text-gray-500 hover:text-blue-700 cursor-pointer"
+                      >
+                        <FiEdit2 size={18} />
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
                                          opacity-0 group-hover/btn:opacity-100 transition-all duration-200
                                          bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap
                                          pointer-events-none">
-                                           Edit
-                                         </span>
-                                       </button>
-                 
-                                       {/* DELETE */}
-                                       <button
-                                         onClick={() => handleDeleteClick(hotel.id)}
-                                         className="relative group/btn p-1 text-gray-500 hover:text-red-700 cursor-pointer"
-                                       >
-                                         <FiTrash2 size={18} />
-                                         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
+                          Edit
+                        </span>
+                      </button>
+
+                      {/* DELETE */}
+                      <button
+                        onClick={() => handleDeleteClick(vehicle.id)}
+                        className="relative group/btn p-1 text-gray-500 hover:text-red-700 cursor-pointer"
+                      >
+                        <FiTrash2 size={18} />
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1
                                          opacity-0 group-hover/btn:opacity-100 transition-all duration-200
                                          bg-black text-white text-xs px-2 py-1 rounded whitespace-nowrap
                                          pointer-events-none">
-                                           Delete
-                                         </span>
-                                       </button>
-                 
-                                     </div>
-                                   </td>
+                          Delete
+                        </span>
+                      </button>
+
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

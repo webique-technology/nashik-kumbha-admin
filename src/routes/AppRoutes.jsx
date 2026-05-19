@@ -32,7 +32,8 @@ export default function AppRoutes() {
 
         {/* <Route path="packages" element={<Packages />} /> */}
         <Route path="hotels" element={<HotelManager />} />
-        <Route path="vehicle" element={<VehiclesManager />} />
+        {/* <Route path="vehicle" element={<VehiclesManager />} /> */}
+        <Route path="vehicle/*" element={<VehiclesManager />} />
         {/* <Route path="blog-table" element={<BlogManager />} /> */}
 
         <Route path="blogs/*" element={<BlogManager />} />

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from "react";
 import { FiUpload } from "react-icons/fi";
 import { FaSnowflake, FaUtensils, FaCrown } from "react-icons/fa";
 import { FiTrash2, FiCheckCircle, FiEdit2 } from "react-icons/fi";
@@ -14,7 +14,6 @@ import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { IoBowlingBallOutline } from "react-icons/io5";
 
 const VehiclesForm = ({ onSave, editData, onCancel }) => {
-
   const [isOn, setIsOn] = useState(false);
 
   const [count, setCount] = useState(12);
@@ -58,7 +57,9 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setFormData({ ...formData, image: url });
+      // setFormData({ ...formData, image: url });
+
+      setFormData({ ...formData,image: file, preview: url});
     }
   };
 
@@ -69,22 +70,35 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     { id: "ac", label: "AC", icon: <FaRegSnowflake /> },
     { id: "nac", label: "Non AC", icon: <FaFan /> },
     { id: "als", label: "Ample Luggage Space", icon: <FaLuggageCart /> },
-    { id: "cs", label:"Comfortable Seating", icon: <MdAirlineSeatReclineNormal /> },
-    { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-
+    {
+      id: "cs",
+      label: "Comfortable Seating",
+      icon: <MdAirlineSeatReclineNormal />,
+    },
+    {
+      id: "ma",
+      label: "ABS and Multiple Airbags",
+      icon: <IoBowlingBallOutline />,
+    },
   ];
 
-  
+  // const handleToggle = (option) => {
+  //   const exists = selected.find((item) => item.id === option.id);
 
-  const handleToggle = (option) => {
-    const exists = selected.find((item) => item.id === option.id);
+  //   if (exists) {
+  //     // remove if unchecked
+  //     setSelected((prev) => prev.filter((item) => item.id !== option.id));
+  //   } else {
+  //     // add if checked
+  //     setSelected((prev) => [...prev, option]);
+  //   }
+  // };
 
-    if (exists) {
-      // remove if unchecked
-      setSelected((prev) => prev.filter((item) => item.id !== option.id));
+  const handleToggle = (label) => {
+    if (selected.includes(label)) {
+      setSelected((prev) => prev.filter((item) => item !== label));
     } else {
-      // add if checked
-      setSelected((prev) => [...prev, option]);
+      setSelected((prev) => [...prev, label]);
     }
   };
 
@@ -92,7 +106,6 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     const filtered = options.filter((opt) => selected.includes(opt.id));
     setSavedItems(filtered);
   };
-
 
   const fileInputRef = useRef(null);
 
@@ -102,33 +115,33 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
 
   // ---------- end -------
 
-
   // 🔥 MAIN FORM STATE
-
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category: "",
-    tseat: "",
+    total_seats: "",
     location: "",
-    price: "",
+    base_price: "",
     status: "",
     image: "",
   });
 
-
-
   const fileRef = useRef();
 
-  // 🔥 PREFILL EDIT
-  // 🔥 PREFILL EDIT
   useEffect(() => {
     if (editData) {
       setFormData(editData);
       setStatus(editData.status);
       setFeatured(editData.image); // ✅ show image in edit
-      setSelected(editData.features || []);
+      // setSelected(editData.features || []);
+
+      setSelected(
+  Array.isArray(editData.features)
+    ? editData.features
+    : []
+);
     }
   }, [editData]);
 
@@ -158,28 +171,36 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // onSave({
+    //   ...formData,
+    //   status,
+    //   image: formData.image || featured || "https://picsum.photos/200",
+    // });
+
     onSave({
       ...formData,
       status,
-      image: formData.image || featured || "https://picsum.photos/200",
+      image: formData.image,
+
+      // features: selected.map((item) => item.label),
+      features: selected,
     });
   };
-
 
   // 🔥 FEATURES
-  const handleFeatureChange = (e) => {
-    const selected = Array.from(e.target.selectedOptions).map(o => o.value);
+  // const handleFeatureChange = (e) => {
+  //   const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
 
-    setFormData({
-      ...formData,
-      features: {
-        wifi: selected.includes("Wifi"),
-        parking: selected.includes("Parking"),
-        pool: selected.includes("Pool"),
-        ac: selected.includes("A/c"),
-      }
-    });
-  };
+  //   setFormData({
+  //     ...formData,
+  //     features: {
+  //       wifi: selected.includes("Wifi"),
+  //       parking: selected.includes("Parking"),
+  //       pool: selected.includes("Pool"),
+  //       ac: selected.includes("A/c"),
+  //     },
+  //   });
+  // };
 
   //--------- Upload Images--------
   const [image, setImage] = useState(null);
@@ -217,23 +238,20 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
 
   // 🔥 FINAL SUBMIT
 
-
   return (
     <main className="page-container">
-
       <form onSubmit={handleSubmit}>
         <div className="p-8 max-w-[1400px] mx-auto w-full grid grid-cols-12 gap-8">
-
           <div className="col-span-12 lg:col-span-8 space-y-8">
-
             <section className="card bg-surface-container-lowest">
               <div className="card-header">
-                <span className="material-symbols-outlined text-primary">edit_note</span>
+                <span className="material-symbols-outlined text-primary">
+                  edit_note
+                </span>
                 <h2 className="card-title">Basic Information</h2>
               </div>
 
               <div className="form-grid">
-
                 <div className="form-group">
                   <label className="form-label">Vehicle Name</label>
                   <input
@@ -281,36 +299,30 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                   </select>
                 </div>
 
-
-
-
                 <div className="form-group">
                   <label className="form-label">Status</label>
-                  <select name="status" value={formData.status}
+                  <select
+                    name="status"
+                    value={formData.status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20">
+                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
+                  >
                     <option>AVAILABLE</option>
                     <option>RENTED</option>
                     <option>In Maintenance</option>
                   </select>
                 </div>
 
-
-
-
-
                 <div className="form-group ">
                   <label className="form-label">Total Seats</label>
                   <input
-                    name="tseat"
-                    value={formData.tseat}
+                    name="total_seats"
+                    value={formData.total_seats}
                     onChange={handleChange}
                     className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
                     placeholder="Enter Total Seats"
                   />
                 </div>
-
-
 
                 {/* <div className="form-group">
                   <label className="form-label">Rating</label>
@@ -344,7 +356,6 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                     </select>
                   </div>
                 </div> */}
-
               </div>
             </section>
 
@@ -354,27 +365,28 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                 <h2 className="text-lg font-bold tracking-tight">Features</h2>
               </div>
 
-              <div className='mb-6'>
-
+              <div className="mb-6">
                 <div className="space-x-1 mb-2 flex gap-4">
                   {options.map((opt) => (
-                    <label key={opt.id} className="flex items-center gap-1 cursor-pointer">
+                    <label
+                      key={opt.id}
+                      className="flex items-center gap-1 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
-                        checked={selected.some((item) => item.id === opt.id)}
-                        onChange={() => handleToggle(opt)}
+                        checked={selected.includes(opt.label)}
+                        onChange={() => handleToggle(opt.label)}
                       />
                       <span>{opt.label}</span>
                     </label>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                   {selected.map((item) => (
                     <div
                       key={item.id}
                       className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
                     >
-                      {/* Left */}
                       <div className="flex items-center gap-2 max-w-fit">
                         <FiCheckCircle className="text-green-600" />
                         <span className="flex items-center gap-2">
@@ -383,8 +395,8 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                         </span>
                       </div>
 
-                      {/* Delete (hover only) */}
-                      <button type='button'
+                      <button
+                        type="button"
                         onClick={() => handleDeleteRepCheck(item.id)}
                         className="text-red-500 opacity-0 group-hover:opacity-100 transition"
                       >
@@ -392,9 +404,43 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                       </button>
                     </div>
                   ))}
-                </div>
-              </div>
+                </div> */}
 
+                <div className="flex gap-2 flex-wrap">
+  {selected.map((label) => {
+    const feature = options.find((opt) => opt.label === label);
+
+    return (
+      <div
+        key={label}
+        className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
+      >
+        <div className="flex items-center gap-2">
+          <FiCheckCircle className="text-green-600" />
+
+          <span className="flex items-center gap-2">
+            {feature?.icon}
+            {label}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            setSelected((prev) =>
+              prev.filter((item) => item !== label)
+            )
+          }
+          className="text-red-500 opacity-0 group-hover:opacity-100 transition"
+        >
+          <FiTrash2 />
+        </button>
+      </div>
+    );
+  })}
+</div>
+
+              </div>
 
               <div className="flex items-center gap-3 mb-3">
                 <BiCategory />
@@ -402,7 +448,10 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
               </div>
               <div className="flex flex-wrap gap-4">
                 {CATEGORY_OPTIONS.map((cat) => (
-                  <label key={cat.id} className="flex items-center gap-2 cursor-pointer">
+                  <label
+                    key={cat.id}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <input
                       type="radio"
                       name="category"
@@ -415,62 +464,48 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                 ))}
               </div>
             </section>
-
-
-
           </div>
 
           <div className="col-span-12 lg:col-span-4 space-y-8">
-
-
-
             <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]">
-
-
-
-
               <div className="space-y-5">
-
-                <div className='grid grid-cols-1 gap-4'>
+                <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">Base Price eee($)</label>
+                    <label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-2">
+                      Base Price eee($)
+                    </label>
                     <input
-                      name="price"
-                      value={formData.price}
+                      name="base_price"
+                      value={formData.base_price}
                       onChange={handleChange}
                       className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-black"
                       type="number"
                     />
                   </div>
-
                 </div>
-
-
-
               </div>
             </section>
 
-
-
-
-
-
             <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]">
               <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined text-primary">collections</span>
-                <h2 className="text-lg font-bold tracking-tight">Main Banner</h2>
+                <span className="material-symbols-outlined text-primary">
+                  collections
+                </span>
+                <h2 className="text-lg font-bold tracking-tight">
+                  Main Banner
+                </h2>
               </div>
               <div className="space-y-4">
-
                 {/* 🔷 Featured Image */}
                 <div>
-                  <label className="block-label">{editData ? "Update Image" : "Upload Image"}</label>
+                  <label className="block-label">
+                    {editData ? "Update Image" : "Upload Image"}
+                  </label>
 
                   <label className="group relative flex items-center justify-center bg-surface-container-low border-2 border-gray-300 border-dashed rounded-xl h-[250px] w-full cursor-pointer overflow-hidden">
-
                     <img
                       src={
-                        formData.image ||
+                         formData.preview ||formData.car_image_url  ||
                         "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
                       }
                       alt="featured"
@@ -480,7 +515,9 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                     {/* Overlay text (optional) */}
                     {!formData.image && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 text-white">
-                        <span className="text-white text-3xl"><IoCloudUploadOutline /></span>
+                        <span className="text-white text-3xl">
+                          <IoCloudUploadOutline />
+                        </span>
                         <div className="font-semibold text-2xl">
                           Click to upload
                         </div>
@@ -496,26 +533,30 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                 </div>
 
                 {/* 🔷 Upload + Grid */}
-
               </div>
             </section>
-
           </div>
         </div>
 
         <div className="px-8 max-w-[1400px] mx-auto w-full flex gap-6">
-          <button type="submit" className="bg-primary text-white px-6 py-3 rounded-lg font-semibold max-w-40.5">
+          <button
+            type="submit"
+            className="bg-primary text-white px-6 py-3 rounded-lg font-semibold max-w-40.5"
+          >
             {editData ? "Update Vehicle" : "Submit Vehicle"}
           </button>
 
-          <button type="button" className='px-6 py-3 rounded-lg font-semibold bg-gray-200 max-w-40.5' onClick={onCancel}>
+          <button
+            type="button"
+            className="px-6 py-3 rounded-lg font-semibold bg-gray-200 max-w-40.5"
+            onClick={onCancel}
+          >
             Cancel
           </button>
         </div>
-
       </form>
     </main>
-  )
-}
+  );
+};
 
-export default VehiclesForm
+export default VehiclesForm;

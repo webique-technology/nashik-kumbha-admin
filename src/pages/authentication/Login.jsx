@@ -148,7 +148,7 @@ export default function Login() {
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500 cursor-pointer">
-          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">mahakumbhtourstravelsnashik.com/</a>
+          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">Visit Website</a>
         </div>
       </div>
     </main>

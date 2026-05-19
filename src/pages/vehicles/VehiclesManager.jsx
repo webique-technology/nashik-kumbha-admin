@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 
 import VehiclesTable from "./VehiclesTable";
 import VehiclesForm from "./VehiclesForm";
+import api from "../../services/axiosInstance";
+
+import { useNavigate, useLocation, useParams,Routes, Route } from "react-router-dom";
 
 import vehicleOne from "../../assets/images/vehicles/sedan-one-toyota-etios.png";
 import vehicleTwo from "../../assets/images/vehicles/sedan-two-maruti-swift-dezire.jpg";
@@ -29,273 +32,85 @@ export const CATEGORY_OPTIONS = [
   { id: "bus", label: "Bus" },
 ];
 
+
 const getCategoryLabel = (id) => {
   return CATEGORY_OPTIONS.find((c) => c.id === id)?.label || id;
 };
 
+const EditVehicleWrapper = ({
+      fetchSingleVehicle,
+      editData,
+      handleSave,
+      navigate,
+    }) => {
+
+      const { id } = useParams();
+
+      useEffect(() => {
+        if (id && !editData) {
+          fetchSingleVehicle(id);
+        }
+      }, [id]);
+
+      if (!editData) {
+        return <div className="p-5">Loading...</div>;
+      }
+      return (
+        <VehiclesForm
+          onSave={handleSave}
+          editData={editData}
+          onCancel={() => navigate("/dashboard/vehicle")}
+        />
+      );
+  };
+
 const VehiclesManager = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+
   const [viewModal, setViewModal] = useState(false);
   const [selectedTour, setSelectedTour] = useState(null);
   const handleView = (tour) => {
     setSelectedTour(tour);
     setViewModal(true);
   };
-  const initialHotels = [
-    {
-      id: 1,
-      image: suvOne,
-      name: "Toyota Innova Crysta (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "crista",
-      tseat: 2,
-      location: "Mumbai",
-      pterm: "Net Terms",
-      price: 180.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 2,
-      image: suvTwo,
-      name: "Toyota Innova (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "sedan",
-      tseat: 3,
-      location: "Delhi",
-      pterm: "Cash on Delivery (COD)",
-      price: 200.00,
-      status: "RENTED",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-            ],
-    },
-    {
-      id: 3,
-      image: suvThr,
-      name: "Maruti Suzuki Ertiga (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "traveller",
-      tseat: 5,
-      location: "Pune",
-      pterm: "Due on Receipt",
-      price: 150.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 4,
-      image: suvFvr,
-      name: "Toyota Innova (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "bus",
-      tseat: 1,
-      location: "Bangalore",
-      pterm: "Installment / Stage Payment",
-      price: 120.00,
-      status: "In Maintenance",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "als", label:"Ample Luggage Space", icon: <FaLuggageCart /> },
-            ],
-    },
-    {
-      id: 5,
-      image: vehicleOne,
-      name: "Toyota Etios (5 Seater)",
-      description: "Sedans – Ideal for solo travelers or couples",
-      category: "car",
-      tseat: 4,
-      location: "Chennai",
-      pterm: "Advance Payment",
-      price: 130.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "cs", label:"Comfortable Seating", icon: <MdAirlineSeatReclineNormal /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 6,
-      image: vehicleTwo,
-      name: "Maruti Swift Dezire (5 Seater)",
-      description: "Sedans – Ideal for solo travelers or couples",
-      category: "crista",
-      tseat: 2,
-      location: "Jaipur",
-      pterm: "Installment / Stage Payment",
-      price: 170.00,
-      status: "RENTED",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 7,
-      image: vehicleThr,
-      name: "Honda Amaze (5 Seater)",
-      description: "Sedans – Ideal for solo travelers or couples",
-      category: "sedan",
-      tseat: 6,
-      location: "Hyderabad",
-      pterm: "Advance Payment",
-      price: 220.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 8,
-      image: busOne,
-      name: "Tempo Traveler (17 Seater)",
-      description: "Tempo Travelers / Buses – Perfect for larger groups",
-      category: "car",
-      tseat: 2,
-      location: "Ahmedabad",
-      pterm: "Installment / Stage Payment",
-      price: 160.00,
-      status: "RENTED",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "als", label:"Ample Luggage Space", icon: <FaLuggageCart /> },
-            ],
-    },
-    {
-      id: 9,
-      image: busTwo,
-      name: "Mini Bus (35 Seater to 50 seater)",
-      description: "Tempo Travelers / Buses – Perfect for larger groups",
-      category: "traveller",
-      tseat: 5,
-      location: "Kolkata",
-      pterm: "Cash on Delivery (COD)",
-      price: 110.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "als", label:"Ample Luggage Space", icon: <FaLuggageCart /> },
-              { id: "cs", label:"Comfortable Seating", icon: <MdAirlineSeatReclineNormal /> },
-             
-            ],
-    },
-    {
-      id: 10,
-      image: busThr,
-      name: "Tempo Traveler (13 Seater)",
-      description: "Tempo Travelers / Buses – Perfect for larger groups",
-      category: "bus",
-      tseat: 10,
-      location: "Nagpur",
-      pterm: "Advance Payment",
-      price: 100.00,
-      status: "In Maintenance",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 11,
-      image: suvOne,
-      name: "Toyota Innova Crysta (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "crista",
-      tseat: 20,
-      location: "Mumbai",
-      pterm: "Cash on Delivery (COD)",
-      price: 180.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 12,
-      image: suvTwo,
-      name: "Toyota Innova (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "bus",
-      tseat: 21,
-      location: "Delhi",
-      pterm: "Advance Payment",
-      price: 200.00,
-      status: "RENTED",
-      features: [   
-            
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 13,
-      image: suvThr,
-      name: "Maruti Suzuki Ertiga (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "Traveller",
-      tseat: 22,
-      location: "Pune",
-      pterm: "Advance Payment",
-      price: 150.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 14,
-      image: suvThr,
-      name: "Maruti Suzuki Ertiga (7 Seater)",
-      description: "SUVs – Comfortable option for families or small groups",
-      category: "sedan",
-      tseat: 14,
-      location: "Pune",
-      pterm: "Cash on Delivery (COD)",
-      price: 150.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "als", label:"Ample Luggage Space", icon: <FaLuggageCart /> },
-              { id: "cs", label:"Comfortable Seating", icon: <MdAirlineSeatReclineNormal /> },
-              { id: "ma", label:"ABS and Multiple Airbags", icon: <IoBowlingBallOutline /> },
-            ],
-    },
-    {
-      id: 15,
-      image: vehicleThr,
-      name: "Honda Amaze (5 Seater)",
-      description: "Sedans – Ideal for solo travelers or couples",
-      category: "car",
-      tseat: 25,
-      location: "Hyderabad",
-      pterm: "Cash on Delivery (COD)",
-      price: 220.00,
-      status: "AVAILABLE",
-      features: [   
-              { id: "ac", label:"AC", icon: <FaRegSnowflake  /> },
-              { id: "nac", label:"Non AC", icon: <FaFan /> },
-            ],
-    },
-  ];
 
-  const [hotels, setHotels] = useState(initialHotels);
-  const [page, setPage] = useState("table");
+  // const [hotels, setHotels] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [editData, setEditData] = useState(null);
+
+// const VehiclesTable = ({
+//     vehicles,
+//     onAdd,
+//     onEdit,
+//     onDelete,
+//     onView,
+//   })
+  
+  
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await api.get("/vehicles");
+      console.log("vehicles:", response.data);
+      setVehicles(response.data.data.data);
+    } catch (error) {
+      console.log("vehicle fetch error:", error);
+    }
+  };
+
+  const fetchSingleVehicle = async (id) => {
+    try {
+      const response = await api.get(`/vehicles/${id}`);
+      setEditData(response.data.data);
+    } catch (error) {
+      console.log("single vehicle error:", error);
+    }
+  };
+
+  // const [hotels, setHotels] = useState(initialHotels);
+  // const [page, setPage] = useState("table");
 
 
   const tourFields = [
@@ -339,66 +154,170 @@ const VehiclesManager = () => {
     },
   ];
 
+  useEffect(() => {
+    fetchVehicles();
+  }, []);
 
+  // const handleSave = (data) => {
+  //   if (editData) {
+  //     setHotels((prev) =>
+  //       prev.map((item) =>
+  //         item.id === data.id ? data : item
+  //       )
+  //     );
+  //   } else {
+  //     setHotels((prev) => [
+  //       {
+  //         ...data,
+  //         id: Date.now(),
+  //       },
+  //       ...prev,
+  //     ]);
+  //   }
 
-  const handleSave = (data) => {
-    if (editData) {
-      setHotels((prev) =>
-        prev.map((item) =>
-          item.id === data.id ? data : item
-        )
-      );
-    } else {
-      setHotels((prev) => [
-        {
-          ...data,
-          id: Date.now(),
-        },
-        ...prev, // ✅ already correct (adds on top)
-      ]);
-    }
+  //   setPage("table");
+  //   setEditData(null);
+  // };
 
-    setPage("table");
-    setEditData(null);
+  const handleSave = async (data) => {
+
+      try {
+
+        const formData = new FormData();
+
+        formData.append("name", data.name);
+        formData.append("description", data.description);
+        formData.append("category", data.category);
+        formData.append("total_seats", data.total_seats);
+        formData.append("location", data.location);
+        formData.append("base_price", data.base_price);
+        formData.append("status", data.status);
+
+        // features array
+          data.features.forEach((feature, index) => {
+            formData.append(`features[${index}]`, feature);
+          });
+
+        // image
+        if (data.image instanceof File) {
+          formData.append("car_image", data.image);
+        }
+
+        let response;
+
+        // UPDATE
+        if (editData) {
+
+          response = await api.post(
+            `/vehicles/${editData.id}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+        } else {
+
+          // CREATE
+          response = await api.post(
+            "/vehicles",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+        }
+        console.log("save response:", response.data);
+
+        fetchVehicles();
+        setEditData(null);
+        navigate("/dashboard/vehicle");
+
+      } catch (error) {
+        console.log("vehicle save error:", error);
+      }
   };
 
-  const handleEdit = (hotel) => {
-    setEditData(hotel);
-    setPage("form");
+  // const handleEdit = (hotel) => {
+  //   setEditData(hotel);
+  //   setPage("form");
+  // };
+
+  const handleEdit = async (vehicle) => {
+    await fetchSingleVehicle(vehicle.id);
+    navigate(`/dashboard/vehicle/edit/${vehicle.id}`);
   };
 
 
+  // const handleDelete = (id) => {
+  //   setHotels((prev) => prev.filter((h) => h.id !== id));
+  // };
 
-  const handleDelete = (id) => {
-    setHotels((prev) => prev.filter((h) => h.id !== id));
+  const handleDelete = async (id) => {
+      try {
+        const response = await api.delete(`/vehicles/${id}`);
+        console.log("delete response:", response.data);
+        fetchVehicles();
+      } catch (error) {
+        console.log("delete error:", error);
+      }
   };
 
   return (
-    <>
-      {page === "table" ? (
-        <VehiclesTable
-          hotels={hotels}
-          onAdd={() => setPage("form")}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onView={handleView}
-        />
-      ) : (
-        <VehiclesForm
-          onSave={handleSave}
-          editData={editData}
-          onCancel={() => setPage("table")}
-        />
-      )}
-      <ViewModal
-        isOpen={viewModal}
-        onClose={() => setViewModal(false)}
-        data={selectedTour}
-        fields={tourFields}
-        title="Vehicles Details"
+  <>
+    <Routes>
+
+      <Route
+        path="/"
+        element={
+          <VehiclesTable
+            vehicles={vehicles}
+            onAdd={() => navigate("/dashboard/vehicle/add")}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onView={handleView}
+          />
+        }
       />
-    </>
-  );
+
+      <Route
+        path="/add"
+        element={
+          <VehiclesForm
+            onSave={handleSave}
+            onCancel={() => navigate("/dashboard/vehicle")}
+          />
+        }
+      />
+
+      <Route
+        path="/edit/:id"
+        element={
+          <EditVehicleWrapper
+            fetchSingleVehicle={fetchSingleVehicle}
+            editData={editData}
+            handleSave={handleSave}
+            navigate={navigate}
+          />
+        }
+      />
+
+    </Routes>
+
+    <ViewModal
+      isOpen={viewModal}
+      onClose={() => setViewModal(false)}
+      data={selectedTour}
+      fields={tourFields}
+      title="Vehicles Details"
+    />
+  </>
+);
 };
 
 export default VehiclesManager;
