@@ -57,8 +57,8 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
             </div>
           ))}
         </div>
-
         </div>
+        
 
       </div>
     </div>
