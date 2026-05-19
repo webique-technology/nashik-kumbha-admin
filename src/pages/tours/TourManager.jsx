@@ -36,7 +36,7 @@ const TourManager = () => {
     try {
       if (editData) {
         // UPDATE Logic (PUT)
-        const response = await api.put(`/tours/${editData.id}`, tourData);
+        const response = await api.post(`/tours/${editData.id}`, tourData);
         setTours((prev) =>
           prev.map((item) => (item.id === editData.id ? response.data.data : item))
         );
