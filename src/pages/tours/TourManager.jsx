@@ -13,59 +13,72 @@ const TourManager = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // this function fetch the tour packages data
+  // Fetch the tour packages data
   const fetchTours = async () => {
     setLoading(true);
+    setError("");
     try {
-      const response = await api.get('/tours');
-      // Adjusting to your specific nested data structure
-      setTours(response.data.data.data || []);
-      console.log("tour package",response.data);
-      
+      const response = await api.get("/tours");
+      // Gracefully handle deep nested data structure
+      const fetchedData =
+        response.data?.data?.data || response.data?.data || response.data || [];
+      setTours(Array.isArray(fetchedData) ? fetchedData : []);
     } catch (err) {
       setError("Failed to load tours.");
+      console.error("Fetch Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Unified Save Handler ---
-  const handleSave = async (tourData) => {
+  // --- Unified Save Handler (Handles FormData) ---
+  const handleSave = async (formDataInstance) => {
     setLoading(true);
     setError("");
     try {
       if (editData) {
-        // UPDATE Logic (PUT)
-        const response = await api.post(`/tours/${editData.id}`, tourData);
+        // UPDATE Logic (Multipart forms usually need POST spoofing or regular PUT depending on backend)
+        // Adjust endpoint if your backend expects /tours/update/${editData.id}
+        const response = await api.post(
+          `/tours/${editData.id}`,
+          formDataInstance,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          },
+        );
+
+        const updatedTour = response.data?.data || response.data;
         setTours((prev) =>
-          prev.map((item) => (item.id === editData.id ? response.data.data : item))
+          prev.map((item) =>
+            item.id === editData.id ? { ...item, ...updatedTour } : item,
+          ),
         );
       } else {
         // CREATE Logic (POST)
-        const response = await api.post('/tours', tourData);
-        const newTour = response.data.data;
+        const response = await api.post("/tours", formDataInstance, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        const newTour = response.data?.data || response.data;
         setTours((prev) => [newTour, ...prev]);
       }
 
-      // Success: Go back to table
       setPage("table");
       setEditData(null);
     } catch (err) {
       console.error("Save Error:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to save tour.");
-      // Note: We stay on the form page so the user doesn't lose their input on error
     } finally {
       setLoading(false);
     }
   };
 
-  // this funtion delete the tour-package by id [any our package]
+  // Delete tour package by id
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this tour?")) return;
     try {
       await api.delete(`/tours/${id}`);
       setTours((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
+      console.error("Delete Error:", err);
       alert("Failed to delete tour.");
     }
   };
@@ -73,8 +86,6 @@ const TourManager = () => {
   useEffect(() => {
     fetchTours();
   }, []);
-
-  // ... (handleEdit and handleView stay the same)
 
   const handleEdit = (tour) => {
     setEditData(tour);
@@ -100,7 +111,7 @@ const TourManager = () => {
         />
       ) : (
         <TourForm
-          onSave={handleSave} // Now handles both Post and Put
+          onSave={handleSave}
           editData={editData}
           onCancel={() => {
             setPage("table");
@@ -109,7 +120,14 @@ const TourManager = () => {
         />
       )}
 
-      {/* ViewModal remains same */}
+      {viewModal && (
+        <ViewModal
+          isOpen={viewModal}
+          onClose={() => setViewModal(false)}
+          data={selectedTour}
+          fields={tours}
+        />
+      )}
     </>
   );
 };

@@ -30,8 +30,7 @@ export default function Login() {
         password: formData.password
       });
 
-      console.log("admin credentials:", response);
-
+      // console.log("admin credentials:", response);
 
       // 2. Extract token (adjust based on your API structure)
       const { token } = response.data;
@@ -148,7 +147,7 @@ export default function Login() {
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500 cursor-pointer">
-          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">mahakumbhtourstravelsnashik.com/</a>
+          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">www.mahakumbhtourstravelsnashik.com/</a>
         </div>
       </div>
     </main>
