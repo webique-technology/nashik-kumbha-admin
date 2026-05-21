@@ -27,7 +27,7 @@ const menuItems = [
 
   { name: "Vehicle", icon: <FiTruck />, path: "/dashboard/vehicle" },
 
-  { name: "Hotel Listings", icon: <FiHotel />, path: "/dashboard/hotels" },
+  { name: "Hotel Listings", icon: <FiHotel />, path: "/dashboard/hotel" },
 
   { name: "Blog", icon: <FiEdit />, path: "/dashboard/blogs" },
 
