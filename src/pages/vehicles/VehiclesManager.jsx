@@ -1,29 +1,11 @@
 import React, { useState, useEffect} from "react";
+import { useNavigate, useLocation, useParams,Routes, Route } from "react-router-dom";
 
 import VehiclesTable from "./VehiclesTable";
 import VehiclesForm from "./VehiclesForm";
 import api from "../../services/axiosInstance";
-
-import { useNavigate, useLocation, useParams,Routes, Route } from "react-router-dom";
-
-import vehicleOne from "../../assets/images/vehicles/sedan-one-toyota-etios.png";
-import vehicleTwo from "../../assets/images/vehicles/sedan-two-maruti-swift-dezire.jpg";
-import vehicleThr from "../../assets/images/vehicles/sedan-three-honda-amaze.jpg";
-
-import busOne from "../../assets/images/vehicles/bus-one-tempo-traveler.png";
-import busTwo from "../../assets/images/vehicles/bus-three-tempo-traveler.png";
-import busThr from "../../assets/images/vehicles/bus-two-mini-bus.jpg";
-
-import suvOne from "../../assets/images/vehicles/suv-one-toyota-innova.png";
-import suvTwo from "../../assets/images/vehicles/suv-two-toyota-innova-crysta.png";
-import suvThr from "../../assets/images/vehicles/suv-three-ertiga.jpg";
-import suvFvr from "../../assets/images/vehicles/suv-four-toyota-innova.png";
 import ViewModal from "../../viewmodel/ViewModal";
-import { FaRegSnowflake } from "react-icons/fa";
-import { FaFan } from "react-icons/fa";
-import { FaLuggageCart } from "react-icons/fa";
-import { MdAirlineSeatReclineNormal } from "react-icons/md";
-import { IoBowlingBallOutline } from "react-icons/io5";
+
 export const CATEGORY_OPTIONS = [
   { id: "crista", label: "Crista" },
   { id: "traveller", label: "Traveller" },
@@ -79,17 +61,7 @@ const VehiclesManager = () => {
   // const [hotels, setHotels] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [editData, setEditData] = useState(null);
-
-// const VehiclesTable = ({
-//     vehicles,
-//     onAdd,
-//     onEdit,
-//     onDelete,
-//     onView,
-//   })
   
-  
-
   const fetchVehicles = async () => {
     try {
       const response = await api.get("/vehicles");
@@ -108,9 +80,6 @@ const VehiclesManager = () => {
       console.log("single vehicle error:", error);
     }
   };
-
-  // const [hotels, setHotels] = useState(initialHotels);
-  // const [page, setPage] = useState("table");
 
 
   const tourFields = [
@@ -157,27 +126,6 @@ const VehiclesManager = () => {
   useEffect(() => {
     fetchVehicles();
   }, []);
-
-  // const handleSave = (data) => {
-  //   if (editData) {
-  //     setHotels((prev) =>
-  //       prev.map((item) =>
-  //         item.id === data.id ? data : item
-  //       )
-  //     );
-  //   } else {
-  //     setHotels((prev) => [
-  //       {
-  //         ...data,
-  //         id: Date.now(),
-  //       },
-  //       ...prev,
-  //     ]);
-  //   }
-
-  //   setPage("table");
-  //   setEditData(null);
-  // };
 
   const handleSave = async (data) => {
 
@@ -243,20 +191,10 @@ const VehiclesManager = () => {
       }
   };
 
-  // const handleEdit = (hotel) => {
-  //   setEditData(hotel);
-  //   setPage("form");
-  // };
-
   const handleEdit = async (vehicle) => {
     await fetchSingleVehicle(vehicle.id);
     navigate(`/dashboard/vehicle/edit/${vehicle.id}`);
   };
-
-
-  // const handleDelete = (id) => {
-  //   setHotels((prev) => prev.filter((h) => h.id !== id));
-  // };
 
   const handleDelete = async (id) => {
       try {
