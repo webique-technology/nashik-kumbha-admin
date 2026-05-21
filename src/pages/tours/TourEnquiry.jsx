@@ -1,48 +1,64 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-const TourEnquiry = () => {
-     const data = [
-    { id: 1, name: "Rahul Sharma", email: "rahul@mail.com", phone: "9876543210", travellers: 2, date: "2026-05-10", tour: "Goa", requirements: "Sea facing hotel" },
-    { id: 2, name: "Priya Patel", email: "priya@mail.com", phone: "9123456780", travellers: 4, date: "2026-06-15", tour: "Manali", requirements: "Snow activities" },
-    { id: 3, name: "Amit Verma", email: "amit@mail.com", phone: "9988776655", travellers: 3, date: "2026-07-01", tour: "Dubai", requirements: "Luxury stay" },
-    { id: 4, name: "Sneha Iyer", email: "sneha@mail.com", phone: "9090909090", travellers: 5, date: "2026-08-20", tour: "Kerala", requirements: "Houseboat" },
-    { id: 5, name: "Rohan Das", email: "rohan@mail.com", phone: "8888888888", travellers: 1, date: "2026-09-12", tour: "Ladakh", requirements: "Bike trip" },
-    { id: 6, name: "Neha Singh", email: "neha@mail.com", phone: "7777777777", travellers: 6, date: "2026-10-05", tour: "Bali", requirements: "Private villa" },
-    { id: 7, name: "Karan Mehta", email: "karan@mail.com", phone: "6666666666", travellers: 2, date: "2026-11-18", tour: "Thailand", requirements: "Nightlife" },
-    { id: 8, name: "Anjali Gupta", email: "anjali@mail.com", phone: "9999999999", travellers: 3, date: "2026-12-25", tour: "Singapore", requirements: "Family friendly" },
-    { id: 9, name: "Vikas Rao", email: "vikas@mail.com", phone: "9555555555", travellers: 2, date: "2027-01-10", tour: "Maldives", requirements: "Water villa" },
-    { id: 10, name: "Pooja Shah", email: "pooja@mail.com", phone: "9444444444", travellers: 4, date: "2027-02-14", tour: "Paris", requirements: "Eiffel view" },
-    { id: 11, name: "Arjun Nair", email: "arjun@mail.com", phone: "9333333333", travellers: 5, date: "2027-03-01", tour: "Switzerland", requirements: "Snow train" },
-    { id: 12, name: "Meera Joshi", email: "meera@mail.com", phone: "9222222222", travellers: 2, date: "2027-04-05", tour: "Udaipur", requirements: "Lake view" },
-    { id: 13, name: "Sahil Khan", email: "sahil@mail.com", phone: "9111111111", travellers: 3, date: "2027-05-10", tour: "Turkey", requirements: "Hot air balloon" },
-    { id: 14, name: "Divya Reddy", email: "divya@mail.com", phone: "9000000000", travellers: 4, date: "2027-06-20", tour: "Japan", requirements: "Cherry blossom" },
-    { id: 15, name: "Manish Gupta", email: "manish@mail.com", phone: "9898989898", travellers: 2, date: "2027-07-15", tour: "London", requirements: "City tour" },
-  ];
+import api from "../../services/axiosInstance";
 
+const TourEnquiry = () => {
+  
   const [searchName, setSearchName] = useState("");
   const [searchTravellers, setSearchTravellers] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [enquiries, setEnquiries] = useState([]);
 
-  const rowsPerPage = 7;
+  const [loading, setLoading] = useState(true);
+  const rowsPerPage = 10;
 
-  // 🔍 Filter Data
-  const filteredData = useMemo(() => {
-    return data.filter((item) => {
-      return (
-        item.name.toLowerCase().includes(searchName.toLowerCase()) &&
-        (searchTravellers === "" ||
-          item.travellers.toString().includes(searchTravellers))
-      );
-    });
-  }, [searchName, searchTravellers]);
+  const [totalPages, setTotalPages] = useState(1);
+
+    const fetchEnquiries = async (page = 1) => {
+      try {
+        const response = await api.get(`/tour-enquiries?page=${page}`);
+
+        console.log("tour enquiries:", response.data);
+
+        setEnquiries(response.data.data.data);
+
+        setCurrentPage(response.data.data.current_page);
+        setTotalPages(response.data.data.last_page);
+
+      } catch (error) {
+        console.log("tour enquiry fetch error:", error);
+      }
+    };
+
+  useEffect(() => {
+    fetchEnquiries(currentPage);
+  }, [currentPage]);
+
+
+      const filteredData = useMemo(() => {
+      return enquiries.filter((item) => {
+        return (
+          item.full_name
+            ?.toLowerCase()
+            .includes(searchName.toLowerCase()) &&
+          (
+            searchTravellers === "" ||
+            item.number_of_travelers
+              ?.toString()
+              .includes(searchTravellers)
+          )
+        );
+      });
+    }, [enquiries, searchName, searchTravellers]);
 
   // 📄 Pagination Logic
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentData = filteredData.slice(
-    startIndex,
-    startIndex + rowsPerPage
-  );
+  // const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  // const startIndex = (currentPage - 1) * rowsPerPage;
+  // const currentData = filteredData.slice(
+  //   startIndex,
+  //   startIndex + rowsPerPage
+  // );
+  const currentData = filteredData;
     return (
         <div className='page-container'>
             <div className='inner-page-container'>
@@ -89,13 +105,13 @@ const TourEnquiry = () => {
             {currentData.length > 0 ? (
               currentData.map((item) => (
                 <tr key={item.id} className="thead-row tr group bg-white">
-                  <td className="td p-3">{item.name}</td>
+                  <td className="td p-3">{item.full_name}</td>
                   <td className="td p-3">{item.email}</td>
-                  <td className="td p-3">{item.phone}</td>
-                  <td className="td p-3">{item.travellers}</td>
-                  <td className="td p-3">{item.date}</td>
-                  <td className="td p-3">{item.tour}</td>
-                  <td className="td p-3">{item.requirements}</td>
+                  <td className="td p-3">{item.phone_number}</td>
+                  <td className="td p-3">{item.number_of_travelers}</td>
+                  <td className="td p-3">{item.preferred_dates}</td>
+                  <td className="td p-3">{item.tour_name}</td>
+                  <td className="td p-3">{item.special_requirements}</td>
                 </tr>
               ))
             ) : (
@@ -110,10 +126,15 @@ const TourEnquiry = () => {
 
         {/* 📄 Pagination */}
       <div className="pagination">
-        <div className="text-sm text-gray-600">
-          Showing {filteredData.length === 0 ? 0 : startIndex + 1} -{" "}
+        {/* <div className="text-sm text-gray-600"> */}
+          {/* Showing {filteredData.length === 0 ? 0 : startIndex + 1} -{" "} */}
+          {/* Showing Page {currentPage} of {totalPages}
           {Math.min(startIndex + rowsPerPage, filteredData.length)} of{" "}
           {filteredData.length}
+        </div> */}
+
+        <div className="text-sm text-gray-600">
+          Showing Page {currentPage} of {totalPages}
         </div>
 
         <div className="flex items-center gap-1">
