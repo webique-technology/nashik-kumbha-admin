@@ -31,8 +31,9 @@ export default function AppRoutes() {
         <Route index element={<Dashboard />} />
 
         {/* <Route path="packages" element={<Packages />} /> */}
-        <Route path="hotels" element={<HotelManager />} />
+        {/* <Route path="hotels" element={<HotelManager />} /> */}
         {/* <Route path="vehicle" element={<VehiclesManager />} /> */}
+        <Route path="hotel/*" element={<HotelManager />} />
         <Route path="vehicle/*" element={<VehiclesManager />} />
         {/* <Route path="blog-table" element={<BlogManager />} /> */}
 

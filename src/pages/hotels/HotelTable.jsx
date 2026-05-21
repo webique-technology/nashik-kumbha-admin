@@ -14,11 +14,25 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
   const itemsPerPage = 7;
 
   // 👉 Use blogs OR fallback dummy
-  const filteredData = hotels.filter((hotel) =>
-    hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
-    hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
-    hotel.category.toLowerCase().includes(search.category.toLowerCase())
-  );
+  // const filteredData = hotels.filter((hotel) =>
+  //   hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
+  //   hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
+  //   hotel.category.toLowerCase().includes(search.category.toLowerCase())
+  // );
+
+  const filteredData = (hotels || []).filter((hotel) =>
+  (hotel.name || "")
+    .toLowerCase()
+    .includes(search.name.toLowerCase()) &&
+
+  (hotel.location || "")
+    .toLowerCase()
+    .includes(search.location.toLowerCase()) &&
+
+  (hotel.category || "")
+    .toLowerCase()
+    .includes(search.category.toLowerCase())
+);
 
   const data = filteredData;
   // 👉 Pagination logic
@@ -189,9 +203,9 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                   <td>
                     <div className="flex flex-wrap gap-2">
-                      {hotel.features?.map((f) => (
+                      {hotel.features?.map((f, index) => (
                         <span
-                          key={f.id}
+                          key={`${f.id}-${index}`}
                           className="flex items-center gap-1 bg-red-100 px-2 py-1 rounded text-xs"
                         >
                           {f.icon}
