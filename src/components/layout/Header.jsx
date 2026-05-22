@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import {FiLogOut} from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import { NavLink, useNavigate } from "react-router-dom";
+import api from "../../services/axiosInstance";
+
 const Header = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
 
   const [openDropdown, setOpenDropdown] = useState(false);
   const dropdownRef = useRef();
-
+  const navigate = useNavigate();
 
 
   const pageTitles = {
@@ -18,7 +20,7 @@ const Header = ({ isOpen, toggleSidebar }) => {
     "/dashboard/hotels": "Hotel Manager",
     "/dashboard/blog-table": "Blog Manager",
     "/dashboard/settings": "Settings",
-    
+
     "/dashboard/paymentpolicy": "Payment Policy",
     "/dashboard/privacypolicy": "Privacy Policy",
     "/dashboard/settings": "Settings",
@@ -27,7 +29,7 @@ const Header = ({ isOpen, toggleSidebar }) => {
   const lowerMenu = [
     { name: "Logout", icon: <FiLogOut />, path: "/login" },
   ];
-  
+
 
   const currentTitle = pageTitles[location.pathname] || "Dashboard";
 
@@ -43,6 +45,30 @@ const Header = ({ isOpen, toggleSidebar }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      // Call logout API
+      await api.post("/admin/logout");
+
+      // Remove token/local storage
+      localStorage.removeItem("token");
+      localStorage.removeItem("admin");
+
+      // Redirect to login
+      navigate("/login");
+
+    } catch (error) {
+      console.error("Logout Error:", error);
+
+      // Optional force logout
+      localStorage.removeItem("token");
+      localStorage.removeItem("admin");
+
+      navigate("/login");
+    }
+  };
+
+
   return (
     <header className="app-header top-0 left-0 w-full">
       <div className="header-left">
@@ -57,7 +83,7 @@ const Header = ({ isOpen, toggleSidebar }) => {
 
       <div className="header-right">
         <div className="relative" ref={dropdownRef}>
-          
+
           {/* Profile */}
           <div
             className="profile-photo cursor-pointer"
@@ -89,30 +115,19 @@ const Header = ({ isOpen, toggleSidebar }) => {
               Notifications
             </Link> */}
 
-            
+            {lowerMenu.map((item) => (
+              <button
+                key={item.name}
+                onClick={handleLogout}
+                className="lower-nav-item lower-nav-inactive w-full text-left"
+              >
+                <span className="nav-icon icon-color">
+                  {item.icon}
+                </span>
 
-
-                {lowerMenu.map((item) => (
-        <NavLink
-          key={item.name}
-          to={item.path}
-          onClick={() => {
-            if (window.innerWidth < 1024) {
-              toggleSidebar();
-            }
-          }}
-          className={({ isActive }) =>
-            `lower-nav-item ${isActive ? "lower-nav-active" : "lower-nav-inactive"
-            }`
-          }
-        >
-          <span className="nav-icon icon-color">
-            {item.icon}
-          </span>
-
-          {isOpen && <span className="text-sm">{item.name}</span>}
-        </NavLink>
-      ))}
+                {isOpen && <span className="text-sm">{item.name}</span>}
+              </button>
+            ))}
           </div>
         </div>
       </div>

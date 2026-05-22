@@ -14,6 +14,7 @@ const Dashboard = () => {
   "#d1571b", // cyan
   "#d1571b", // pink
 ];
+
   const mainMetric = {
     id: 0,
     label: "Total Revenue (Monthly)",
@@ -300,14 +301,6 @@ const Dashboard = () => {
         </div>
 
       </div>
-
-
-
-
-
-
-
-
     </div>
   )
 }

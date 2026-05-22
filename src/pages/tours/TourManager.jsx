@@ -35,35 +35,32 @@ const TourManager = () => {
   const handleSave = async (formDataInstance) => {
     setLoading(true);
     setError("");
+
     try {
       if (editData) {
-        // UPDATE Logic (Multipart forms usually need POST spoofing or regular PUT depending on backend)
-        // Adjust endpoint if your backend expects /tours/update/${editData.id}
-        const response = await api.post(
+        await api.post(
           `/tours/${editData.id}`,
           formDataInstance,
           {
-            headers: { "Content-Type": "multipart/form-data" },
-          },
-        );
-
-        const updatedTour = response.data?.data || response.data;
-        setTours((prev) =>
-          prev.map((item) =>
-            item.id === editData.id ? { ...item, ...updatedTour } : item,
-          ),
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
       } else {
-        // CREATE Logic (POST)
-        const response = await api.post("/tours", formDataInstance, {
-          headers: { "Content-Type": "multipart/form-data" },
+        await api.post("/tours", formDataInstance, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
-        const newTour = response.data?.data || response.data;
-        setTours((prev) => [newTour, ...prev]);
       }
+
+      // IMPORTANT
+      await fetchTours();
 
       setPage("table");
       setEditData(null);
+
     } catch (err) {
       console.error("Save Error:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Failed to save tour.");
@@ -102,7 +99,10 @@ const TourManager = () => {
       {page === "table" ? (
         <TourTable
           tourData={tours}
-          onAdd={() => setPage("form")}
+          onAdd={() => {
+            setEditData(null);
+            setPage("form");
+          }}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onView={handleView}
