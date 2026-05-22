@@ -174,14 +174,14 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                       {/* Image */}
                       <img
-                        src={hotel.images?.[0]}
+                        src={hotel.image_url}
                         alt={hotel.name}
                         className="w-16 h-16 object-cover rounded"
                       />
 
                       {/* Title + Description */}
                       <div>
-                        <h3 className="font-semibold text-sm">{hotel.name}</h3>
+                        <h3 className="font-semibold text-sm">{hotel.title}</h3>
                         <p className="text-xs text-gray-500 line-clamp-2">
                           {hotel.description}
                         </p>
@@ -189,7 +189,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                     </div>
                   </td>
-                  <td className="td">{hotel.foodcat}</td>
+                  <td className="td">{hotel.meals}</td>
                   <td className="td">{hotel.category}</td>
                   <td className="td">{hotel.rating} ⭐</td>
                   <td className="td">{hotel.location}</td>
@@ -209,13 +209,13 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                           className="flex items-center gap-1 bg-red-100 px-2 py-1 rounded text-xs"
                         >
                           {f.icon}
-                          {f.label}
+                          {f}
                         </span>
                       ))}
                     </div>
                   </td>
 
-                  <td className="td">₹{hotel.price}</td>
+                  <td className="td">₹{hotel.base_price}</td>
 
 
 

@@ -98,7 +98,7 @@ const HotelManager = () => {
     try {
       const payload = new FormData();
 
-      payload.append("name", formData.name || "");
+      payload.append("title", formData.title || "");
       payload.append(
         "description",
         formData.description || ""
@@ -108,22 +108,25 @@ const HotelManager = () => {
         "category",
         formData.category || ""
       );
-      payload.append("foodcat", formData.foodcat || "");
+      payload.append("meals", formData.meals || "");
       payload.append(
         "location",
         formData.location || ""
       );
-      payload.append("price", formData.price || "");
+      payload.append("base_price", formData.base_price || "");
       payload.append(
-        "offerPrice",
-        formData.offerPrice || ""
+        "offer_price",
+        formData.offer_price || ""
       );
 
       // FEATURES
-      payload.append(
-        "features",
-        JSON.stringify(formData.features || [])
-      );
+      // payload.append(
+      //   "features",
+      //   JSON.stringify(formData.features || [])
+      // );
+      formData.features.forEach((feature) => {
+        payload.append("features[]", feature);
+      });
 
       // IMAGES
       if (formData.images?.length) {
@@ -136,7 +139,7 @@ const HotelManager = () => {
 
       // UPDATE
       if (editData?.id) {
-        payload.append("_method", "PUT");
+        // payload.append("_method", "PUT");
 
         await api.post(
           `/hotels/${editData.id}`,
@@ -183,12 +186,12 @@ const HotelManager = () => {
 
   // ================= TABLE FIELDS =================
   const hotelFields = [
-    { key: "name", label: "Name" },
+    { key: "title", label: "title" },
     { key: "description", label: "Description" },
     { key: "rating", label: "Rating" },
     { key: "category", label: "Category" },
-    { key: "foodcat", label: "Food Category" },
-    { key: "price", label: "Price" },
+    { key: "meals", label: "Food Category" },
+    { key: "base_price", label: "base_price" },
     { key: "location", label: "Location" },
   ];
 
