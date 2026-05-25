@@ -76,15 +76,8 @@ const HotelManager = () => {
       const response = await api.get(`/hotels/${id}`);
 
       console.log("single hotel:", response.data);
-      const hotel = response?.data?.data;
 
-      setEditData({
-        ...hotel,
-        features:
-          typeof hotel.features === "string"
-            ? JSON.parse(hotel.features)
-            : hotel.features || [],
-      });
+      setEditData(response?.data?.data || null);
     } catch (error) {
       console.log("single hotel fetch error:", error);
     }
@@ -100,7 +93,6 @@ const HotelManager = () => {
     setViewModal(true);
   };
 
-  // ================= SAVE =================
   // ================= SAVE =================
   const handleSave = async (formData) => {
     try {
@@ -136,15 +128,7 @@ const HotelManager = () => {
         payload.append("features[]", feature);
       });
 
-      // ================= EXISTING IMAGES =================
-      if (formData.oldImages?.length) {
-        payload.append(
-          "oldImages",
-          JSON.stringify(formData.oldImages)
-        );
-      }
-
-      // ================= NEW IMAGES =================
+      // IMAGES
       if (formData.images?.length) {
         formData.images.forEach((img) => {
           if (img instanceof File) {
@@ -158,21 +142,23 @@ const HotelManager = () => {
         // payload.append("_method", "PUT");
 
         await api.post(
-          `/hotels/${formData.id}`,
+          `/hotels/${editData.id}`,
           payload,
           {
             headers: {
-              "Content-Type": "multipart/form-data",
+              "Content-Type":
+                "multipart/form-data",
             },
           }
         );
       }
 
-      // ================= CREATE =================
+      // CREATE
       else {
         await api.post("/hotels", payload, {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type":
+              "multipart/form-data",
           },
         });
       }
@@ -182,12 +168,8 @@ const HotelManager = () => {
       setEditData(null);
 
       navigate("/dashboard/hotel");
-
     } catch (error) {
-      console.log(
-        "hotel save error:",
-        error?.response?.data || error
-      );
+      console.log("hotel save error:", error);
     }
   };
 
@@ -196,7 +178,7 @@ const HotelManager = () => {
     try {
       await api.delete(`/hotels/${id}`);
 
-      await fetchHotels();
+      fetchHotels();
     } catch (error) {
       console.log("hotel delete error:", error);
     }
