@@ -76,8 +76,15 @@ const HotelManager = () => {
       const response = await api.get(`/hotels/${id}`);
 
       console.log("single hotel:", response.data);
+      const hotel = response?.data?.data;
 
-      setEditData(response?.data?.data || null);
+      setEditData({
+        ...hotel,
+        features:
+          typeof hotel.features === "string"
+            ? JSON.parse(hotel.features)
+            : hotel.features || [],
+      });
     } catch (error) {
       console.log("single hotel fetch error:", error);
     }
@@ -94,30 +101,19 @@ const HotelManager = () => {
   };
 
   // ================= SAVE =================
+  // ================= SAVE =================
   const handleSave = async (formData) => {
     try {
       const payload = new FormData();
 
       payload.append("name", formData.name || "");
-      payload.append(
-        "description",
-        formData.description || ""
-      );
+      payload.append("description", formData.description || "");
       payload.append("rating", formData.rating || "");
-      payload.append(
-        "category",
-        formData.category || ""
-      );
+      payload.append("category", formData.category || "");
       payload.append("foodcat", formData.foodcat || "");
-      payload.append(
-        "location",
-        formData.location || ""
-      );
+      payload.append("location", formData.location || "");
       payload.append("price", formData.price || "");
-      payload.append(
-        "offerPrice",
-        formData.offerPrice || ""
-      );
+      payload.append("offerPrice", formData.offerPrice || "");
 
       // FEATURES
       payload.append(
@@ -125,7 +121,15 @@ const HotelManager = () => {
         JSON.stringify(formData.features || [])
       );
 
-      // IMAGES
+      // ================= EXISTING IMAGES =================
+      if (formData.oldImages?.length) {
+        payload.append(
+          "oldImages",
+          JSON.stringify(formData.oldImages)
+        );
+      }
+
+      // ================= NEW IMAGES =================
       if (formData.images?.length) {
         formData.images.forEach((img) => {
           if (img instanceof File) {
@@ -134,28 +138,26 @@ const HotelManager = () => {
         });
       }
 
-      // UPDATE
-      if (editData?.id) {
+      // ================= UPDATE =================
+      if (formData.id) {
         payload.append("_method", "PUT");
 
         await api.post(
-          `/hotels/${editData.id}`,
+          `/hotels/${formData.id}`,
           payload,
           {
             headers: {
-              "Content-Type":
-                "multipart/form-data",
+              "Content-Type": "multipart/form-data",
             },
           }
         );
       }
 
-      // CREATE
+      // ================= CREATE =================
       else {
         await api.post("/hotels", payload, {
           headers: {
-            "Content-Type":
-              "multipart/form-data",
+            "Content-Type": "multipart/form-data",
           },
         });
       }
@@ -165,8 +167,12 @@ const HotelManager = () => {
       setEditData(null);
 
       navigate("/dashboard/hotel");
+
     } catch (error) {
-      console.log("hotel save error:", error);
+      console.log(
+        "hotel save error:",
+        error?.response?.data || error
+      );
     }
   };
 
@@ -175,7 +181,7 @@ const HotelManager = () => {
     try {
       await api.delete(`/hotels/${id}`);
 
-      fetchHotels();
+      await fetchHotels();
     } catch (error) {
       console.log("hotel delete error:", error);
     }

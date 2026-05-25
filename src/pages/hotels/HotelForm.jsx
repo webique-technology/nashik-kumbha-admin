@@ -28,6 +28,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
   const [selected, setSelected] = useState([]);
 
   const [formData, setFormData] = useState({
+    id: null,
     name: "",
     description: "",
     foodcat: "",
@@ -37,6 +38,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
     price: "",
     offerPrice: "",
     images: [],
+    oldImages: [],
     features: [],
   });
 
@@ -44,6 +46,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
   useEffect(() => {
     if (editData) {
       setFormData({
+        id: editData.id || null,
         name: editData.name || "",
         description: editData.description || "",
         foodcat: editData.foodcat || "",
@@ -52,16 +55,16 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
         location: editData.location || "",
         price: editData.price || "",
         offerPrice: editData.offerPrice || "",
-        images: editData.images || [],
+        images: [],
+        oldImages: editData.images || [],
         features: editData.features || [],
       });
 
       setSelected(editData.features || []);
 
-      if (editData.images?.length > 0) {
-        setPreviewImages(editData.images);
-        setFeatured(editData.images[0]);
-      }
+      setPreviewImages(editData.images || []);
+
+      setFeatured(editData.images?.[0] || null);
     }
   }, [editData]);
 
@@ -103,7 +106,10 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
       URL.createObjectURL(file)
     );
 
-    setImages((prev) => [...prev, ...files]);
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...files],
+    }));
 
     setPreviewImages((prev) => [...prev, ...previews]);
 
@@ -114,18 +120,32 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
   // ================= IMAGE DELETE =================
   const handleDeleteImage = (index) => {
+
+    const imageToDelete = previewImages[index];
+
     const updatedPreview = previewImages.filter(
       (_, i) => i !== index
     );
 
-    const updatedImages = images.filter(
+    // NEW FILE IMAGES
+    const updatedImages = formData.images.filter(
       (_, i) => i !== index
     );
 
-    setPreviewImages(updatedPreview);
-    setImages(updatedImages);
+    // OLD API IMAGES
+    const updatedOldImages = formData.oldImages.filter(
+      (img) => img !== imageToDelete
+    );
 
-    if (featured === previewImages[index]) {
+    setPreviewImages(updatedPreview);
+
+    setFormData((prev) => ({
+      ...prev,
+      images: updatedImages,
+      oldImages: updatedOldImages,
+    }));
+
+    if (featured === imageToDelete) {
       setFeatured(updatedPreview[0] || null);
     }
   };
@@ -136,13 +156,8 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
     const hotelData = {
       ...formData,
-      images,
       features: selected,
     };
-
-    if (id) {
-      hotelData.id = Number(id);
-    }
 
     onSave(hotelData);
   };
@@ -472,11 +487,10 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                       src={img}
                       alt={`hotel-${index}`}
                       onClick={() => setFeatured(img)}
-                      className={`aspect-square w-full h-full rounded-md object-cover cursor-pointer border-2 ${
-                        featured === img
-                          ? "border-blue-500"
-                          : "border-transparent"
-                      }`}
+                      className={`aspect-square w-full h-full rounded-md object-cover cursor-pointer border-2 ${featured === img
+                        ? "border-blue-500"
+                        : "border-transparent"
+                        }`}
                     />
 
                     <button

@@ -21,18 +21,18 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
   // );
 
   const filteredData = (hotels || []).filter((hotel) =>
-  (hotel.name || "")
-    .toLowerCase()
-    .includes(search.name.toLowerCase()) &&
+    (hotel.name || "")
+      .toLowerCase()
+      .includes(search.name.toLowerCase()) &&
 
-  (hotel.location || "")
-    .toLowerCase()
-    .includes(search.location.toLowerCase()) &&
+    (hotel.location || "")
+      .toLowerCase()
+      .includes(search.location.toLowerCase()) &&
 
-  (hotel.category || "")
-    .toLowerCase()
-    .includes(search.category.toLowerCase())
-);
+    (hotel.category || "")
+      .toLowerCase()
+      .includes(search.category.toLowerCase())
+  );
 
   const data = filteredData;
   // 👉 Pagination logic
@@ -174,7 +174,10 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                       {/* Image */}
                       <img
-                        src={hotel.images?.[0]}
+                        src={
+                          hotel.images?.[0] ||
+                          "https://placehold.co/100x100"
+                        }
                         alt={hotel.name}
                         className="w-16 h-16 object-cover rounded"
                       />
@@ -203,23 +206,20 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
                   <td>
                     <div className="flex flex-wrap gap-2">
-                      {hotel.features?.map((f, index) => (
-                        <span
-                          key={`${f.id}-${index}`}
-                          className="flex items-center gap-1 bg-red-100 px-2 py-1 rounded text-xs"
-                        >
-                          {f.icon}
-                          {f.label}
-                        </span>
-                      ))}
+                      {Array.isArray(hotel.features)
+                        ? hotel.features.map((f, index) => (
+                          <span
+                            key={`${f.id}-${index}`}
+                            className="flex items-center gap-1 bg-red-100 px-2 py-1 rounded text-xs"
+                          >
+                            {f}
+                          </span>
+                        ))
+                        : null}
                     </div>
                   </td>
 
                   <td className="td">₹{hotel.price}</td>
-
-
-
-
 
                   <td>
                     <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">
