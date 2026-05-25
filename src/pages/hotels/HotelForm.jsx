@@ -17,26 +17,25 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
   const topUploadRef = useRef();
 
   const options = [
-    { id: "hotel", label: "Hotel", icon: <RiHotelLine /> },
-    { id: "meals", label: "Meals", icon: <IoFastFoodOutline /> },
-    { id: "flight", label: "Flight", icon: <PiAirplaneTakeoffLight /> },
-    { id: "sightseeing", label: "Sightseeing", icon: <LuTrees /> },
-    { id: "transport", label: "Transport", icon: <PiVanLight /> },
-    { id: "train", label: "Train", icon: <IoTrainOutline /> },
+    { id: "wifi", label: "Wifi", icon: <RiHotelLine /> },
+    { id: "pool", label: "Pool", icon: <IoFastFoodOutline /> },
+    { id: "parking", label: "Parking", icon: <PiAirplaneTakeoffLight /> },
+    { id: "ac", label: "Ac", icon: <LuTrees /> },
+    { id: "meals", label: "Meals", icon: <PiVanLight /> },
+    // { id: "train", label: "Train", icon: <IoTrainOutline /> },
   ];
 
   const [selected, setSelected] = useState([]);
 
   const [formData, setFormData] = useState({
-    id: null,
-    name: "",
+    title: "",
     description: "",
-    foodcat: "",
+    meals: "",
     rating: "",
     category: "",
     location: "",
-    price: "",
-    offerPrice: "",
+    base_price: "",
+    offer_price: "",
     images: [],
     oldImages: [],
     features: [],
@@ -46,21 +45,28 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
   useEffect(() => {
     if (editData) {
       setFormData({
-        id: editData.id || null,
-        name: editData.name || "",
+        title: editData.title || "",
         description: editData.description || "",
-        foodcat: editData.foodcat || "",
+        meals: editData.meals || "",
         rating: editData.rating || "",
         category: editData.category || "",
         location: editData.location || "",
-        price: editData.price || "",
-        offerPrice: editData.offerPrice || "",
-        images: [],
-        oldImages: editData.images || [],
+        base_price: editData.base_price || "",
+        offer_price: editData.offer_price || "",
+        images: editData.images || [],
         features: editData.features || [],
       });
 
-      setSelected(editData.features || []);
+      const mappedFeatures = (editData.features || []).map((feature) => {
+        return options.find(
+          (opt) =>
+            opt.label.toLowerCase() === feature.toLowerCase()
+        );
+      }).filter(Boolean);
+
+      setSelected(mappedFeatures);
+
+      // setSelected(editData.features || []);
 
       setPreviewImages(editData.images || []);
 
@@ -154,9 +160,15 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // const hotelData = {
+    //   ...formData,
+    //   images,
+    //   features: selected,
+    // };
     const hotelData = {
       ...formData,
-      features: selected,
+      images,
+      features: selected.map((f) => f.label),
     };
 
     onSave(hotelData);
@@ -191,8 +203,8 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name || ""}
+                    name="title"
+                    value={formData.title || ""}
                     onChange={handleChange}
                     placeholder="Hotel Name"
                     className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
@@ -357,9 +369,9 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                   >
                     <input
                       type="radio"
-                      name="foodcat"
+                      name="meals"
                       value={cat.id}
-                      checked={formData.foodcat === cat.id}
+                      checked={formData.meals === cat.id}
                       onChange={handleChange}
                     />
 
@@ -385,8 +397,8 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
                   <input
                     type="number"
-                    name="price"
-                    value={formData.price || ""}
+                    name="base_price"
+                    value={formData.base_price || ""}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
@@ -399,8 +411,8 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
                   <input
                     type="number"
-                    name="offerPrice"
-                    value={formData.offerPrice || ""}
+                    name="offer_price"
+                    value={formData.offer_price || ""}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />

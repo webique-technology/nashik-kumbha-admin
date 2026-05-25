@@ -24,7 +24,7 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
           )}
 
           <div className="space-y-2">
-            {fields.map((field) => (
+            {/* {fields.map((field) => (
               <div key={field.key}>
                 <strong>{field.key}:</strong>
 
@@ -32,6 +32,24 @@ const ViewModal = ({ isOpen, onClose, data, fields, title }) => {
                   field.render(data[field.key], data)
                 ) : (
                   <p>{data[field.description]}</p>
+                )}
+              </div>
+            ))} */}
+
+            {fields.map((field) => (
+              <div key={field.key} className=" pb-2">
+                <strong className="capitalize">
+                  {field.label || field.key}:
+                </strong>
+
+                {field.render ? (
+                  field.render(data[field.key], data)
+                ) : (
+                  <p className="text-gray-700">
+                    {Array.isArray(data[field.key])
+                      ? data[field.key].join(", ")
+                      : data[field.key] || "-"}
+                  </p>
                 )}
               </div>
             ))}
