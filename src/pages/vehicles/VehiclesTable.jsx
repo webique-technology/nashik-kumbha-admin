@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FiTrash2, FiEdit2, FiEye } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
 const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
   const [showModal, setShowModal] = useState(false);
@@ -27,10 +29,11 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
       .includes(search.name.toLowerCase()) &&
     (vehicle.location || "")
       .toLowerCase()
-      .includes(search.location.toLowerCase()) &&
-    (vehicle.category || "")
-      .toLowerCase()
-      .includes(search.category.toLowerCase())
+      .includes(search.location.toLowerCase()) 
+    //   &&
+    // (vehicle.category || "")
+    //   .toLowerCase()
+    //   .includes(search.category.toLowerCase())
   );
 
   const totalItems = filteredData.length;
@@ -144,11 +147,22 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
                 <tr key={vehicle.id} className="tr group">
                   <td className="p-3">
                     <div className="flex items-center gap-3">
-                      <img
+                      {/* <img
                         src={
                           vehicle.car_image_url ||              
                           (vehicle.car_image_url && vehicle.imagesl[0]) || 
                           "https://picsum.photos/200"  //
+                        }
+                        alt={vehicle.name}
+                        className="w-16 h-16 object-cover rounded"
+                      /> */}
+                      <img
+                        src={
+                          vehicle.car_image_url
+                            ? `${API_URL}${vehicle.car_image_url}`
+                            : vehicle.images?.[0]
+                            ? `${API_URL}${vehicle.images[0]}`
+                            : "https://picsum.photos/200"
                         }
                         alt={vehicle.name}
                         className="w-16 h-16 object-cover rounded"
@@ -162,7 +176,7 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
                     </div>
                   </td>
 
-                  <td className="td">{vehicle.category}</td>
+                  <td className="td">{vehicle.category.category}</td>
                   <td className="td">{vehicle.base_price}</td>
 
                   <td className="td">
