@@ -86,6 +86,8 @@ const TourForm = ({ onSave, editData, onCancel }) => {
     offer_price: "",
     total_seats: 12,
     highlights: [],
+    route: [],
+    vehicles: [],
     itineraries: [],
     inclusions: [],
     seo_meta: {
@@ -97,6 +99,8 @@ const TourForm = ({ onSave, editData, onCancel }) => {
   // --- LOCAL STATES ---
   const [highlightInput, setHighlightInput] = useState("");
   const [highlightEditIndex, setHighlightEditIndex] = useState(null);
+  const [routeInput, setRouteInput] = useState("");
+  const [routeEditIndex, setRouteEditIndex] = useState(null);
   const [itineraryForm, setItineraryForm] = useState({
     title: "",
     description: "",
@@ -107,7 +111,27 @@ const TourForm = ({ onSave, editData, onCancel }) => {
 
   const topUploadRef = useRef();
   const itineraryFileRef = useRef();
+  const vehicleCategories = [
+    "Sedan",
+    "SUV",
+    "Tempo Traveller",
+    "Mini Bus",
+    "Luxury Bus",
+  ];
+  const handleVehicleCategory = (category) => {
+    const exists = (formData.vehicles || []).includes(category);
 
+    const updatedVehicles = exists
+      ? (formData.vehicles || []).filter((item) => item !== category)
+      : [...(formData.vehicles || []), category];
+
+    setFormData((prev) => ({
+      ...prev,
+      vehicles: updatedVehicles,
+    }));
+
+    console.log(updatedVehicles);
+  };
   // --- PREFILL DATA ---
   useEffect(() => {
     if (editData) {
@@ -117,12 +141,12 @@ const TourForm = ({ onSave, editData, onCancel }) => {
         category: editData.category || "",
         status: editData.status || "active",
         location: editData.location || "",
-
+        vehicles: editData.vehicles || [],
         base_price: editData.base_price || "",
         offer_price: editData.offer_price || "",
 
         total_seats: editData.total_seats ?? 12,
-
+        route: editData.route || [],
         highlights: editData.highlights || [],
 
         inclusions:
@@ -165,6 +189,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
         total_seats: 12,
         highlights: [],
         itineraries: [],
+        route: [],
         inclusions: [],
         seo_meta: {
           title: "",
@@ -199,6 +224,35 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       preview: URL.createObjectURL(file),
     }));
   };
+
+
+  const handleSaveRoute = () => {
+    if (!routeInput.trim()) return;
+
+    const updatedRoutes = [...formData.route];
+
+    if (routeEditIndex !== null) {
+      updatedRoutes[routeEditIndex] = routeInput;
+      setRouteEditIndex(null);
+    } else {
+      updatedRoutes.push(routeInput);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      route: updatedRoutes,
+    }));
+
+    setRouteInput("");
+  };
+
+  const removeRoute = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      route: prev.route.filter((_, i) => i !== index),
+    }));
+  };
+
 
   // --- HIGHLIGHTS LOGIC ---
   const handleSaveHighlight = () => {
@@ -320,6 +374,10 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       formData.inclusions.forEach((item) =>
         submitData.append("inclusions[]", item),
       );
+      console.log("Selected Vehicles:", formData.vehicles);
+      formData.vehicles.forEach((item) =>
+        submitData.append("vehicles[]", item)
+      );
 
       // COMPLEX OBJECT ARRAY HANDLING
       formData.itineraries.forEach((day, index) => {
@@ -400,7 +458,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                   formClass="full"
                 />
 
-                <SelectOption
+                {/* <SelectOption
                   label="Category"
                   name="category"
                   value={formData.category}
@@ -415,7 +473,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                       <option value="Culinary Tourism">Culinary Tourism</option>
                     </>
                   }
-                />
+                /> */}
 
                 <SelectOption
                   label="Status"
@@ -430,7 +488,41 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                   }
                 />
 
-                <SelectOption
+                <div className="form-group full">
+                  <label className="form-label">Vehicle Category</label>
+                  {/* {(formData.vehicles || []).length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {(formData.vehicles || []).map((vehicle, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-2 rounded-lg text-sm font-medium"
+                        >
+                          <FiCheckCircle className="text-green-600" />
+                          <span>{vehicle}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )} */}
+
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    {vehicleCategories.map((vehicle, index) => (
+                      <label
+                        key={index}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={(formData.vehicles || []).includes(vehicle)}
+                          onChange={() => handleVehicleCategory(vehicle)}
+                        />
+
+                        <span className="text-sm">{vehicle}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* <SelectOption
                   label="Location"
                   name="location"
                   value={formData.location}
@@ -444,7 +536,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                       <option value="Goa">Goa</option>
                     </>
                   }
-                />
+                /> */}
               </div>
             </div>
 
@@ -796,6 +888,84 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                 </div>
               </div>
             </section>
+
+
+
+            <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">
+                    road
+                  </span>
+                  <h2 className="text-lg font-bold tracking-tight">
+                    Tour Routes
+                  </h2>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-2 mb-0 flex gap-2 flex-wrap">
+                  {formData.route.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center group justify-between bg-surface-container-low px-3 py-2 mb-2 rounded-lg min-h-[48px]"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <FiCheckCircle className="text-green-600 shrink-0" />
+
+                        <span className="truncate max-w-[220px] block">
+                          {item}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setRouteInput(item);
+                            setRouteEditIndex(index);
+                          }}
+                          className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                        >
+                          <FiEdit2 />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => removeRoute(index)}
+                          className="text-red-500 hover:text-red-700 cursor-pointer"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="w-full flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={routeInput}
+                    onChange={(e) => setRouteInput(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      (e.preventDefault(), handleSaveRoute())
+                    }
+                    placeholder="Enter something..."
+                    className="w-full px-4 py-3 bg-surface-container-low rounded-lg focus:ring-2 focus:ring-primary/20 text-sm"
+                  />
+                  <button
+                    onClick={handleSaveRoute}
+                    type="button"
+                    className="bg-primary cursor-pointer w-[120px] text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    {highlightEditIndex !== null ? "Update" : "Save"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
 
             <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]">
               <div className="flex items-center gap-3 mb-6">
