@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
-const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
+const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,10 +30,10 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
     (vehicle.location || "")
       .toLowerCase()
       .includes(search.location.toLowerCase()) 
-    //   &&
-    // (vehicle.category || "")
-    //   .toLowerCase()
-    //   .includes(search.category.toLowerCase())
+      &&
+      (vehicle.category?.category || "")
+    .toLowerCase()
+    .includes(search.category.toLowerCase())
   );
 
   const totalItems = filteredData.length;
@@ -116,7 +116,7 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
 
 
 
-          <select
+          {/* <select
             value={search.category}
             onChange={(e) =>
               setSearch({ ...search, category: e.target.value })
@@ -127,7 +127,26 @@ const VehiclesTable = ({ vehicles, onAdd, onEdit, onDelete, onView }) => {
             <option>Sedan</option>
             <option>SUV</option>
             <option>Tempo Traveller</option>
-          </select>
+          </select> */}
+
+          <select
+              value={search.category}
+              onChange={(e) =>
+                setSearch({ ...search, category: e.target.value })
+              }
+              className="input"
+            >
+              <option value="">All Categories</option>
+
+              {categories?.map((cat) => (
+                <option
+                  key={cat.id}
+                  value={cat.category}
+                >
+                  {cat.category}
+                </option>
+              ))}
+            </select>
         </div>
 
         <div className="table-wrapper bg-surface-container-lowest">
