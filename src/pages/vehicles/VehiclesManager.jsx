@@ -6,6 +6,7 @@ import VehiclesForm from "./VehiclesForm";
 import api from "../../services/axiosInstance";
 import ViewModal from "../../viewmodel/ViewModal";
 
+
 export const CATEGORY_OPTIONS = [
   { id: "crista", label: "Crista" },
   { id: "traveller", label: "Traveller" },
@@ -15,15 +16,20 @@ export const CATEGORY_OPTIONS = [
 ];
 
 
-const getCategoryLabel = (id) => {
-  return CATEGORY_OPTIONS.find((c) => c.id === id)?.label || id;
-};
+// const getCategoryLabel = (id) => {
+//   return CATEGORY_OPTIONS.find((c) => c.id === id)?.label || id;
+// };
+// const getCategoryLabel = (id) => {
+//   return categories.find((c) => String(c.id) === String(id))?.category || id;
+// };
+
 
 const EditVehicleWrapper = ({
       fetchSingleVehicle,
       editData,
       handleSave,
       navigate,
+      categories,
     }) => {
 
       const { id } = useParams();
@@ -41,6 +47,7 @@ const EditVehicleWrapper = ({
         <VehiclesForm
           onSave={handleSave}
           editData={editData}
+          categories={categories}
           onCancel={() => navigate("/dashboard/vehicle")}
         />
       );
@@ -61,6 +68,35 @@ const VehiclesManager = () => {
   // const [hotels, setHotels] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [editData, setEditData] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get("/vehicle-categories");
+
+      console.log("categories:", response.data.data);
+
+      // adjust if api structure differs
+      setCategories(response.data.data);
+    } catch (error) {
+      console.log("category fetch error:", error);
+    }
+  };
+  const getCategoryLabel = (value) => {
+    if (!value) return "";
+
+    // if backend sends full object
+    if (typeof value === "object") {
+      return value.category || "";
+    }
+
+    // if backend sends only id
+    return (
+      categories.find(
+        (c) => String(c.id) === String(value)
+      )?.category || ""
+    );
+  };
   
   const fetchVehicles = async () => {
     try {
@@ -75,9 +111,26 @@ const VehiclesManager = () => {
   const fetchSingleVehicle = async (id) => {
     try {
       const response = await api.get(`/vehicles/${id}`);
-      setEditData(response.data.data);
+      // setEditData(response.data.data);
+      const vehicle = response.data.data;
+
+      setEditData({
+        ...vehicle,
+
+        category_id:
+          vehicle.category_id ||
+          vehicle.category?.id ||
+          "",
+
+        features:
+          vehicle.features?.map((f) =>
+            typeof f === "object"
+              ? f.label || f.name
+              : f
+          ) || [],
+      });
     } catch (error) {
-      console.log("single vehicle error:", error);
+      console.log("single vehicle error:", error);  
     }
   };
 
@@ -123,8 +176,21 @@ const VehiclesManager = () => {
     },
   ];
 
+  const vehicleFields = [
+  { key: "name", label: "Vehicle Name" },
+ 
+  { key: "category.category", label: "Category" },
+  { key: "total_seats", label: "Total Seat" },
+  { key: "location", label: "Location" },
+  { key: "base_price", label: "Price" },
+ 
+  { key: "features", label: "Features" },
+  { key: "status", label: "Status" },
+];
+
   useEffect(() => {
     fetchVehicles();
+     fetchCategories();
   }, []);
 
   const handleSave = async (data) => {
@@ -135,7 +201,8 @@ const VehiclesManager = () => {
 
         formData.append("name", data.name);
         formData.append("description", data.description);
-        formData.append("category", data.category);
+        // formData.append("category", data.category);
+        formData.append("category_id", data.category_id);
         formData.append("total_seats", data.total_seats);
         formData.append("location", data.location);
         formData.append("base_price", data.base_price);
@@ -215,6 +282,7 @@ const VehiclesManager = () => {
         element={
           <VehiclesTable
             vehicles={vehicles}
+            categories={categories}
             onAdd={() => navigate("/dashboard/vehicle/add")}
             onEdit={handleEdit}
             onDelete={handleDelete}
@@ -228,6 +296,7 @@ const VehiclesManager = () => {
         element={
           <VehiclesForm
             onSave={handleSave}
+            categories={categories}
             onCancel={() => navigate("/dashboard/vehicle")}
           />
         }
@@ -241,6 +310,7 @@ const VehiclesManager = () => {
             editData={editData}
             handleSave={handleSave}
             navigate={navigate}
+            categories={categories}
           />
         }
       />
@@ -251,7 +321,8 @@ const VehiclesManager = () => {
       isOpen={viewModal}
       onClose={() => setViewModal(false)}
       data={selectedTour}
-      fields={tourFields}
+      // fields={tourFields}
+      fields={vehicleFields}
       title="Vehicles Details"
     />
   </>

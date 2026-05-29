@@ -13,7 +13,7 @@ import { FaLuggageCart } from "react-icons/fa";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { IoBowlingBallOutline } from "react-icons/io5";
 
-const VehiclesForm = ({ onSave, editData, onCancel }) => {
+const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
   const [isOn, setIsOn] = useState(false);
 
   const [count, setCount] = useState(12);
@@ -115,12 +115,12 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
 
   // ---------- end -------
 
-  // 🔥 MAIN FORM STATE
+  //  MAIN FORM STATE
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    category: "",
+    category_id: "",
     total_seats: "",
     location: "",
     base_price: "",
@@ -134,7 +134,7 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     if (editData) {
       setFormData(editData);
       setStatus(editData.status);
-      setFeatured(editData.image); // ✅ show image in edit
+      setFeatured(editData.image); //  show image in edit
       // setSelected(editData.features || []);
 
       setSelected(
@@ -145,7 +145,7 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     }
   }, [editData]);
 
-  // 🔥 COMMON INPUT HANDLER
+  //  COMMON INPUT HANDLER
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -187,7 +187,7 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     });
   };
 
-  // 🔥 FEATURES
+  //  FEATURES
   // const handleFeatureChange = (e) => {
   //   const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
 
@@ -236,7 +236,7 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
     setSelected((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // 🔥 FINAL SUBMIT
+  //  FINAL SUBMIT
 
   return (
     <main className="page-container">
@@ -407,59 +407,59 @@ const VehiclesForm = ({ onSave, editData, onCancel }) => {
                 </div> */}
 
                 <div className="flex gap-2 flex-wrap">
-  {selected.map((label) => {
-    const feature = options.find((opt) => opt.label === label);
+                {selected.map((label) => {
+                  const feature = options.find((opt) => opt.label === label);
 
-    return (
-      <div
-        key={label}
-        className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
-      >
-        <div className="flex items-center gap-2">
-          <FiCheckCircle className="text-green-600" />
+                  return (
+                    <div
+                      key={label}
+                      className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiCheckCircle className="text-green-600" />
 
-          <span className="flex items-center gap-2">
-            {feature?.icon}
-            {label}
-          </span>
-        </div>
+                        <span className="flex items-center gap-2">
+                          {feature?.icon}
+                          {label}
+                        </span>
+                      </div>
 
-        <button
-          type="button"
-          onClick={() =>
-            setSelected((prev) =>
-              prev.filter((item) => item !== label)
-            )
-          }
-          className="text-red-500 opacity-0 group-hover:opacity-100 transition"
-        >
-          <FiTrash2 />
-        </button>
-      </div>
-    );
-  })}
-</div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelected((prev) =>
+                            prev.filter((item) => item !== label)
+                          )
+                        }
+                        className="text-red-500 opacity-0 group-hover:opacity-100 transition"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
 
               </div>
 
               <div className="flex items-center gap-3 mb-3">
                 <BiCategory />
-                <h2 className="text-lg font-bold tracking-tight">Category</h2>
+                <h2 className="text-lg font-bold tracking-tight">Category </h2>
               </div>
               <div className="flex flex-wrap gap-4">
-                {CATEGORY_OPTIONS.map((cat) => (
+                {categories?.map((cat) => (
                   <label
                     key={cat.id}
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     <input
                       type="radio"
-                      name="category"
+                      name="category_id"
                       value={cat.id}
-                      checked={formData.category === cat.id}
+                      checked={String(formData.category_id) === String(cat.id)}
                       onChange={handleChange}
                     />
-                    {cat.label}
+                    {cat.category}
                   </label>
                 ))}
               </div>
