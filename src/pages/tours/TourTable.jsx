@@ -121,7 +121,7 @@ const TourTable = ({
             <thead>
               <tr className="bg-gray-50 border-b">
                 <th className="p-3 text-left">Tour Detail</th>
-                <th className="p-3 text-left">Category</th>
+                {/* <th className="p-3 text-left">Category</th> */}
                 <th className="p-3 text-left">Inclusions</th>
                 <th className="p-3 text-left">Pricing</th>
                 <th className="p-3 text-left">Status</th>
@@ -152,7 +152,7 @@ const TourTable = ({
                         </div>
                       </div>
                     </td>
-                    <td className="p-3">{tour.category}</td>
+                    {/* <td className="p-3">{tour.category}</td> */}
                     <td className="p-3">
                       <div className="flex flex-wrap gap-2">
                         {Array.isArray(tour?.inclusions) &&

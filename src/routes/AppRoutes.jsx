@@ -43,8 +43,9 @@ export default function AppRoutes() {
         <Route path="settings" element={<GeneralSettings />} />
         <Route path="paymentpolicy" element={<PaymentPolicy />} />
         <Route path="privacypolicy" element={<PrivacyPoplicy />} />
-        <Route path="tour-manager" element={<TourManager />} />
-        <Route path="add-tour" element={<AddTour />} />
+        {/* <Route path="tour-manager" element={<TourManager />} /> */}
+        <Route path="tours/*" element={<TourManager />} />
+        {/* <Route path="add-tour" element={<AddTour />} /> */}
       </Route>
 
     </Routes>

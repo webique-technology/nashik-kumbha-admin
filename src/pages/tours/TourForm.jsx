@@ -70,7 +70,7 @@ const SelectOption = ({ child, formClass, label, name, value, onChange }) => (
 );
 
 // Main Form Component
-const TourForm = ({ onSave, editData, onCancel }) => {
+const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
   const [activeTab, setActiveTab] = useState("itinerary");
 
   // --- MAIN FORM STATE ---
@@ -111,13 +111,13 @@ const TourForm = ({ onSave, editData, onCancel }) => {
 
   const topUploadRef = useRef();
   const itineraryFileRef = useRef();
-  const vehicleCategories = [
-    "Sedan",
-    "SUV",
-    "Tempo Traveller",
-    "Mini Bus",
-    "Luxury Bus",
-  ];
+  // const vehicleCategories = [
+  //   "Sedan",
+  //   "SUV",
+  //   "Tempo Traveller",
+  //   "Mini Bus",
+  //   "Luxury Bus",
+  // ];
   const handleVehicleCategory = (category) => {
     const exists = (formData.vehicles || []).includes(category);
 
@@ -141,12 +141,15 @@ const TourForm = ({ onSave, editData, onCancel }) => {
         category: editData.category || "",
         status: editData.status || "active",
         location: editData.location || "",
-        vehicles: editData.vehicles || [],
+        // vehicles: editData.vehicles || [],
         base_price: editData.base_price || "",
         offer_price: editData.offer_price || "",
 
+        route: editData.routes || [],
+        vehicles: (editData.vehicle_category_ids || []).map(String),
+
         total_seats: editData.total_seats ?? 12,
-        route: editData.route || [],
+        // route: editData.route || [],
         highlights: editData.highlights || [],
 
         inclusions:
@@ -374,9 +377,11 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       formData.inclusions.forEach((item) =>
         submitData.append("inclusions[]", item),
       );
-      console.log("Selected Vehicles:", formData.vehicles);
       formData.vehicles.forEach((item) =>
         submitData.append("vehicles[]", item)
+      );
+      formData.route.forEach((item) =>
+        submitData.append("route[]", item)
       );
 
       // COMPLEX OBJECT ARRAY HANDLING
@@ -505,7 +510,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                   )} */}
 
                   <div className="flex flex-wrap gap-3 mt-2">
-                    {vehicleCategories.map((vehicle, index) => (
+                    {/* {vehicleCategories.map((vehicle, index) => (
                       <label
                         key={index}
                         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container"
@@ -517,6 +522,24 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                         />
 
                         <span className="text-sm">{vehicle}</span>
+                      </label>
+                    ))} */}
+                    {vehicleCategories.map((vehicle) => (
+                      <label
+                        key={vehicle.id}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={(formData.vehicles || []).includes(String(vehicle.id))}
+                          onChange={() =>
+                            handleVehicleCategory(String(vehicle.id))
+                          }
+                        />
+
+                        <span className="text-sm">
+                          {vehicle.category}
+                        </span>
                       </label>
                     ))}
                   </div>
