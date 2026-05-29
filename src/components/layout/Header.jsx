@@ -19,8 +19,9 @@ const Header = ({ isOpen, toggleSidebar }) => {
     "/dashboard/vehicle": "Vehicles Manager",
     "/dashboard/hotels": "Hotel Manager",
     "/dashboard/blog-table": "Blog Manager",
-    "/dashboard/settings": "Settings",
+    "/dashboard/settings": "Settingsqqq",
 
+    "/dashboard/home-page-settings": "Home Page Settings",
     "/dashboard/paymentpolicy": "Payment Policy",
     "/dashboard/privacypolicy": "Privacy Policy",
     "/dashboard/settings": "Settings",
