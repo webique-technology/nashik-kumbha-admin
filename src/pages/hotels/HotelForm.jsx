@@ -29,7 +29,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
+    // description: "",
     meals: "",
     rating: "",
     category: "",
@@ -45,7 +45,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
     if (editData) {
       setFormData({
         title: editData.title || "",
-        description: editData.description || "",
+        // description: editData.description || "",
         meals: editData.meals || "",
         rating: editData.rating || "",
         category: editData.category || "",
@@ -213,7 +213,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                   />
                 </div>
 
-                <div className="md:col-span-2">
+                {/* <div className="md:col-span-2">
                   <label className="form-label block mb-2">
                     Description
                   </label>
@@ -226,7 +226,7 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     rows={5}
                     className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <label className="form-label block mb-2">

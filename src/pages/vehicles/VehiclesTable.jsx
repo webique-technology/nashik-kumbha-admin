@@ -177,11 +177,7 @@ const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView })
                       /> */}
                       <img
                         src={
-                          vehicle.car_image_url
-                            ? `${API_URL}${vehicle.car_image_url}`
-                            : vehicle.images?.[0]
-                            ? `${API_URL}${vehicle.images[0]}`
-                            : "https://picsum.photos/200"
+                          vehicle.car_image_url ? `${API_URL}${vehicle.car_image_url}` : vehicle.images?.[0] ? `${API_URL}${vehicle.images[0]}` : "https://picsum.photos/200"
                         }
                         alt={vehicle.name}
                         className="w-16 h-16 object-cover rounded"
