@@ -120,10 +120,44 @@ const TourManager = () => {
   };
 
   const tourFields = [
-    { key: "name", label: "Tour Name" },
-    { key: "location", label: "Location" },
-    { key: "price", label: "Price" },
+    { key: "title", label: "Tour Name" },
+    { key: "description", label: "Description" },
+    { key: "base_price", label: "Price" },
     { key: "status", label: "Status" },
+    {
+      key: "highlights",
+      label: "highlights",
+      render: (highlights) => (
+        <div className="flex flex-wrap gap-2">
+          {highlights?.map((item) => (
+            <span
+              key={item}
+              className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-200 rounded"
+            >
+              <span className="text-sm">{item.icon}</span>
+              {item}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: "inclusions",
+      label: "Inclusions",
+      render: (inclusions) => (
+        <div className="flex flex-wrap gap-2">
+          {inclusions?.map((item) => (
+            <span
+              key={item}
+              className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-200 rounded"
+            >
+              <span className="text-sm">{item.icon}</span>
+              {item}
+            </span>
+          ))}
+        </div>
+      ),
+    },
   ];
 
   return (
