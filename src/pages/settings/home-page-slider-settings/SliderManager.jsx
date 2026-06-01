@@ -50,7 +50,7 @@ const SliderManager = () => {
         setSliders(response.data.data.data);
 
       } catch (error) {
-        console.log("Blog fetch error:", error);
+        console.log("Slider fetch error:", error);
       }
     };
 
@@ -178,12 +178,12 @@ const blogFields = [
       }
   };
 
-  const fetchSingleBlog = async (id) => {
+  const fetchSingleSlider = async (id) => {
     try {
       const response = await api.get(`/home-page-settings/${id}`);
       setEditData(response.data.data);
     } catch (error) {
-      console.log("single blog error:", error);
+      console.log("single Slider error:", error);
     }
   };
   // EDIT
@@ -300,7 +300,7 @@ const blogFields = [
         onClose={() => setViewModal(false)}
         data={selectedTour}
         fields={blogFields}
-        title="Blog Details"
+        title="Slider Details"
       />
 
     </div>
