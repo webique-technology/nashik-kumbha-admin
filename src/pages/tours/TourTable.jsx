@@ -121,7 +121,7 @@ const TourTable = ({
             <thead>
               <tr className="bg-gray-50 border-b">
                 <th className="p-3 text-left">Tour Detail</th>
-                <th className="p-3 text-left">Category</th>
+                {/* <th className="p-3 text-left">Category</th> */}
                 <th className="p-3 text-left">Inclusions</th>
                 <th className="p-3 text-left">Pricing</th>
                 <th className="p-3 text-left">Status</th>
@@ -152,7 +152,7 @@ const TourTable = ({
                         </div>
                       </div>
                     </td>
-                    <td className="p-3">{tour.category}</td>
+                    {/* <td className="p-3">{tour.category}</td> */}
                     <td className="p-3">
                       <div className="flex flex-wrap gap-2">
                         {Array.isArray(tour?.inclusions) &&
@@ -272,7 +272,7 @@ const TourTable = ({
             <div className="flex justify-center gap-4">
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary"
               >
                 Delete
               </button>

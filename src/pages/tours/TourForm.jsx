@@ -10,6 +10,8 @@ import { RiHotelLine } from "react-icons/ri";
 import { PiAirplaneTakeoffLight, PiVanLight } from "react-icons/pi";
 import { LuTrees } from "react-icons/lu";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 // --- REUSABLE COMPONENTS ---
 const InputComp = ({
   name,
@@ -70,7 +72,7 @@ const SelectOption = ({ child, formClass, label, name, value, onChange }) => (
 );
 
 // Main Form Component
-const TourForm = ({ onSave, editData, onCancel }) => {
+const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
   const [activeTab, setActiveTab] = useState("itinerary");
 
   // --- MAIN FORM STATE ---
@@ -102,22 +104,23 @@ const TourForm = ({ onSave, editData, onCancel }) => {
   const [routeInput, setRouteInput] = useState("");
   const [routeEditIndex, setRouteEditIndex] = useState(null);
   const [itineraryForm, setItineraryForm] = useState({
-    title: "",
-    description: "",
-    image: "",
-    file: null,
+      title: "",
+      description: "",
+      image: "",
+      existing_image: "",
+      file: null,
   });
   const [currentEditItineraryIdx, setCurrentEditItineraryIdx] = useState(null);
 
   const topUploadRef = useRef();
   const itineraryFileRef = useRef();
-  const vehicleCategories = [
-    "Sedan",
-    "SUV",
-    "Tempo Traveller",
-    "Mini Bus",
-    "Luxury Bus",
-  ];
+  // const vehicleCategories = [
+  //   "Sedan",
+  //   "SUV",
+  //   "Tempo Traveller",
+  //   "Mini Bus",
+  //   "Luxury Bus",
+  // ];
   const handleVehicleCategory = (category) => {
     const exists = (formData.vehicles || []).includes(category);
 
@@ -141,12 +144,15 @@ const TourForm = ({ onSave, editData, onCancel }) => {
         category: editData.category || "",
         status: editData.status || "active",
         location: editData.location || "",
-        vehicles: editData.vehicles || [],
+        // vehicles: editData.vehicles || [],
         base_price: editData.base_price || "",
         offer_price: editData.offer_price || "",
 
+        route: editData.routes || [],
+        vehicles: (editData.vehicle_category_ids || []).map(String),
+
         total_seats: editData.total_seats ?? 12,
-        route: editData.route || [],
+        // route: editData.route || [],
         highlights: editData.highlights || [],
 
         inclusions:
@@ -154,24 +160,40 @@ const TourForm = ({ onSave, editData, onCancel }) => {
             typeof item === "string" ? item : item.label
           ) || [],
 
+        // itineraries:
+        //   editData.itineraries?.map((item) => ({
+        //     id: item.id,
+        //     title: item.itinerary_title || "",
+        //     description: item.description || "",
+        //     image: item.itineraries_image_url || "",
+        //     file: null,
+        //   })) || [],
+
         itineraries:
           editData.itineraries?.map((item) => ({
             id: item.id,
             title: item.itinerary_title || "",
             description: item.description || "",
+
+            // preview image
             image: item.itineraries_image_url || "",
+
+            // actual existing db path
+            existing_image: item.image || "",
+
+            // new uploaded file
             file: null,
           })) || [],
 
         // IMPORTANT FIX
-        preview: editData.image_url || "",
+        preview: API_URL+editData.image_url || "",
 
         // IMPORTANT
         main_banner: null,
 
         seo_meta: {
-          title: editData.seo_title || "",
-          desc: editData.seo_desc || "",
+            title: editData.seo_meta?.title || "",
+            desc: editData.seo_meta?.desc || "",
         },
       });
     } else {
@@ -290,6 +312,44 @@ const TourForm = ({ onSave, editData, onCancel }) => {
   };
 
   // for Ititneary data submit
+  // const submitItineraryData = () => {
+  //   if (!itineraryForm.title.trim() || !itineraryForm.description.trim())
+  //     return;
+
+  //   const updatedList = [...formData.itineraries];
+
+  //   const newItem = {
+  //     id: itineraryForm.id || null,
+  //     title: itineraryForm.title,
+  //     description: itineraryForm.description,
+  //     image:
+  //       itineraryForm.file instanceof File
+  //         ? URL.createObjectURL(itineraryForm.file)
+  //         : itineraryForm.image || "",
+  //     file: itineraryForm.file instanceof File
+  //       ? itineraryForm.file
+  //       : null,
+  //   };
+
+  //   if (currentEditItineraryIdx !== null) {
+  //     updatedList[currentEditItineraryIdx] = newItem;
+  //     setCurrentEditItineraryIdx(null);
+  //   } else {
+  //     updatedList.push(newItem);
+  //   }
+
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     itineraries: updatedList,
+  //   }));
+
+  //   setItineraryForm({
+  //     title: "",
+  //     description: "",
+  //     image: "",
+  //     file: null,
+  //   });
+  // };
   const submitItineraryData = () => {
     if (!itineraryForm.title.trim() || !itineraryForm.description.trim())
       return;
@@ -300,13 +360,18 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       id: itineraryForm.id || null,
       title: itineraryForm.title,
       description: itineraryForm.description,
+
       image:
         itineraryForm.file instanceof File
           ? URL.createObjectURL(itineraryForm.file)
           : itineraryForm.image || "",
-      file: itineraryForm.file instanceof File
-        ? itineraryForm.file
-        : null,
+
+      existing_image: itineraryForm.existing_image || "",
+
+      file:
+        itineraryForm.file instanceof File
+          ? itineraryForm.file
+          : null,
     };
 
     if (currentEditItineraryIdx !== null) {
@@ -325,6 +390,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       title: "",
       description: "",
       image: "",
+      existing_image: "",
       file: null,
     });
   };
@@ -364,8 +430,8 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       submitData.append("total_seats", formData.total_seats);
 
       // METADATA
-      submitData.append("seo_title", formData.seo_meta.title);
-      submitData.append("seo_desc", formData.seo_meta.desc);
+      submitData.append("seo_meta[title]", formData.seo_meta.title);
+      submitData.append("seo_meta[desc]", formData.seo_meta.desc);
 
       // ARRAYS SANITIZATION
       formData.highlights.forEach((item) =>
@@ -374,42 +440,47 @@ const TourForm = ({ onSave, editData, onCancel }) => {
       formData.inclusions.forEach((item) =>
         submitData.append("inclusions[]", item),
       );
-      console.log("Selected Vehicles:", formData.vehicles);
       formData.vehicles.forEach((item) =>
         submitData.append("vehicles[]", item)
+      );
+      formData.route.forEach((item) =>
+        submitData.append("route[]", item)
       );
 
       // COMPLEX OBJECT ARRAY HANDLING
       formData.itineraries.forEach((day, index) => {
         submitData.append(
-          `itineraries[${index}][itinerary_title]`,
-          day.title || "",
-        );
+            `itineraries[${index}][itinerary_title]`,
+            day.title || ""
+          );
 
-        submitData.append(
-          `itineraries[${index}][description]`,
-          day.description || "",
-        );
+          submitData.append(
+            `itineraries[${index}][description]`,
+            day.description || ""
+          );
 
-        // Existing DB id
-        if (day.id) {
-          submitData.append(`itineraries[${index}][id]`, day.id);
-        }
+          if (day.id) {
+            submitData.append(
+              `itineraries[${index}][id]`,
+              day.id
+            );
+          }
 
-        // Only send image if new file uploaded
-        if (day.file instanceof File) {
-          submitData.append(`itineraries[${index}][image]`, day.file);
-        }
+          // new changed image
+          if (day.file instanceof File) {
+            submitData.append(
+              `itineraries[${index}][image]`,
+              day.file
+            );
+          }
 
-        // // New image upload
-        // if (day.file instanceof File) {
-        //   submitData.append(`itineraries[${index}][image]`, day.file);
-        // }
-
-        // // Existing image url
-        // else if (day.image) {
-        //   submitData.append(`itineraries[${index}][image]`, day.image);
-        // }
+          // old existing image
+          else if (day.existing_image) {
+            submitData.append(
+              `itineraries[${index}][existing_image]`,
+              day.existing_image
+            );
+          }
       });
 
       if (formData.main_banner) {
@@ -505,7 +576,7 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                   )} */}
 
                   <div className="flex flex-wrap gap-3 mt-2">
-                    {vehicleCategories.map((vehicle, index) => (
+                    {/* {vehicleCategories.map((vehicle, index) => (
                       <label
                         key={index}
                         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container"
@@ -517,6 +588,24 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                         />
 
                         <span className="text-sm">{vehicle}</span>
+                      </label>
+                    ))} */}
+                    {vehicleCategories.map((vehicle) => (
+                      <label
+                        key={vehicle.id}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={(formData.vehicles || []).includes(String(vehicle.id))}
+                          onChange={() =>
+                            handleVehicleCategory(String(vehicle.id))
+                          }
+                        />
+
+                        <span className="text-sm">
+                          {vehicle.category}
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -635,9 +724,9 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                           className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl group"
                         >
                           <div className="flex items-center gap-4">
-                            {data.image && (
+                           {data.image && (
                               <img
-                                src={data.image}
+                               src={`${API_URL}${data.image}`}
                                 alt="preview"
                                 className="w-20 h-20 object-cover rounded-lg"
                               />
@@ -656,12 +745,20 @@ const TourForm = ({ onSave, editData, onCancel }) => {
                             <button
                               type="button"
                               onClick={() => {
+                                // setItineraryForm({
+                                //   id: data.id,
+                                //   title: data.title,
+                                //   description: data.description,
+                                //   image: data.image || "",
+                                //   file: null,
+                                // });
                                 setItineraryForm({
-                                  id: data.id,
-                                  title: data.title,
-                                  description: data.description,
-                                  image: data.image || "",
-                                  file: null,
+                                   id: data.id,
+                                    title: data.title,
+                                    description: data.description,
+                                    image: data.image || "",
+                                    existing_image: data.existing_image || "",
+                                    file: null,
                                 });
                                 setCurrentEditItineraryIdx(idx);
                               }}

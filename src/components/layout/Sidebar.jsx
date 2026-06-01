@@ -20,7 +20,7 @@ const menuItems = [
     name: "Tour Packages",
     icon: <FiCompass />,
     children: [
-      { name: "Tour Manager", path: "/dashboard/tour-manager" },
+      { name: "Tour Manager", path: "/dashboard/tours" },
       { name: "Tour Enquiry", path: "/dashboard/tour-enquriy" }, // keep same as route OR fix both
     ],
   },
@@ -36,7 +36,7 @@ const menuItems = [
     name: "Settings",
     icon: <FiCompass />,
     children: [
-      { name: "Home Page Settings", path: "/dashboard/home-page-settings" },
+      { name: "Home Page Settings", path: "/dashboard/home-settings" },
       { name: "General Settings", path: "/dashboard/settings" },
       { name: "Privacy Policy", path: "/dashboard/privacypolicy" },
       { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, // keep same as route OR fix both
