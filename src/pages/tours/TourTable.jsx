@@ -272,7 +272,7 @@ const TourTable = ({
             <div className="flex justify-center gap-4">
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary"
               >
                 Delete
               </button>

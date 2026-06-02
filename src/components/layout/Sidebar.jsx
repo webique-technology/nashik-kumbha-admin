@@ -36,6 +36,7 @@ const menuItems = [
     name: "Settings",
     icon: <FiCompass />,
     children: [
+      { name: "Home Page Settings", path: "/dashboard/home-settings" },
       { name: "General Settings", path: "/dashboard/settings" },
       { name: "Privacy Policy", path: "/dashboard/privacypolicy" },
       { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, // keep same as route OR fix both
