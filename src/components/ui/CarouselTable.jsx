@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import {
     FiEye,
     FiEdit2,
@@ -292,7 +293,7 @@ export default function CarouselTable() {
                             </th>
 
                             <th className="th">
-                                Title
+                                Title &amp; Sub Title
                             </th>
 
                             <th className="th">
@@ -324,11 +325,12 @@ export default function CarouselTable() {
                                 </td>
 
                                 <td className="p-3">
-                                    <p className="text-xs text-gray-500">
-                                        {item.subtitle}
-                                    </p>
+                                    
                                     <p className="font-medium">
                                         {item.title}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {item.subtitle}
                                     </p>
                                 </td>
 
@@ -383,11 +385,7 @@ export default function CarouselTable() {
                         ))}
                     </tbody>
                 </table>
-            </div>
-
-            {/* Pagination */}
-
-            <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="pagination">
                 <div className="text-sm text-gray-600">
                     Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}
                     {" - "}
@@ -404,9 +402,9 @@ export default function CarouselTable() {
                         onClick={() =>
                             setCurrentPage((p) => p - 1)
                         }
-                        className="h-9 w-9 rounded border"
+                        className="px-3 py-1  rounded disabled:opacity-50"
                     >
-                        &lt;
+                       <FaChevronLeft />
                     </button>
 
                     {Array.from(
@@ -418,8 +416,8 @@ export default function CarouselTable() {
                                     setCurrentPage(i + 1)
                                 }
                                 className={`h-9 w-9 rounded ${currentPage === i + 1
-                                    ? "bg-blue-600 text-white"
-                                    : "border"
+                                    ? "px-3 py-1 border rounded bg-primary text-white"
+                                    : "px-3 py-1 border rounded bg-secondary border-gray-300 hover:bg-gray-100"
                                     }`}
                             >
                                 {i + 1}
@@ -434,12 +432,17 @@ export default function CarouselTable() {
                         onClick={() =>
                             setCurrentPage((p) => p + 1)
                         }
-                        className="h-9 w-9 rounded border"
+                        className="px-3 py-1  rounded disabled:opacity-50"
                     >
-                        &gt;
+                        <FaChevronRight />
                     </button>
                 </div>
             </div>
+            </div>
+
+            {/* Pagination */}
+
+            
 
             {/* View Modal */}
 

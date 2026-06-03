@@ -8,7 +8,7 @@ export default function HomePageSettings() {
   const [activeTab, setActiveTab] = useState("carousel");
 
   return (
-    <div className="page-container h-screen">
+    <div className="page-container">
         <div className="inner-page-container">
       {/* Tabs */}
       <div className="inline-flex gap-2 rounded-xl bg-gray-100 p-2 ">
