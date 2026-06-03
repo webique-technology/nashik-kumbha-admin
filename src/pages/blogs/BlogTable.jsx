@@ -109,7 +109,7 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
 
 
-                  <td className="p-3">
+                  <td className="p-3 w-3/12">
                     <div className="flex items-center gap-3">
 
                       {/* Image */}
@@ -127,14 +127,14 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                   {/* <td className="td">{blog.title}</td> */}
 
                   {/* <td className="td">{blog.description}</td> */}
-                  <td className="td">
-                    {(blog.description || "")
-                      .replace(/<[^>]+>/g, "")
-                      .substring(0, 120)}
-                    ...
+                  <td className="td w-6/12">
+                    {(() => {
+                      const text = (blog.description || "").replace(/<[^>]+>/g, "");
+                      return text.length > 70 ? text.slice(0, 70) + "..." : text;
+                    })()}
                   </td>
 
-                  <td>
+                  <td className="w-3/12">
                     <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">
 
                       {/* VIEW */}

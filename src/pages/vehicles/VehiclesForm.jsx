@@ -13,7 +13,11 @@ import { FaLuggageCart } from "react-icons/fa";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { IoBowlingBallOutline } from "react-icons/io5";
 
+import { useParams } from "react-router-dom";
+import BackButton from "../../components/ui/BackButton";
+
 const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
+  const { id } = useParams();
   const [isOn, setIsOn] = useState(false);
 
   const [count, setCount] = useState(12);
@@ -59,7 +63,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
       const url = URL.createObjectURL(file);
       // setFormData({ ...formData, image: url });
 
-      setFormData({ ...formData,image: file, preview: url});
+      setFormData({ ...formData, image: file, preview: url });
     }
   };
 
@@ -138,10 +142,10 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
       // setSelected(editData.features || []);
 
       setSelected(
-  Array.isArray(editData.features)
-    ? editData.features
-    : []
-);
+        Array.isArray(editData.features)
+          ? editData.features
+          : []
+      );
     }
   }, [editData]);
 
@@ -240,6 +244,31 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
 
   return (
     <main className="page-container">
+
+
+      <div className="px-8 max-w-[1400px] mx-auto w-full mb-0 gap-8">
+        <div className="flex items-center justify-start gap-3">
+          <BackButton
+            // label="Back to Blogs"
+            to="/dashboard/vehicle"
+            className="bg-primary text-white cursor-pointer"
+          />
+          <div>
+            <h1 className="text-xl font-bold">
+              {id ? "Edit Vehicle" : "Add New Vehicle"}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {id
+                ? "Update vehicle details"
+                : "Add New Vehicle"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+
+
       <form onSubmit={handleSubmit}>
         <div className="p-8 max-w-[1400px] mx-auto w-full grid grid-cols-12 gap-8">
           <div className="col-span-12 lg:col-span-8 space-y-8">
@@ -407,38 +436,38 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                 </div> */}
 
                 <div className="flex gap-2 flex-wrap">
-                {selected.map((label) => {
-                  const feature = options.find((opt) => opt.label === label);
+                  {selected.map((label) => {
+                    const feature = options.find((opt) => opt.label === label);
 
-                  return (
-                    <div
-                      key={label}
-                      className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
-                    >
-                      <div className="flex items-center gap-2">
-                        <FiCheckCircle className="text-green-600" />
-
-                        <span className="flex items-center gap-2">
-                          {feature?.icon}
-                          {label}
-                        </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelected((prev) =>
-                            prev.filter((item) => item !== label)
-                          )
-                        }
-                        className="text-red-500 opacity-0 group-hover:opacity-100 transition"
+                    return (
+                      <div
+                        key={label}
+                        className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 gap-2 rounded-lg group"
                       >
-                        <FiTrash2 />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                        <div className="flex items-center gap-2">
+                          <FiCheckCircle className="text-green-600" />
+
+                          <span className="flex items-center gap-2">
+                            {feature?.icon}
+                            {label}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelected((prev) =>
+                              prev.filter((item) => item !== label)
+                            )
+                          }
+                          className="text-red-500 opacity-0 group-hover:opacity-100 transition"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
 
               </div>
 
@@ -505,7 +534,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                   <label className="group relative flex items-center justify-center bg-surface-container-low border-2 border-gray-300 border-dashed rounded-xl h-[250px] w-full cursor-pointer overflow-hidden">
                     <img
                       src={
-                         formData.preview ||formData.car_image_url  ||
+                        formData.preview || formData.car_image_url ||
                         "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
                       }
                       alt="featured"

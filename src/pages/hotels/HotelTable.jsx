@@ -169,7 +169,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
 
 
                 <tr className="tr group" key={hotel.id}>
-                  <td className="p-3">
+                  <td className="p-3 w-3/12">
                     <div className="flex items-center gap-3">
 
                       {/* Image */}
@@ -183,7 +183,9 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                       <div>
                         <h3 className="font-semibold text-sm">{hotel.title}</h3>
                         <p className="text-xs text-gray-500 line-clamp-2">
-                          {hotel.description}
+                          {hotel.description?.length > 70
+                            ? `${hotel.description.slice(0, 70)}...`
+                            : hotel.description}
                         </p>
                       </div>
 

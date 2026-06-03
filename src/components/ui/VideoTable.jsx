@@ -5,23 +5,23 @@ import {
     FiTrash2,
     FiUploadCloud,
 } from "react-icons/fi";
-import meera1 from '../../../assets/videos/meera-1.mp4'
-import meera2 from '../../../assets/videos/meera-2.mp4'
-import meera3 from '../../../assets/videos/meera-3.mp4'
-import meera4 from '../../../assets/videos/meera-4.mp4'
+import meera1 from '../../assets/videos/meera-1.mp4'
+import meera2 from '../../assets/videos/meera-2.mp4'
+import meera3 from '../../assets/videos/meera-3.mp4'
+import meera4 from '../../assets/videos/meera-4.mp4'
 
-import meera5 from '../../../assets/videos/meera-5.mp4'
-import meera6 from '../../../assets/videos/meera-6.mp4'
-import meera7 from '../../../assets/videos/meera-7.mp4'
-import meera8 from '../../../assets/videos/meera-8.mp4'
+import meera5 from '../../assets/videos/meera-5.mp4'
+import meera6 from '../../assets/videos/meera-6.mp4'
+import meera7 from '../../assets/videos/meera-7.mp4'
+import meera8 from '../../assets/videos/meera-8.mp4'
 
-import meera9 from '../../../assets/videos/meera-9.mp4'
-import meera10 from '../../../assets/videos/meera-10.mp4'
+import meera9 from '../../assets/videos/meera-9.mp4'
+import meera10 from '../../assets/videos/meera-10.mp4'
 
 
-import video1 from '../../../assets/videos/reel-1.mp4'
-import video2 from '../../../assets/videos/reel-2.mp4'
-import video3 from '../../../assets/videos/reel-3.mp4'
+import video1 from '../../assets/videos/reel-1.mp4'
+import video2 from '../../assets/videos/reel-2.mp4'
+import video3 from '../../assets/videos/reel-3.mp4'
 
 export default function VideoTable() {
     const [carouselData, setCarouselData] = useState([

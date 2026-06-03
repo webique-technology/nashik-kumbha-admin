@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useParams, useNavigate } from "react-router-dom";
+import BackButton from "../../components/ui/BackButton";
+
 
 const BlogForm = ({ onSave, editData, onCancel }) => {
   const editorRef = useRef();
@@ -20,7 +22,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
       if (editorRef.current) {
         editorRef.current.innerHTML = editData.description || "";
-      } 
+      }
     }
   }, [editData]);
 
@@ -117,7 +119,12 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
         <div className="block-grid">
           <section className="block-left">
 
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-start gap-3">
+              <BackButton
+                // label="Back to Blogs"
+                to="/dashboard/blogs"
+                className="bg-primary text-white cursor-pointer"
+              />
               <div>
                 <h1 className="text-xl font-bold">
                   {id ? "Edit Blog" : "Add New Blog"}
@@ -158,7 +165,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                       //   formData.image ||
                       //   "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"
                       // }
-                      src={formData.preview ||formData.image_url ||"https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"}
+                      src={formData.preview || formData.image_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuA3WQlX_leJ_Ty8fktKfNtPNRlJrGOYIXZgE9gMd4b5NOF1WyC2nfC9TfBE66s2kU1NuA1UOup8_2CVfJUSGOhPd777c3yNupZJewuorQuhDMbaVOBuCn-GbSOzQzvehmLGPtK5Zzb3Ol5qkoyiVzfX4YrciuCEOceO89MduUCopYVr5ftUEa24BFA5hAToAN9kh13qYssgbYLEMYM48s7o9dSJD4JUxdVsfAS0KRPDP1diEmgpsRM1e80ukOIRcfVt2YyUEj6J5xs"}
                       alt="featured"
                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                     />
@@ -166,10 +173,10 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                     {/* Overlay text (optional) */}
                     {!formData.image && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 text-white">
-                      <span className="text-white text-3xl"><IoCloudUploadOutline /></span>
-                      <div className="font-semibold text-2xl">
-                        Click to upload
-                      </div>
+                        <span className="text-white text-3xl"><IoCloudUploadOutline /></span>
+                        <div className="font-semibold text-2xl">
+                          Click to upload
+                        </div>
                       </div>
                     )}
 
@@ -229,7 +236,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
                 {/* FOOTER */}
                 <div className="block-footer">
-                 
+
 
                   <button
                     onClick={handlePublish}
@@ -238,7 +245,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                     {id ? "Update Article" : "Publish Article"}
                   </button>
 
-                   <button
+                  <button
                     onClick={onCancel}
                     className="px-6 py-3 rounded-lg font-semibold bg-gray-200 max-w-40.5 cursor-pointer"
                   >

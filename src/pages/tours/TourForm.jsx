@@ -9,6 +9,8 @@ import {
 import { RiHotelLine } from "react-icons/ri";
 import { PiAirplaneTakeoffLight, PiVanLight } from "react-icons/pi";
 import { LuTrees } from "react-icons/lu";
+import BackButton from "../../components/ui/BackButton";
+import { useParams } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -73,6 +75,7 @@ const SelectOption = ({ child, formClass, label, name, value, onChange }) => (
 
 // Main Form Component
 const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("itinerary");
 
   // --- MAIN FORM STATE ---
@@ -499,6 +502,30 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
 
   return (
     <main className="page-container">
+    
+
+<div className="px-8 max-w-[1400px] mx-auto w-full mb-0 gap-8">
+        <div className="flex items-center justify-start gap-3">
+          <BackButton
+            // label="Back to Blogs"
+            to="/dashboard/tours"
+            className="bg-primary text-white cursor-pointer"
+          />
+          <div>
+            <h1 className="text-xl font-bold">
+              {id ? "Edit Tour Details" : "Add New Vehicle"}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {id
+                ? "Update vehicle details"
+                : "Add New Vehicle"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+
+
       <form onSubmit={handleSubmit}>
         <div className="p-8 max-w-[1400px] mx-auto w-full grid grid-cols-12 gap-8">
           {/* LEFT CONTAINER */}

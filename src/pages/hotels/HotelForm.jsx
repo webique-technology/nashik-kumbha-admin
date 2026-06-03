@@ -6,6 +6,7 @@ import { IoFastFoodOutline, IoTrainOutline } from "react-icons/io5";
 import { PiAirplaneTakeoffLight, PiVanLight } from "react-icons/pi";
 import { LuTrees } from "react-icons/lu";
 import { useParams } from "react-router-dom";
+import BackButton from "../../components/ui/BackButton";
 
 const HotelForm = ({ onSave, editData, onCancel }) => {
   const { id } = useParams();
@@ -163,6 +164,29 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
 
   return (
     <main className="page-container">
+
+
+      <div className="px-8 max-w-[1400px] mx-auto w-full mb-0 gap-8">
+        <div className="flex items-center justify-start gap-3">
+          <BackButton
+            // label="Back to Blogs"
+            to="/dashboard/hotel"
+            className="bg-primary text-white cursor-pointer"
+          />
+          <div>
+            <h1 className="text-xl font-bold">
+              {id ? "Edit Hotel" : "Add New Hotel Booking"}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {id
+                ? "Update your Hotel Details below"
+                : "Add New Hotel"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+
       <form onSubmit={handleSubmit}>
         <div className="p-8 max-w-[1400px] mx-auto w-full grid grid-cols-12 gap-8">
 
@@ -486,11 +510,10 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                       src={img}
                       alt={`hotel-${index}`}
                       onClick={() => setFeatured(img)}
-                      className={`aspect-square w-full h-full rounded-md object-cover cursor-pointer border-2 ${
-                        featured === img
-                          ? "border-blue-500"
-                          : "border-transparent"
-                      }`}
+                      className={`aspect-square w-full h-full rounded-md object-cover cursor-pointer border-2 ${featured === img
+                        ? "border-blue-500"
+                        : "border-transparent"
+                        }`}
                     />
 
                     <button

@@ -135,7 +135,7 @@ const TourTable = ({
                     key={tour.id || index}
                     className="border-b hover:bg-gray-50 transition"
                   >
-                    <td className="p-3">
+                    <td className="p-3 w-4/12">
                       <div className="flex items-center gap-3">
                         <img
                           src={tour.image_url}
@@ -146,12 +146,18 @@ const TourTable = ({
                           <h3 className="font-semibold text-sm">
                             {tour.title}
                           </h3>
-                          <p className="text-xs text-gray-500 line-clamp-2">
-                            {tour.description}
+                          <p className="text-xs text-gray-500">
+                            {tour.description?.length > 70
+                              ? `${tour.description.slice(0, 70)}...`
+                              : tour.description}
                           </p>
                         </div>
                       </div>
                     </td>
+
+
+
+
                     {/* <td className="p-3">{tour.category}</td> */}
                     <td className="p-3">
                       <div className="flex flex-wrap gap-2">

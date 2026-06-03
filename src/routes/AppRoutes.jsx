@@ -14,7 +14,8 @@ import TourEnquiry from "../pages/tours/TourEnquiry";
 import GeneralSettings from "../pages/settings/GeneralSettings";
 import PaymentPolicy from "../pages/settings/PaymentPolicy";
 import PrivacyPoplicy from "../pages/settings/PrivacyPoplicy";
-import HomePageSettings from "../pages/settings/home-page-slider-settings/HomePageSettings";
+import HomePageSettings from "../pages/settings/HomePageSettings";
+
 
 
 

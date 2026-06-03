@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
-const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView }) => {
+const VehiclesTable = ({ vehicles, categories, onAdd, onEdit, onDelete, onView }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,11 +29,11 @@ const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView })
       .includes(search.name.toLowerCase()) &&
     (vehicle.location || "")
       .toLowerCase()
-      .includes(search.location.toLowerCase()) 
-      &&
-      (vehicle.category?.category || "")
-    .toLowerCase()
-    .includes(search.category.toLowerCase())
+      .includes(search.location.toLowerCase())
+    &&
+    (vehicle.category?.category || "")
+      .toLowerCase()
+      .includes(search.category.toLowerCase())
   );
 
   const totalItems = filteredData.length;
@@ -130,23 +130,23 @@ const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView })
           </select> */}
 
           <select
-              value={search.category}
-              onChange={(e) =>
-                setSearch({ ...search, category: e.target.value })
-              }
-              className="input"
-            >
-              <option value="">All Categories</option>
+            value={search.category}
+            onChange={(e) =>
+              setSearch({ ...search, category: e.target.value })
+            }
+            className="input"
+          >
+            <option value="">All Categories</option>
 
-              {categories?.map((cat) => (
-                <option
-                  key={cat.id}
-                  value={cat.category}
-                >
-                  {cat.category}
-                </option>
-              ))}
-            </select>
+            {categories?.map((cat) => (
+              <option
+                key={cat.id}
+                value={cat.category}
+              >
+                {cat.category}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="table-wrapper bg-surface-container-lowest">
@@ -164,7 +164,7 @@ const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView })
             <tbody className="tbody">
               {currentData.map((vehicle) => (
                 <tr key={vehicle.id} className="tr group">
-                  <td className="p-3">
+                  <td className="p-3 w-3/12">
                     <div className="flex items-center gap-3">
                       {/* <img
                         src={
@@ -185,8 +185,14 @@ const VehiclesTable = ({ vehicles,categories, onAdd, onEdit, onDelete, onView })
                       <div>
                         <div className="font-semibold">{vehicle.name}</div>
                         <div className="text-sm text-gray-500">
-                          {vehicle.description}
+                          {vehicle.description?.length > 70
+                            ? `${vehicle.description.slice(0, 70)}...`
+                            : vehicle.description}
                         </div>
+
+
+
+
                       </div>
                     </div>
                   </td>
