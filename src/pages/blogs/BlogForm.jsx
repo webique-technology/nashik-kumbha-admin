@@ -9,6 +9,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
   const [formData, setFormData] = useState({
     title: "",
+    category: "",
     image: "",
     description: "",
   });
@@ -94,13 +95,21 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
 
   //   onSave(finalData);
   // };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handlePublish = () => {
 
     const contentHTML = editorRef.current.innerHTML;
 
     const finalData = {
       title: formData.title,
+      category: formData.category,
       image: formData.image,
       description: contentHTML,
       id: editData?.id,
@@ -153,6 +162,29 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                     placeholder="Enter title..."
                   />
                 </div>
+                 <div>
+                  <label className="block-label">Article Category</label>
+                  {/* <input
+                    className="block-input form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    placeholder="Enter title..."
+                  /> */}
+                   <select
+                    name="category"
+                    value={formData.category || ""}
+                    onChange={handleChange}
+                    className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Travel-tips">Travel-tips</option>
+                    <option value="Food">Food</option>
+                    <option value="Guide">Guide</option>
+                    <option value="History">History</option>
+                  </select>
+                </div>
 
                 {/* FEATURED IMAGE */}
                 <div>
@@ -189,6 +221,7 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                 </div>
 
                 {/* EDITOR */}
+                 <label className="block-label">Description</label>
                 <div className="bg-surface-container-low rounded-xl overflow-hidden border border-gray-300">
 
                   {/* TOOLBAR */}

@@ -99,6 +99,7 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
               <tr className="thead-row">
                 <th className="th">Image</th>
                 <th className="th">Description</th>
+                <th className="th">Category</th>
                 <th className="th">Actions</th>
               </tr>
             </thead>
@@ -133,8 +134,8 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                       return text.length > 70 ? text.slice(0, 70) + "..." : text;
                     })()}
                   </td>
-
-                  <td className="w-3/12">
+                  <td className="td">{blog.category}</td> 
+                  <td>
                     <div className="flex th gap-2 opacity-30 hover:opacity-100 transition">
 
                       {/* VIEW */}

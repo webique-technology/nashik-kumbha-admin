@@ -127,6 +127,7 @@ const blogFields = [
       try {
         const formData = new FormData();
         formData.append("title", data.title);
+        formData.append("category", data.category);
         formData.append("description", data.description);
 
         if (data.image instanceof File) {
