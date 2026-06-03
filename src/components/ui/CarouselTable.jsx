@@ -8,123 +8,134 @@ import {
 
 export default function CarouselTable() {
     const [carouselData, setCarouselData] = useState([
-        {
-            id: 1,
-            image: "https://picsum.photos/300/200?1",
-            title: "Summer Collection",
-            description: "Explore our latest summer collection.",
-            ctaNameOne: "button text 1",
-            ctaNameLinkOne: "button link 1",
-            ctaNameTwo: "button text 1",
-            ctaNameLinkTwo: "button link 1",
-            active: true,
-        },
-        {
-            id: 2,
-            image: "https://picsum.photos/300/200?2",
-            title: "Winter Sale",
-            description: "Exclusive winter discounts available.",
-            ctaNameOne: "button text 2",
-            ctaNameLinkOne: "button link 2",
-            ctaNameTwo: "button text 2",
-            ctaNameLinkTwo: "button link 2",
-            active: false,
-        },
-        {
-            id: 3,
-            image: "https://picsum.photos/300/200?3",
-            title: "Fashion Week",
-            description: "New fashion arrivals.",
-            ctaNameOne: "button text 3",
-            ctaNameLinkOne: "button link 3",
-            ctaNameTwo: "button text 3",
-            ctaNameLinkTwo: "button link 3",
-            active: true,
-        },
-        {
-            id: 4,
-            image: "https://picsum.photos/300/200?4",
-            title: "New Launch",
-            description: "Introducing our newest products.",
-            ctaNameOne: "button text 4",
-            ctaNameLinkOne: "button link 4",
-            ctaNameTwo: "button text 4",
-            ctaNameLinkTwo: "button link 4",
-            active: true,
-        },
-        {
-            id: 5,
-            image: "https://picsum.photos/300/200?5",
-            title: "Trending",
-            description: "Trending products collection.",
-            ctaNameOne: "button text 10",
-            ctaNameLinkOne: "button link 10",
-            ctaNameTwo: "button text 10",
-            ctaNameLinkTwo: "button link 10",
-            active: true,
-        },
-        {
-            id: 6,
-            image: "https://picsum.photos/300/200?6",
-            title: "Festival Offer",
-            description: "Special festive discounts.",
-            ctaNameOne: "button text 5",
-            ctaNameLinkOne: "button link 5",
-            ctaNameTwo: "button text 5",
-            ctaNameLinkTwo: "button link 5",
-            active: false,
-        },
-        {
-            id: 7,
-            image: "https://picsum.photos/300/200?7",
-            title: "Mega Sale",
-            description: "Biggest sale of the season.",
-            ctaNameOne: "button text 9",
-            ctaNameLinkOne: "button link 9",
-            ctaNameTwo: "button text 9",
-            ctaNameLinkTwo: "button link 9",
-            active: true,
-        },
-        {
-            id: 8,
-            image: "https://picsum.photos/300/200?8",
-            title: "Premium Range",
-            description: "Premium products showcase.",
-            ctaNameOne: "button text 6",
-            ctaNameLinkOne: "button link 6",
-            ctaNameTwo: "button text 6",
-            ctaNameLinkTwo: "button link 6",
-            active: true,
-        },
-        {
-            id: 9,
-            image: "https://picsum.photos/300/200?9",
-            title: "Special Edition",
-            description: "Limited edition collection.",
-            ctaNameOne: "button text 7",
-            ctaNameLinkOne: "button link 7",
-            ctaNameTwo: "button text 7",
-            ctaNameLinkTwo: "button link 7",
-            active: false,
-        },
-        {
-            id: 10,
-            image: "https://picsum.photos/300/200?10",
-            title: "Best Sellers",
-            description: "Our most popular products.",
-            ctaNameOne: "button text 8",
-            ctaNameLinkOne: "button link 8",
-            ctaNameTwo: "button text 8",
-            ctaNameLinkTwo: "button link 8",
-            active: true,
-        },
-    ]);
+  {
+    id: 1,
+    image: "https://picsum.photos/300/200?1",
+    subtitle: "Discover New Trends",
+    title: "Summer Collection",
+    description: "Explore our latest summer collection.",
+    ctaNameOne: "button text 1",
+    ctaNameLinkOne: "button link 1",
+    ctaNameTwo: "button text 1",
+    ctaNameLinkTwo: "button link 1",
+    active: true,
+  },
+  {
+    id: 2,
+    image: "https://picsum.photos/300/200?2",
+    subtitle: "Limited Time Offer",
+    title: "Winter Sale",
+    description: "Exclusive winter discounts available.",
+    ctaNameOne: "button text 2",
+    ctaNameLinkOne: "button link 2",
+    ctaNameTwo: "button text 2",
+    ctaNameLinkTwo: "button link 2",
+    active: false,
+  },
+  {
+    id: 3,
+    image: "https://picsum.photos/300/200?3",
+    subtitle: "Style Redefined",
+    title: "Fashion Week",
+    description: "New fashion arrivals.",
+    ctaNameOne: "button text 3",
+    ctaNameLinkOne: "button link 3",
+    ctaNameTwo: "button text 3",
+    ctaNameLinkTwo: "button link 3",
+    active: true,
+  },
+  {
+    id: 4,
+    image: "https://picsum.photos/300/200?4",
+    subtitle: "Fresh Arrival",
+    title: "New Launch",
+    description: "Introducing our newest products.",
+    ctaNameOne: "button text 4",
+    ctaNameLinkOne: "button link 4",
+    ctaNameTwo: "button text 4",
+    ctaNameLinkTwo: "button link 4",
+    active: true,
+  },
+  {
+    id: 5,
+    image: "https://picsum.photos/300/200?5",
+    subtitle: "Popular Right Now",
+    title: "Trending",
+    description: "Trending products collection.",
+    ctaNameOne: "button text 10",
+    ctaNameLinkOne: "button link 10",
+    ctaNameTwo: "button text 10",
+    ctaNameLinkTwo: "button link 10",
+    active: true,
+  },
+  {
+    id: 6,
+    image: "https://picsum.photos/300/200?6",
+    subtitle: "Celebrate With Savings",
+    title: "Festival Offer",
+    description: "Special festive discounts.",
+    ctaNameOne: "button text 5",
+    ctaNameLinkOne: "button link 5",
+    ctaNameTwo: "button text 5",
+    ctaNameLinkTwo: "button link 5",
+    active: false,
+  },
+  {
+    id: 7,
+    image: "https://picsum.photos/300/200?7",
+    subtitle: "Don't Miss Out",
+    title: "Mega Sale",
+    description: "Biggest sale of the season.",
+    ctaNameOne: "button text 9",
+    ctaNameLinkOne: "button link 9",
+    ctaNameTwo: "button text 9",
+    ctaNameLinkTwo: "button link 9",
+    active: true,
+  },
+  {
+    id: 8,
+    image: "https://picsum.photos/300/200?8",
+    subtitle: "Luxury Collection",
+    title: "Premium Range",
+    description: "Premium products showcase.",
+    ctaNameOne: "button text 6",
+    ctaNameLinkOne: "button link 6",
+    ctaNameTwo: "button text 6",
+    ctaNameLinkTwo: "button link 6",
+    active: true,
+  },
+  {
+    id: 9,
+    image: "https://picsum.photos/300/200?9",
+    subtitle: "Exclusive Release",
+    title: "Special Edition",
+    description: "Limited edition collection.",
+    ctaNameOne: "button text 7",
+    ctaNameLinkOne: "button link 7",
+    ctaNameTwo: "button text 7",
+    ctaNameLinkTwo: "button link 7",
+    active: false,
+  },
+  {
+    id: 10,
+    image: "https://picsum.photos/300/200?10",
+    subtitle: "Customer Favorites",
+    title: "Best Sellers",
+    description: "Our most popular products.",
+    ctaNameOne: "button text 8",
+    ctaNameLinkOne: "button link 8",
+    ctaNameTwo: "button text 8",
+    ctaNameLinkTwo: "button link 8",
+    active: true,
+  },
+]);
 
     const [modalType, setModalType] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
 
     const [form, setForm] = useState({
         image: "",
+        subtitle: "",
         title: "",
         description: "",
         ctaNameOne: "",
@@ -166,6 +177,7 @@ export default function CarouselTable() {
     const openAddModal = () => {
         setForm({
             image: "",
+            subtitle: "",
             title: "",
             description: "",
             ctaNameOne: "",
@@ -188,6 +200,7 @@ export default function CarouselTable() {
 
         setForm({
             image: item.image,
+            subtitle: item.subtitle,
             title: item.title,
             description: item.description,
             ctaNameOne: item.ctaNameOne,
@@ -310,8 +323,13 @@ export default function CarouselTable() {
                                     />
                                 </td>
 
-                                <td className="p-3 font-medium">
-                                    {item.title}
+                                <td className="p-3">
+                                    <p className="text-xs text-gray-500">
+                                        {item.subtitle}
+                                    </p>
+                                    <p className="font-medium">
+                                        {item.title}
+                                    </p>
                                 </td>
 
                                 <td className="p-3 max-w-sm">
@@ -435,7 +453,14 @@ export default function CarouselTable() {
                         />
 
                         <div className="space-y-4">
-
+                            <div>
+                                <p className="mb-1 text-sm font-medium text-gray-500">
+                                    Subtitle :
+                                </p>
+                                <p className="text-base text-gray-900">
+                                    {selectedItem.subtitle}
+                                </p>
+                            </div>
                             <div>
                                 <p className="mb-1 text-sm font-medium text-gray-500">
                                     Title :
@@ -552,6 +577,23 @@ export default function CarouselTable() {
                                         />
                                     </label>
                                 </div>
+                            </div>
+                            <div className="mb-4">
+                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                    Subtitle
+                                </label>
+
+                                <input
+                                    placeholder="Enter subtitle"
+                                    value={form.subtitle}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            subtitle: e.target.value,
+                                        })
+                                    }
+                                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
+                                />
                             </div>
                             <div className="mb-4">
                                 <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -685,7 +727,7 @@ export default function CarouselTable() {
                             <div className="flex justify-end gap-3">
                                 <button
                                     onClick={closeModal}
-                                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer" 
+                                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
                                 >
                                     Cancel
                                 </button>
