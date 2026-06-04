@@ -19,6 +19,9 @@ export default function VideoTable() {
 
     const [modalType, setModalType] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
+    
+    // State to hold Laravel validation errors
+    const [errors, setErrors] = useState({});
 
     const [form, setForm] = useState({
         video_link: "",
@@ -77,6 +80,7 @@ export default function VideoTable() {
             description: "",
             status: true,
         });
+        setErrors({}); // Clear validation tracking
         setModalType("add");
     };
 
@@ -95,6 +99,7 @@ export default function VideoTable() {
             description: item.description || "",
             status: item.status == 1 || item.status === true,
         });
+        setErrors({}); // Clear validation tracking
         setModalType("edit");
     };
 
@@ -106,9 +111,11 @@ export default function VideoTable() {
     const closeModal = () => {
         setModalType(null);
         setSelectedItem(null);
+        setErrors({}); // Reset error messages on close
     };
 
     const handleSave = async () => {
+        setErrors({}); // Clear existing errors before hitting api
         const formData = new FormData();
         formData.append("video_link", form.video_link);
         formData.append("title", form.title);
@@ -131,7 +138,12 @@ export default function VideoTable() {
             closeModal();
             fetchVideos(modalType === "add" ? 1 : currentPage);
         } catch (error) {
-            console.log("Error saving video:", error);
+            // Check if backend returned HTTP 422 standard validation rules
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                console.log("Error saving video:", error);
+            }
         }
     };
 
@@ -149,7 +161,6 @@ export default function VideoTable() {
     const renderVideoPlayer = (url) => {
         if (!url) return <div className="text-gray-500 text-center py-10">No video link provided</div>;
 
-        // 1. YouTube Handler (Converts watch links and shorts links to structural embed links)
         if (url.includes("youtube.com") || url.includes("youtu.be")) {
             let videoId = "";
             if (url.includes("youtu.be/")) {
@@ -172,7 +183,6 @@ export default function VideoTable() {
             );
         }
 
-        // 2. Vimeo Handler
         if (url.includes("vimeo.com")) {
             const videoId = url.split("vimeo.com/")[1]?.split(/[?#]/)[0];
             return (
@@ -186,7 +196,6 @@ export default function VideoTable() {
             );
         }
 
-        // 3. Direct Video File Handler (.mp4, .webm, .ogg, or local storage API paths)
         const isDirectVideoFile = /\.(mp4|webm|ogg)($|\?)/i.test(url) || url.includes("/storage/");
         if (isDirectVideoFile) {
             return (
@@ -200,7 +209,6 @@ export default function VideoTable() {
             );
         }
 
-        // 4. Fallback Embedder for any other platform links
         return (
             <iframe
                 src={url}
@@ -339,8 +347,6 @@ export default function VideoTable() {
             {modalType === "view" && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-xl rounded-xl bg-white p-6">
-                        
-                        {/* DYNAMIC PLAYER SELECTION */}
                         <div className="mb-4">
                             {renderVideoPlayer(selectedItem.video_link)}
                         </div>
@@ -371,6 +377,7 @@ export default function VideoTable() {
                             {modalType === "add" ? "Add Video" : "Edit Video"}
                         </h3>
 
+                        {/* Video Link Field */}
                         <div className="mb-4">
                             <label className="mb-2 block text-sm font-medium"> Video Link </label>
                             <input
@@ -382,13 +389,24 @@ export default function VideoTable() {
                                         video_link: e.target.value,
                                     })
                                 }
-                                className="mb-4 w-full rounded-lg border p-3"
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.video_link ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
                             />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.video_link && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.video_link[0]}
+                                </p>
+                            )}
                         </div>
                         
+                        {/* Thumbnail Image Field */}
                         <div className="mb-4">
                             <label className="mb-2 block text-sm font-medium text-gray-700">Thumbnail Image</label>
-                            <div className="group relative mx-auto h-52 overflow-hidden rounded-xl border-2 border-dashed bg-gray-50 ">
+                            <div className={`group relative mx-auto h-52 overflow-hidden rounded-xl border-2 border-dashed bg-gray-50 ${
+                                errors.video_image ? "border-red-500 bg-red-50/20" : "border-gray-300"
+                            }`}>
                                 <img
                                     src={form.imagePreview || "https://placehold.co/600x400?text=Upload+Image"}
                                     alt=""
@@ -409,8 +427,15 @@ export default function VideoTable() {
                                     />
                                 </label>
                             </div>
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.video_image && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.video_image[0]}
+                                </p>
+                            )}
                         </div>
 
+                        {/* Title Field */}
                         <div className="mb-4">
                             <label className="mb-2 block text-sm font-medium">Title </label>
                             <input
@@ -422,10 +447,19 @@ export default function VideoTable() {
                                         title: e.target.value,
                                     })
                                 }
-                                className="mb-4 w-full rounded-lg border p-3"
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.title ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
                             />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.title && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.title[0]}
+                                </p>
+                            )}
                         </div>
 
+                        {/* Description Field */}
                         <div className="mb-4">
                             <label className="mb-2 block text-sm font-medium"> Description </label>
                             <textarea
@@ -438,8 +472,16 @@ export default function VideoTable() {
                                         description: e.target.value,
                                     })
                                 }
-                                className="mb-4 w-full rounded-lg border p-3"
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.description ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
                             />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.description && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.description[0]}
+                                </p>
+                            )}
                         </div>
 
                         <div className="mb-5 flex items-center gap-3">
