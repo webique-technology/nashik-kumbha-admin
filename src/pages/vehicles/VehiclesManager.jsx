@@ -30,6 +30,7 @@ const EditVehicleWrapper = ({
       handleSave,
       navigate,
       categories,
+      errors,
     }) => {
 
       const { id } = useParams();
@@ -48,6 +49,7 @@ const EditVehicleWrapper = ({
           onSave={handleSave}
           editData={editData}
           categories={categories}
+          errors={errors}
           onCancel={() => navigate("/dashboard/vehicle")}
         />
       );
@@ -57,6 +59,7 @@ const VehiclesManager = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
+  const [errors, setErrors] = useState({});
 
   const [viewModal, setViewModal] = useState(false);
   const [selectedTour, setSelectedTour] = useState(null);
@@ -69,6 +72,7 @@ const VehiclesManager = () => {
   const [vehicles, setVehicles] = useState([]);
   const [editData, setEditData] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [pagination, setPagination] = useState({});
 
   const fetchCategories = async () => {
     try {
@@ -98,11 +102,35 @@ const VehiclesManager = () => {
     );
   };
   
-  const fetchVehicles = async () => {
+  // const fetchVehicles = async () => {
+  //   try {
+  //     const response = await api.get("/vehicles");
+  //     console.log("vehicles:", response.data);
+  //     setVehicles(response.data.data.data);
+  //   } catch (error) {
+  //     console.log("vehicle fetch error:", error);
+  //   }
+  // };
+
+  const fetchVehicles = async (page = 1) => {
     try {
-      const response = await api.get("/vehicles");
-      console.log("vehicles:", response.data);
+      const response = await api.get(
+        `/vehicles?page=${page}`
+      );
+
       setVehicles(response.data.data.data);
+
+      setPagination({
+        current_page: response.data.data.current_page,
+        last_page: response.data.data.last_page,
+        total: response.data.data.total,
+        from: response.data.data.from,
+        to: response.data.data.to,
+        next_page_url:
+          response.data.data.next_page_url,
+        prev_page_url:
+          response.data.data.prev_page_url,
+      });
     } catch (error) {
       console.log("vehicle fetch error:", error);
     }
@@ -250,11 +278,17 @@ const VehiclesManager = () => {
         console.log("save response:", response.data);
 
         fetchVehicles();
+        setErrors({});
         setEditData(null);
         navigate("/dashboard/vehicle");
 
       } catch (error) {
-        console.log("vehicle save error:", error);
+         console.log("vehicle save error:", error);
+
+          if (error.response?.status === 422) {
+            console.log("vehicle error:", error.response?.data);
+            setErrors(error.response.data.errors || {});
+          }
       }
   };
 
@@ -267,7 +301,7 @@ const VehiclesManager = () => {
       try {
         const response = await api.delete(`/vehicles/${id}`);
         console.log("delete response:", response.data);
-        fetchVehicles();
+        fetchVehicles(pagination.current_page);
       } catch (error) {
         console.log("delete error:", error);
       }
@@ -287,6 +321,8 @@ const VehiclesManager = () => {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleView}
+            pagination={pagination}
+            fetchVehicles={fetchVehicles}
           />
         }
       />
@@ -297,6 +333,7 @@ const VehiclesManager = () => {
           <VehiclesForm
             onSave={handleSave}
             categories={categories}
+            errors={errors}
             onCancel={() => navigate("/dashboard/vehicle")}
           />
         }
@@ -311,6 +348,7 @@ const VehiclesManager = () => {
             handleSave={handleSave}
             navigate={navigate}
             categories={categories}
+            errors={errors}
           />
         }
       />

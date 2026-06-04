@@ -16,7 +16,7 @@ import { IoBowlingBallOutline } from "react-icons/io5";
 import { useParams } from "react-router-dom";
 import BackButton from "../../components/ui/BackButton";
 
-const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
+const VehiclesForm = ({ onSave, editData, categories = [], errors = {}, onCancel }) => {
   const { id } = useParams();
   const [isOn, setIsOn] = useState(false);
 
@@ -131,6 +131,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
     status: "",
     image: "",
   });
+  // const [errors, setErrors] = useState({});
 
   const fileRef = useRef();
 
@@ -151,10 +152,20 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
 
   //  COMMON INPUT HANDLER
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    // setFormData({
+    //   ...formData,
+    //   [e.target.name]: e.target.value,
+    // });
+
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (errors[name]) {
+      errors[name] = null;
+    }
   };
 
   const handleImage = (e) => {
@@ -188,7 +199,8 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
 
       // features: selected.map((item) => item.label),
       features: selected,
-    });
+    }
+  );
   };
 
   //  FEATURES
@@ -283,14 +295,19 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">Vehicle Name</label>
-                  <input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
-                    placeholder="e.g. Saffron Trails: Luxury Rajasthan Expedition"
-                    type="text"
-                  />
+                         <input
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
+                        placeholder="Vehicle Name"
+                      />
+
+                      {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.name[0]}
+                        </p>
+                      )}
                 </div>
 
                 {/* <div className="form-group">
@@ -326,6 +343,11 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                     <option>Bangalore</option>
                     <option>Goa</option>
                   </select>
+                  {errors.location && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.location[0]}
+                      </p>
+                    )}
                 </div>
 
                 <div className="form-group">
@@ -351,6 +373,11 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                     className="form-input bg-surface-container-low focus:ring-2 focus:ring-primary/20"
                     placeholder="Enter Total Seats"
                   />
+                  {errors.total_seats && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.total_seats[0]}
+                    </p>
+                  )}
                 </div>
 
                 {/* <div className="form-group">
@@ -492,6 +519,11 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                   </label>
                 ))}
               </div>
+              {errors.category_id && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.category_id[0]}
+                </p>
+              )}
             </section>
           </div>
 
@@ -510,6 +542,11 @@ const VehiclesForm = ({ onSave, editData, categories = [], onCancel }) => {
                       className="w-full px-4 py-3 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-sm font-black"
                       type="number"
                     />
+                    {errors.base_price && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.base_price[0]}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

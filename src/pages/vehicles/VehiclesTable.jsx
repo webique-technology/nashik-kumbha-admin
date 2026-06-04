@@ -5,17 +5,17 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
-const VehiclesTable = ({ vehicles, categories, onAdd, onEdit, onDelete, onView }) => {
+const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd, onEdit, onDelete, onView }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState({
     name: "",
     location: "",
     category: "",
   });
 
-  const itemsPerPage = 7;
+  // const itemsPerPage = 7;
 
   // const filteredData = hotels.filter((hotel) =>
   //   hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
@@ -35,51 +35,7 @@ const VehiclesTable = ({ vehicles, categories, onAdd, onEdit, onDelete, onView }
       .toLowerCase()
       .includes(search.category.toLowerCase())
   );
-
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  const currentData = filteredData.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
-
-  const startItem = totalItems === 0 ? 0 : startIndex + 1;
-  const endItem = Math.min(startIndex + itemsPerPage, totalItems);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
-    }
-  }, [totalPages]);
-
-  const getPageNumbers = () => {
-    const pages = [];
-
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    pages.push(1);
-
-    if (currentPage > 3) pages.push("...");
-
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pages.push(i);
-    }
-
-    if (currentPage < totalPages - 2) pages.push("...");
-
-    pages.push(totalPages);
-
-    return pages;
-  };
+  const currentData = filteredData;
 
   const handleDeleteClick = (id) => {
     setSelectedId(id);
@@ -266,45 +222,52 @@ const VehiclesTable = ({ vehicles, categories, onAdd, onEdit, onDelete, onView }
             </tbody>
           </table>
 
-          {totalPages > 1 && (
+         {pagination?.last_page > 1 && (
             <div className="pagination">
 
               <div className="text-sm text-gray-600">
-                Showing {startItem} - {endItem} of {totalItems}
+               Showing {pagination.from || 0}- {pagination.to || 0} of {pagination.total || 0}
               </div>
 
               <div className="flex items-center gap-2">
 
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  disabled={currentPage === 1}
+                  onClick={() =>  fetchVehicles(
+                        pagination.current_page - 1
+                      )
+                    }
+                  disabled={!pagination.prev_page_url}
                   className="px-3 py-1  rounded disabled:opacity-50"
                 >
                   <FaChevronLeft />
                 </button>
 
-                {getPageNumbers().map((page, i) =>
-                  page === "..." ? (
-                    <span key={i}>...</span>
-                  ) : (
+                  {Array.from(
+                  { length: pagination.last_page || 0 },
+                  (_, i) => (
                     <button
                       key={i}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1 border rounded ${currentPage === page
-                        ? "bg-primary text-white"
-                        : "bg-secondary border-gray-300 hover:bg-gray-100"
-                        }`}
+                      onClick={() =>
+                        fetchVehicles(i + 1)
+                      }
+                      className={`px-3 py-1 border rounded ${
+                        pagination.current_page === i + 1
+                          ? "bg-primary text-white"
+                          : "bg-secondary border-gray-300 hover:bg-gray-100"
+                      }`}
                     >
-                      {page}
+                      {i + 1}
                     </button>
                   )
                 )}
 
                 <button
                   onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                      fetchVehicles(
+                      pagination.current_page + 1
+                    )
                   }
-                  disabled={currentPage === totalPages}
+                 disabled={!pagination.next_page_url}
                   className="px-3 py-1  rounded disabled:opacity-50"
                 >
                   <FaChevronRight />
