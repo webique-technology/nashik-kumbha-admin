@@ -11,10 +11,12 @@ import TourManager from "../pages/tours/TourManager";
 import AddTour from "../pages/tours/TourForm";
 import VehiclesManager from "../pages/vehicles/VehiclesManager";
 import TourEnquiry from "../pages/tours/TourEnquiry";
-import GeneralSettings from "../pages/settings/GeneralSettings";
+import EnquriyDeatils from "../pages/settings/EnquriyDeatils";
 import PaymentPolicy from "../pages/settings/PaymentPolicy";
 import PrivacyPoplicy from "../pages/settings/PrivacyPoplicy";
 import HomePageSettings from "../pages/settings/HomePageSettings";
+import VehicleEnquiry from "../pages/vehicles/VehicleEnquiry";
+import HotelEnquiry from "../pages/hotels/HotelEnquiry";
 
 
 
@@ -44,7 +46,9 @@ export default function AppRoutes() {
         <Route path="blogs/*" element={<BlogManager />} />
 
         <Route path="tour-enquriy" element={<TourEnquiry />} />
-        <Route path="settings" element={<GeneralSettings />} />
+        <Route path="vehicle-enquriy" element={<VehicleEnquiry />} />
+        <Route path="hotel-enquriy" element={<HotelEnquiry />} />
+        <Route path="enquiry-details" element={<EnquriyDeatils />} />
         <Route path="paymentpolicy" element={<PaymentPolicy />} />
         <Route path="privacypolicy" element={<PrivacyPoplicy />} />
         {/* <Route path="tour-manager" element={<TourManager />} /> */}

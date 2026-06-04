@@ -2,12 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { RxCaretRight } from "react-icons/rx";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FiUsers } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import img1 from '../assets/images/admin-hotel.png'
 import img2 from '../assets/images/admin-vehicle.png'
 import img3 from '../assets/images/admin-tour.png'
 import api from "../services/axiosInstance"
 import CountUp from "react-countup";
+import BackButton from '../components/ui/BackButton';
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
@@ -472,7 +473,7 @@ const Dashboard = () => {
           {/* LEFT */}
           <div className="dashboard-left">
 
-
+            <h3 className='mb-3 text-xl font-bold text-slate-900'>Tour Enquiry</h3>
             <div className="table-wrapper bg-surface-container-lowest">
               <table className="table">
                 <thead className="bg-gray-100 text-left">
@@ -514,50 +515,16 @@ const Dashboard = () => {
               </table>
 
               {/* 📄 Pagination */}
-              <div className="pagination">
-                {/* <div className="text-sm text-gray-600"> */}
-                {/* Showing {filteredData.length === 0 ? 0 : startIndex + 1} -{" "} */}
-                {/* Showing Page {currentPage} of {totalPages}
-                      {Math.min(startIndex + rowsPerPage, filteredData.length)} of{" "}
-                      {filteredData.length}
-                    </div> */}
 
-                <div className="text-sm text-gray-600">
-                  Showing Page {currentPage} of {totalPages}
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    className="px-2 py-1  rounded"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
-                  >
-                    <FaChevronLeft />
-                  </button>
-
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i}
-                      className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "px-3 py-1 border rounded bg-primary text-white" : ""
-                        }`}
-                      onClick={() => setCurrentPage(i + 1)}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-
-                  <button
-                    className="px-2 py-1 rounded"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => p + 1)}
-                  >
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </div>
             </div>
-
-
+            <div className='flex justify-end'>
+              <Link
+                to="/dashboard/tour-enquriy"
+                className="px-4 py-2 bg-transparent icon-color font-semibold underline rounded inline-block"
+              >
+                Go to Tour Enquiry
+              </Link>
+            </div>
           </div>
 
           {/* RIGHT */}

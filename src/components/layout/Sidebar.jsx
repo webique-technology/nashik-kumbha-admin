@@ -25,9 +25,26 @@ const menuItems = [
     ],
   },
 
-  { name: "Vehicle", icon: <FiTruck />, path: "/dashboard/vehicle" },
 
-  { name: "Hotel Listings", icon: <FiHotel />, path: "/dashboard/hotel" },
+
+    {
+    name: "Vehicle",
+    icon: <FiTruck />,
+    children: [
+      { name: "Vehicle Manager", path: "/dashboard/vehicle" },
+      { name: "Vehicle Enquiry", path: "/dashboard/vehicle-enquriy" }, // keep same as route OR fix both
+    ],
+  },
+
+
+   {
+    name: "Hotel Listings",
+    icon: <FiHotel />,
+    children: [
+      { name: "Hotel Manager", path: "/dashboard/hotel" },
+      { name: "Hotel Enquiry", path: "/dashboard/hotel-enquriy" }, // keep same as route OR fix both
+    ],
+  },
 
   { name: "Blog", icon: <FiEdit />, path: "/dashboard/blogs" },
 
@@ -37,7 +54,7 @@ const menuItems = [
     icon: <FiCompass />,
     children: [
       { name: "Home Page Settings", path: "/dashboard/home-settings" },
-      { name: "General Settings", path: "/dashboard/settings" },
+      { name: "Contact Enquiry Details", path: "/dashboard/enquiry-details" },
       { name: "Privacy Policy", path: "/dashboard/privacypolicy" },
       { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, // keep same as route OR fix both
     ],
