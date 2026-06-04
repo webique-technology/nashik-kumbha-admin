@@ -1,150 +1,86 @@
-import { useState } from "react";
-import {
-    FiEye,
-    FiEdit2,
-    FiTrash2,
-    FiUploadCloud,
-} from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiEye, FiEdit2, FiTrash2, FiUploadCloud } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import meera1 from '../../assets/videos/meera-1.mp4'
-import meera2 from '../../assets/videos/meera-2.mp4'
-import meera3 from '../../assets/videos/meera-3.mp4'
-import meera4 from '../../assets/videos/meera-4.mp4'
-
-import meera5 from '../../assets/videos/meera-5.mp4'
-import meera6 from '../../assets/videos/meera-6.mp4'
-import meera7 from '../../assets/videos/meera-7.mp4'
-import meera8 from '../../assets/videos/meera-8.mp4'
-
-import meera9 from '../../assets/videos/meera-9.mp4'
-import meera10 from '../../assets/videos/meera-10.mp4'
-
-
-import video1 from '../../assets/videos/reel-1.mp4'
-import video2 from '../../assets/videos/reel-2.mp4'
-import video3 from '../../assets/videos/reel-3.mp4'
+import api from "../../services/axiosInstance";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function VideoTable() {
-    const [carouselData, setCarouselData] = useState([
-        {
-            id: 1,
-            video: meera1,
-            title: "Kumbh Mela Highlights",
-            description: "Sacred bathing rituals and spiritual gathering.",
-            active: true,
-        },
-        {
-            id: 2,
-            video: meera2,
-            title: "Morning Ganga Aarti",
-            description: "Devotional aarti on the banks of the Ganga.",
-            active: true,
-        },
-        {
-            id: 3,
-            video: meera3,
-            title: "Spiritual Journey",
-            description: "Experience the divine atmosphere of Kumbh.",
-            active: true,
-        },
-        {
-            id: 4,
-            video: meera4,
-            title: "Sadhus of Kumbh",
-            description: "Life and traditions of holy saints.",
-            active: true,
-        },
-        {
-            id: 5,
-            video: meera5,
-            title: "Meditation and Peace",
-            description: "Spiritual practices from India.",
-            active: true,
-        },
-        {
-            id: 6,
-            video: meera6,
-            title: "Temple Devotion",
-            description: "Sacred chants and prayers.",
-            active: false,
-        },
-        {
-            id: 7,
-            video: meera7,
-            title: "Holy Dip Ceremony",
-            description: "Pilgrims taking the sacred bath.",
-            active: true,
-        },
-        {
-            id: 8,
-            video: meera8,
-            title: "Spiritual India",
-            description: "Journey through sacred places.",
-            active: true,
-        },
-        {
-            id: 9,
-            video: meera9,
-            title: "Bhajan Sandhya",
-            description: "Evening devotional songs.",
-            active: false,
-        },
-        {
-            id: 10,
-            video: meera10,
-            title: "Divine Kumbh Experience",
-            description: "The grandeur of the world's largest gathering.",
-            active: true,
-        },
-    ]);
-    const [modalType, setModalType] = useState(null);
-    const [selectedItem, setSelectedItem] = useState(null);
-
-    const [form, setForm] = useState({
-        video: "",
-        title: "",
-        description: "",
-        active: true,
+    const [carouselData, setCarouselData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pagination, setPagination] = useState({
+        current_page: 1,
+        last_page: 1,
+        per_page: 7,
+        total: 0,
+        from: 1,
+        to: 1,
     });
 
-    const handleVideoUpload = (e) => {
-        const file = e.target.files[0];
+    const [modalType, setModalType] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    
+    // State to hold Laravel validation errors
+    const [errors, setErrors] = useState({});
 
-        if (!file) return;
+    const [form, setForm] = useState({
+        video_link: "",
+        video_image: null,
+        imagePreview: null,
+        title: "",
+        description: "",
+        status: true,
+    });
 
-        const reader = new FileReader();
+    useEffect(() => {
+        fetchVideos(currentPage);
+    }, [currentPage]);
 
-        reader.onloadend = () => {
-            setForm((prev) => ({
-                ...prev,
-                video: reader.result,
-            }));
-        };
-
-        reader.readAsDataURL(file);
+    const fetchVideos = async (page = 1) => {
+        setLoading(true);
+        try {
+            const response = await api.get(`/videos?page=${page}`);
+            setCarouselData(response.data.data);
+            setPagination({
+                current_page: response.data.current_page,
+                last_page: response.data.last_page,
+                per_page: response.data.per_page,
+                total: response.data.total,
+                from: response.data.from,
+                to: response.data.to,
+                next_page_url: response.data.next_page_url,
+                prev_page_url: response.data.prev_page_url,
+                links: response.data.links,
+            });
+            setCurrentPage(response.data.current_page);
+        } catch (error) {
+            console.log("Video fetch error:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const ITEMS_PER_PAGE = 7;
-    const [currentPage, setCurrentPage] = useState(1);
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    const totalPages = Math.ceil(
-        carouselData.length / ITEMS_PER_PAGE
-    );
-
-    const paginatedData = carouselData.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    );
+        setForm((prev) => ({
+            ...prev,
+            video_image: file,
+            imagePreview: URL.createObjectURL(file),
+        }));
+    };
 
     const openAddModal = () => {
-
         setForm({
-            video: "",
+            video_link: "",
+            video_image: null,
+            imagePreview: null,
             title: "",
             description: "",
-            active: true,
+            status: true,
         });
-
+        setErrors({}); // Clear validation tracking
         setModalType("add");
     };
 
@@ -155,14 +91,15 @@ export default function VideoTable() {
 
     const openEditModal = (item) => {
         setSelectedItem(item);
-
         setForm({
-            video: item.video,
-            title: item.title,
-            description: item.description,
-            active: item.active,
+            video_link: item.video_link || "",
+            video_image: null,
+            imagePreview: item.image_url,
+            title: item.title || "",
+            description: item.description || "",
+            status: item.status == 1 || item.status === true,
         });
-
+        setErrors({}); // Clear validation tracking
         setModalType("edit");
     };
 
@@ -174,58 +111,121 @@ export default function VideoTable() {
     const closeModal = () => {
         setModalType(null);
         setSelectedItem(null);
+        setErrors({}); // Reset error messages on close
     };
 
-    const handleSave = () => {
-        if (modalType === "add") {
-            setCarouselData((prev) => [
-                {
-                    id: Date.now(),
-                    ...form,
-                },
-                ...prev,
-            ]);
+    const handleSave = async () => {
+        setErrors({}); // Clear existing errors before hitting api
+        const formData = new FormData();
+        formData.append("video_link", form.video_link);
+        formData.append("title", form.title);
+        formData.append("description", form.description);
+        formData.append("status", form.status ? 1 : 0);
+        
+        if (form.video_image) {
+            formData.append("video_image", form.video_image);
         }
 
-        if (modalType === "edit") {
-            setCarouselData((prev) =>
-                prev.map((item) =>
-                    item.id === selectedItem.id
-                        ? { ...item, ...form }
-                        : item
-                )
+        try {
+            if (modalType === "add") {
+                await api.post("/videos/store", formData);
+            }
+
+            if (modalType === "edit") {
+                await api.post(`/videos/update/${selectedItem.id}`, formData);
+            }
+
+            closeModal();
+            fetchVideos(modalType === "add" ? 1 : currentPage);
+        } catch (error) {
+            // Check if backend returned HTTP 422 standard validation rules
+            if (error.response && error.response.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                console.log("Error saving video:", error);
+            }
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await api.delete(`/videos/delete/${selectedItem.id}`);
+            closeModal();
+            fetchVideos(currentPage);
+        } catch (error) {
+            console.log("Delete error:", error);
+        }
+    };
+
+    // Helper function to format any video link dynamically
+    const renderVideoPlayer = (url) => {
+        if (!url) return <div className="text-gray-500 text-center py-10">No video link provided</div>;
+
+        if (url.includes("youtube.com") || url.includes("youtu.be")) {
+            let videoId = "";
+            if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split(/[?#]/)[0];
+            } else if (url.includes("embed/")) {
+                videoId = url.split("embed/")[1].split(/[?#]/)[0];
+            } else if (url.includes("shorts/")) {
+                videoId = url.split("shorts/")[1].split(/[?#]/)[0];
+            } else {
+                videoId = url.split("v=")[1]?.split("&")[0];
+            }
+            return (
+                <iframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    className="w-full h-72 rounded-lg bg-black border-0"
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                />
             );
         }
 
-        closeModal();
-
-        // Optional: go back to first page so newly added item is visible
-        setCurrentPage(1);
-    };
-
-    const handleDelete = () => {
-        setCarouselData((prev) =>
-            prev.filter(
-                (item) => item.id !== selectedItem.id
-            )
-        );
-
-        if (currentPage > 1 && paginatedData.length === 1) {
-            setCurrentPage((prev) => prev - 1);
+        if (url.includes("vimeo.com")) {
+            const videoId = url.split("vimeo.com/")[1]?.split(/[?#]/)[0];
+            return (
+                <iframe
+                    src={`https://player.vimeo.com/video/${videoId}`}
+                    className="w-full h-72 rounded-lg bg-black border-0"
+                    title="Vimeo video player"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowFullScreen
+                />
+            );
         }
 
-        closeModal();
+        const isDirectVideoFile = /\.(mp4|webm|ogg)($|\?)/i.test(url) || url.includes("/storage/");
+        if (isDirectVideoFile) {
+            return (
+                <video 
+                    src={url} 
+                    controls 
+                    className="w-full h-72 rounded-lg bg-black object-contain"
+                >
+                    Your browser does not support the video tag.
+                </video>
+            );
+        }
+
+        return (
+            <iframe
+                src={url}
+                className="w-full h-72 rounded-lg bg-black border-0"
+                title="Video player"
+                allowFullScreen
+            />
+        );
     };
 
     return (
         <div className="rounded-xl bg-white">
             {/* Header */}
-
             <div className="mb-6 flex items-center justify-between">
                 <h2 className="title text-on-surface">
                     Video Management
                 </h2>
-
                 <button
                     onClick={openAddModal}
                     className="rounded-lg btn-primary-packages text-white"
@@ -235,46 +235,27 @@ export default function VideoTable() {
             </div>
 
             {/* Table */}
-
             <div className="table-wrapper bg-surface-container-lowest">
                 <table className="table">
                     <thead>
                         <tr className="thead-row">
-                            <th className="th">
-                                Video
-                            </th>
-
-                            <th className="th">
-                                Title
-                            </th>
-
-                            <th className="th">
-                                Description
-                            </th>
-
-                            <th className="th">
-                                Status
-                            </th>
-
-                            <th className="th">
-                                Action
-                            </th>
+                            <th className="th">Thumbnail Image</th>
+                            <th className="th">Title</th>
+                            <th className="th">Description</th>
+                            <th className="th">Status</th>
+                            <th className="th">Action</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        {paginatedData.map((item) => (
-                            <tr
-                                key={item.id}
-                                className="tr group"
-                            >
+                        {carouselData.map((item) => (
+                            <tr key={item.id} className="tr group">
                                 <td className="p-3">
                                     <div className="h-16 w-24 overflow-hidden rounded-lg bg-black">
-                                        <video
-                                            src={item.video}
+                                        <img
+                                            src={item.image_url}
                                             className="h-full w-full object-cover"
-                                            muted
-                                            preload="metadata"
+                                            alt=""
                                         />
                                     </div>
                                 </td>
@@ -289,43 +270,27 @@ export default function VideoTable() {
 
                                 <td className="p-3">
                                     <span
-                                        className={`rounded-full px-3 py-1 text-xs font-medium ${item.active
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-red-100 text-red-700"
-                                            }`}
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                                            item.status == 1
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700"
+                                        }`}
                                     >
-                                        {item.active
-                                            ? "Active"
-                                            : "Inactive"}
+                                        {item.status == 1 ? "Active" : "Inactive"}
                                     </span>
                                 </td>
 
                                 <td className="p-3">
                                     <div className="flex gap-4 text-lg">
-                                        <button
-                                            title="View"
-                                            onClick={() =>
-                                                openViewModal(item)
-                                            }
-                                        >
+                                        <button title="View" onClick={() => openViewModal(item)}>
                                             <FiEye />
                                         </button>
 
-                                        <button
-                                            title="Edit"
-                                            onClick={() =>
-                                                openEditModal(item)
-                                            }
-                                        >
+                                        <button title="Edit" onClick={() => openEditModal(item)}>
                                             <FiEdit2 />
                                         </button>
 
-                                        <button
-                                            title="Delete"
-                                            onClick={() =>
-                                                openDeleteModal(item)
-                                            }
-                                        >
+                                        <button title="Delete" onClick={() => openDeleteModal(item)}>
                                             <FiTrash2 />
                                         </button>
                                     </div>
@@ -334,82 +299,63 @@ export default function VideoTable() {
                         ))}
                     </tbody>
                 </table>
-                 <div className="pagination">
-                <div className="text-sm text-gray-600">
-                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}
-                    {" - "}
-                    {Math.min(
-                        currentPage * ITEMS_PER_PAGE,
-                        carouselData.length
-                    )}{" "}
-                    of {carouselData.length}
-                </div>
+                
+                {/* Pagination */}
+                <div className="pagination">
+                    <div className="text-sm text-gray-600">
+                        Showing {pagination.from || 0} - {pagination.to || 0} of {pagination.total || 0}
+                    </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        disabled={currentPage === 1}
-                        onClick={() =>
-                            setCurrentPage((p) => p - 1)
-                        }
-                        className="px-3 py-1  rounded disabled:opacity-50"
-                    >
-                        <FaChevronLeft/>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage((p) => p - 1)}
+                            className="px-3 py-1 rounded disabled:opacity-50"
+                        >
+                            <FaChevronLeft/>
+                        </button>
 
-                    {Array.from(
-                        { length: totalPages },
-                        (_, i) => (
-                            <button
-                                key={i}
-                                onClick={() =>
-                                    setCurrentPage(i + 1)
-                                }
-                                className={`h-9 w-9 rounded ${currentPage === i + 1
-                                    ? "px-3 py-1 border rounded bg-primary text-white"
-                                    : "px-3 py-1 border rounded bg-secondary border-gray-300 hover:bg-gray-100"
+                        {Array.from(
+                            { length: pagination.last_page || 1 },
+                            (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`h-9 w-9 rounded ${
+                                        currentPage === i + 1
+                                            ? "px-3 py-1 border rounded bg-primary text-white"
+                                            : "px-3 py-1 border rounded bg-secondary border-gray-300 hover:bg-gray-100"
                                     }`}
-                            >
-                                {i + 1}
-                            </button>
-                        )
-                    )}
+                                >
+                                    {i + 1}
+                                </button>
+                            )
+                        )}
 
-                    <button
-                        disabled={
-                            currentPage === totalPages
-                        }
-                        onClick={() =>
-                            setCurrentPage((p) => p + 1)
-                        }
-                        className="px-3 py-1  rounded disabled:opacity-50"
-                    >
-                        <FaChevronRight/>
-                    </button>
+                        <button
+                            disabled={currentPage === pagination.last_page}
+                            onClick={() => setCurrentPage((p) => p + 1)}
+                            className="px-3 py-1 rounded disabled:opacity-50"
+                        >
+                            <FaChevronRight/>
+                        </button>
+                    </div>
                 </div>
             </div>
-            </div>
-
-       
-
-           
 
             {/* View Modal */}
-
             {modalType === "view" && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-xl rounded-xl bg-white p-6">
-                        <video
-                            controls
-                            autoPlay
-                            className="mb-4 h-72 w-full rounded-lg bg-black object-contain"
-                        >
-                            <source src={selectedItem.video} />
-                        </video>
+                        <div className="mb-4">
+                            {renderVideoPlayer(selectedItem.video_link)}
+                        </div>
+
                         <h3 className="text-xl font-semibold">
                             {selectedItem.title}
                         </h3>
 
-                        <p className="mt-3">
+                        <p className="mt-3 text-gray-600">
                             {selectedItem.description}
                         </p>
 
@@ -424,57 +370,74 @@ export default function VideoTable() {
             )}
 
             {/* Add/Edit Modal */}
+            {(modalType === "add" || modalType === "edit") && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-xl rounded-xl bg-white p-6">
+                        <h3 className="mb-5 text-xl font-semibold">
+                            {modalType === "add" ? "Add Video" : "Edit Video"}
+                        </h3>
 
-            {(modalType === "add" ||
-                modalType === "edit") && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                        <div className="w-full max-w-xl rounded-xl bg-white p-6">
-                            <h3 className="mb-5 text-xl font-semibold">
-                                {modalType === "add"
-                                    ? "Add Carousel"
-                                    : "Edit Carousel"}
-                            </h3>
-
-                            <div className="mb-5">
-                                <label className="mb-2 block text-sm font-medium">
-                                    Video
+                        {/* Video Link Field */}
+                        <div className="mb-4">
+                            <label className="mb-2 block text-sm font-medium"> Video Link </label>
+                            <input
+                                placeholder="Video Link"
+                                value={form.video_link}
+                                onChange={(e) =>
+                                    setForm({
+                                        ...form,
+                                        video_link: e.target.value,
+                                    })
+                                }
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.video_link ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
+                            />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.video_link && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.video_link[0]}
+                                </p>
+                            )}
+                        </div>
+                        
+                        {/* Thumbnail Image Field */}
+                        <div className="mb-4">
+                            <label className="mb-2 block text-sm font-medium text-gray-700">Thumbnail Image</label>
+                            <div className={`group relative mx-auto h-52 overflow-hidden rounded-xl border-2 border-dashed bg-gray-50 ${
+                                errors.video_image ? "border-red-500 bg-red-50/20" : "border-gray-300"
+                            }`}>
+                                <img
+                                    src={form.imagePreview || "https://placehold.co/600x400?text=Upload+Image"}
+                                    alt=""
+                                    className="h-full w-full object-cover"
+                                />
+                                <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/50">
+                                    <div className="translate-y-5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                                        <div className="flex flex-col items-center text-white">
+                                            <FiUploadCloud size={36} />
+                                            <span className="mt-2 text-sm font-medium">Upload Image</span>
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleImageUpload}
+                                    />
                                 </label>
-
-                                <div className="group relative h-56 overflow-hidden rounded-xl border-2 border-dashed border-gray-300">
-
-                                    {form.video ? (
-                                        <video
-                                            src={form.video}
-                                            controls
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full items-center justify-center bg-gray-50 text-gray-400">
-                                            No Video Selected
-                                        </div>
-                                    )}
-
-                                    <label className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/40">
-
-                                        <div className="opacity-0 transition-all duration-300 group-hover:opacity-100">
-                                            <div className="flex flex-col items-center text-white">
-                                                <FiUploadCloud size={36} />
-                                                <span className="mt-2">
-                                                    Upload Video
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <input
-                                            type="file"
-                                            accept="video/*"
-                                            className="hidden"
-                                            onChange={handleVideoUpload}
-                                        />
-                                    </label>
-                                </div>
                             </div>
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.video_image && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.video_image[0]}
+                                </p>
+                            )}
+                        </div>
 
+                        {/* Title Field */}
+                        <div className="mb-4">
+                            <label className="mb-2 block text-sm font-medium">Title </label>
                             <input
                                 placeholder="Title"
                                 value={form.title}
@@ -484,9 +447,21 @@ export default function VideoTable() {
                                         title: e.target.value,
                                     })
                                 }
-                                className="mb-4 w-full rounded-lg border p-3"
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.title ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
                             />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.title && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.title[0]}
+                                </p>
+                            )}
+                        </div>
 
+                        {/* Description Field */}
+                        <div className="mb-4">
+                            <label className="mb-2 block text-sm font-medium"> Description </label>
                             <textarea
                                 rows={4}
                                 placeholder="Description"
@@ -494,68 +469,76 @@ export default function VideoTable() {
                                 onChange={(e) =>
                                     setForm({
                                         ...form,
-                                        description:
-                                            e.target.value,
+                                        description: e.target.value,
                                     })
                                 }
-                                className="mb-4 w-full rounded-lg border p-3"
+                                className={`w-full rounded-lg border p-3 ${
+                                    errors.description ? "border-red-500 bg-red-50/30" : "border-gray-300"
+                                }`}
                             />
+                            {/* ERROR TEXT DISPLAY */}
+                            {errors.description && (
+                                <p className="mt-1 text-xs font-medium text-red-500">
+                                    {errors.description[0]}
+                                </p>
+                            )}
+                        </div>
 
-                            <div className="mb-5 flex items-center gap-3">
-                                <span>Status</span>
+                        <div className="mb-5 flex items-center gap-3">
+                            <span>Status</span>
 
-                                <button
-                                    onClick={() =>
-                                        setForm({
-                                            ...form,
-                                            active: !form.active,
-                                        })
-                                    }
-                                    className={`relative h-6 w-11 left-0 rounded-full ${form.active
+                            <button
+                                onClick={() =>
+                                    setForm({
+                                        ...form,
+                                        status: !form.status,
+                                    })
+                                }
+                                className={`relative h-6 w-11 left-0 rounded-full ${
+                                    form.status
                                         ? "bg-green-500"
                                         : "bg-gray-300"
-                                        }`}
-                                >
-                                    <span
-                                        className={`absolute top-0.5 h-5 w-5 left-0 rounded-full bg-white transition ${form.active
+                                }`}
+                            >
+                                <span
+                                    className={`absolute top-0.5 h-5 w-5 left-0 rounded-full bg-white transition ${
+                                        form.status
                                             ? "translate-x-5"
                                             : "translate-x-0.5"
-                                            }`}
-                                    />
-                                </button>
-                            </div>
+                                    }`}
+                                />
+                            </button>
+                        </div>
 
-                            <div className="flex justify-end gap-3">
-                                <button
-                                    onClick={closeModal}
-                                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                                >
-                                    Cancel
-                                </button>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={closeModal}
+                                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                            >
+                                Cancel
+                            </button>
 
-                                <button
-                                    onClick={handleSave}
-                                    className="rounded bg-primary px-4 py-2 text-white"
-                                >
-                                    Save
-                                </button>
-                            </div>
+                            <button
+                                onClick={handleSave}
+                                className="rounded bg-primary px-4 py-2 text-white"
+                            >
+                                Save
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
             {/* Delete Modal */}
-
             {modalType === "delete" && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-md rounded-xl bg-white p-6">
                         <h3 className="text-lg font-semibold">
-                            Delete Carousel
+                            Delete Video
                         </h3>
 
                         <p className="mt-3">
-                            Are you sure you want to delete
-                            this carousel?
+                            Are you sure you want to delete this video?
                         </p>
 
                         <div className="mt-6 flex justify-end gap-3">
