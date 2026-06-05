@@ -21,6 +21,7 @@ const EditHotelWrapper = ({
   editData,
   handleSave,
   navigate,
+  errors
 }) => {
   const { id } = useParams();
 
@@ -42,6 +43,7 @@ const EditHotelWrapper = ({
     <HotelForm
       onSave={handleSave}
       editData={editData}
+      errors={errors}
       onCancel={() => navigate("/dashboard/hotel")}
     />
   );
@@ -60,20 +62,10 @@ const HotelManager = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
+  const [errors, setErrors] = useState({});
 
   // ================= FETCH ALL HOTELS =================
-  // const fetchHotels = async () => {
-  //   try {
-  //     const response = await api.get("/hotels");
-
-  //     console.log("hotels:", response.data);
-
-  //     setHotels(response?.data?.data?.data || []);
-  //   } catch (error) {
-  //     console.log("hotel fetch error:", error);
-  //   }
-  // };
-
+  
   const fetchHotels = async (
     page = 1,
     title = searchTitle,
@@ -143,84 +135,140 @@ const HotelManager = () => {
   };
 
   // ================= SAVE =================
+  // const handleSave = async (formData) => {
+  //   try {
+  //     const payload = new FormData();
+
+  //     payload.append("title", formData.title || "");
+  //     payload.append(
+  //       "description",
+  //       formData.description || ""
+  //     );
+  //     payload.append("rating", formData.rating || "");
+  //     payload.append(
+  //       "category",
+  //       formData.category || ""
+  //     );
+  //     payload.append("meals", formData.meals || "");
+  //     payload.append(
+  //       "location",
+  //       formData.location || ""
+  //     );
+  //     payload.append("base_price", formData.base_price || "");
+  //     payload.append(
+  //       "offer_price",
+  //       formData.offer_price || ""
+  //     );
+
+  //     // FEATURES
+  //     // payload.append(
+  //     //   "features",
+  //     //   JSON.stringify(formData.features || [])
+  //     // );
+  //     formData.features.forEach((feature) => {
+  //       payload.append("features[]", feature);
+  //     });
+
+  //     // IMAGES
+  //     if (formData.images?.length) {
+  //       formData.images.forEach((img) => {
+  //         if (img instanceof File) {
+  //           payload.append("images[]", img);
+  //         }
+  //       });
+  //     }
+
+  //     // UPDATE
+  //     if (editData?.id) {
+  //       // payload.append("_method", "PUT");
+
+  //       await api.post(
+  //         `/hotels/${editData.id}`,
+  //         payload,
+  //         {
+  //           headers: {
+  //             "Content-Type":
+  //               "multipart/form-data",
+  //           },
+  //         }
+  //       );
+  //     }
+
+  //     // CREATE
+  //     else {
+  //       await api.post("/hotels", payload, {
+  //         headers: {
+  //           "Content-Type":
+  //             "multipart/form-data",
+  //         },
+  //       });
+  //     }
+
+  //     await fetchHotels();
+
+  //     setEditData(null);
+
+  //     navigate("/dashboard/hotel");
+  //   } catch (error) {
+  //     console.log("hotel save error:", error);
+  //   }
+  // };
+
   const handleSave = async (formData) => {
-    try {
-      const payload = new FormData();
+      setErrors({});
 
-      payload.append("title", formData.title || "");
-      payload.append(
-        "description",
-        formData.description || ""
-      );
-      payload.append("rating", formData.rating || "");
-      payload.append(
-        "category",
-        formData.category || ""
-      );
-      payload.append("meals", formData.meals || "");
-      payload.append(
-        "location",
-        formData.location || ""
-      );
-      payload.append("base_price", formData.base_price || "");
-      payload.append(
-        "offer_price",
-        formData.offer_price || ""
-      );
+      try {
+        const payload = new FormData();
 
-      // FEATURES
-      // payload.append(
-      //   "features",
-      //   JSON.stringify(formData.features || [])
-      // );
-      formData.features.forEach((feature) => {
-        payload.append("features[]", feature);
-      });
+        payload.append("title", formData.title || "");
+        payload.append("rating", formData.rating || "");
+        payload.append("category", formData.category || "");
+        payload.append("meals", formData.meals || "");
+        payload.append("location", formData.location || "");
+        payload.append("base_price", formData.base_price || "");
+        payload.append("offer_price", formData.offer_price || "");
 
-      // IMAGES
-      if (formData.images?.length) {
-        formData.images.forEach((img) => {
-          if (img instanceof File) {
-            payload.append("images[]", img);
-          }
+        formData.features.forEach((feature) => {
+          payload.append("features[]", feature);
         });
-      }
 
-      // UPDATE
-      if (editData?.id) {
-        // payload.append("_method", "PUT");
+        if (formData.images?.length) {
+          formData.images.forEach((img) => {
+            if (img instanceof File) {
+              payload.append("images[]", img);
+            }
+          });
+        }
 
-        await api.post(
-          `/hotels/${editData.id}`,
-          payload,
-          {
+        if (editData?.id) {
+          await api.post(`/hotels/${editData.id}`, payload, {
             headers: {
-              "Content-Type":
-                "multipart/form-data",
+              "Content-Type": "multipart/form-data",
             },
-          }
-        );
+          });
+        } else {
+          await api.post("/hotels", payload, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        }
+
+        await fetchHotels();
+
+        setErrors({});
+        setEditData(null);
+
+        navigate("/dashboard/hotel");
+      } catch (error) {
+
+        if (error.response?.status === 422) {
+          setErrors(error.response.data.errors || {});
+        }
+
+        console.log(error);
       }
-
-      // CREATE
-      else {
-        await api.post("/hotels", payload, {
-          headers: {
-            "Content-Type":
-              "multipart/form-data",
-          },
-        });
-      }
-
-      await fetchHotels();
-
-      setEditData(null);
-
-      navigate("/dashboard/hotel");
-    } catch (error) {
-      console.log("hotel save error:", error);
-    }
-  };
+    };
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
@@ -282,6 +330,7 @@ const HotelManager = () => {
           element={
             <HotelForm
               onSave={handleSave}
+               errors={errors}
               onCancel={() =>
                 navigate("/dashboard/hotel")
               }
@@ -298,6 +347,7 @@ const HotelManager = () => {
               editData={editData}
               handleSave={handleSave}
               navigate={navigate}
+              errors={errors}
             />
           }
         />

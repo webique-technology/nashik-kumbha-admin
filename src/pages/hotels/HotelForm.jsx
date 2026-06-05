@@ -8,7 +8,7 @@ import { LuTrees } from "react-icons/lu";
 import { useParams } from "react-router-dom";
 import BackButton from "../../components/ui/BackButton";
 
-const HotelForm = ({ onSave, editData, onCancel }) => {
+const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
   const { id } = useParams();
 
   const [previewImages, setPreviewImages] = useState([]);
@@ -220,6 +220,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     placeholder="Hotel Name"
                     className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.title[0]}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -235,6 +240,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     placeholder="5"
                     className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
+                  {errors.rating && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.rating[0]}
+                    </p>
+                  )}
                 </div>
 
                 {/* <div className="md:col-span-2">
@@ -269,6 +279,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     <option value="Mid-Range">Mid-Range</option>
                     <option value="Budget">Budget</option>
                   </select>
+                  {errors.category && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.category[0]}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -296,6 +311,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                       Goa
                     </option>
                   </select>
+                  {errors.location && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.location[0]}
+                      </p>
+                    )}
                 </div>
 
               </div>
@@ -389,6 +409,12 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     {cat.label}
                   </label>
                 ))}
+
+              {errors.meals && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.meals[0]}
+                </p>
+              )}
               </div>
             </section>
           </div>
@@ -413,6 +439,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
+                  {errors.base_price && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.base_price[0]}
+                  </p>
+                )}
                 </div>
 
                 <div>
@@ -427,6 +458,11 @@ const HotelForm = ({ onSave, editData, onCancel }) => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
+                  {errors.offer_price && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.offer_price[0]}
+                    </p>
+                  )}
                 </div>
 
               </div>

@@ -74,7 +74,7 @@ const SelectOption = ({ child, formClass, label, name, value, onChange }) => (
 );
 
 // Main Form Component
-const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
+const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors = {}, }) => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("itinerary");
 
@@ -107,11 +107,11 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
   const [routeInput, setRouteInput] = useState("");
   const [routeEditIndex, setRouteEditIndex] = useState(null);
   const [itineraryForm, setItineraryForm] = useState({
-      title: "",
-      description: "",
-      image: "",
-      existing_image: "",
-      file: null,
+    title: "",
+    description: "",
+    image: "",
+    existing_image: "",
+    file: null,
   });
   const [currentEditItineraryIdx, setCurrentEditItineraryIdx] = useState(null);
 
@@ -189,14 +189,14 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
           })) || [],
 
         // IMPORTANT FIX
-        preview: API_URL+editData.image_url || "",
+        preview: API_URL + editData.image_url || "",
 
         // IMPORTANT
         main_banner: null,
 
         seo_meta: {
-            title: editData.seo_meta?.title || "",
-            desc: editData.seo_meta?.desc || "",
+          title: editData.seo_meta?.title || "",
+          desc: editData.seo_meta?.desc || "",
         },
       });
     } else {
@@ -225,9 +225,25 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
   }, [editData]);
 
   // for main form input onchange handler
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  // };
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // if (errors[name]) {
+    //   errors[name] = null;
+    // }
+    // setErrors((prev) => ({
+    //   ...prev,
+    //   [name]: null,
+    // }));
   };
 
   // for seo input onchange handler
@@ -421,7 +437,7 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
     e.preventDefault();
     try {
       const submitData = new FormData();
-
+      
       // BASIC DETAILS
       submitData.append("title", formData.title);
       submitData.append("description", formData.description);
@@ -437,53 +453,53 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
       submitData.append("seo_meta[desc]", formData.seo_meta.desc);
 
       // ARRAYS SANITIZATION
-      formData.highlights.forEach((item) =>
-        submitData.append("highlights[]", item),
+      (formData.highlights || []).forEach((item) =>
+        submitData.append("highlights[]", item)
       );
-      formData.inclusions.forEach((item) =>
-        submitData.append("inclusions[]", item),
+
+      (formData.inclusions || []).forEach((item) =>
+        submitData.append("inclusions[]", item)
       );
-      formData.vehicles.forEach((item) =>
+
+      (formData.vehicles || []).forEach((item) =>
         submitData.append("vehicles[]", item)
       );
-      formData.route.forEach((item) =>
+
+      (formData.route || []).forEach((item) =>
         submitData.append("route[]", item)
       );
 
+
       // COMPLEX OBJECT ARRAY HANDLING
-      formData.itineraries.forEach((day, index) => {
+      (formData.itineraries || []).forEach((day, index) => {
         submitData.append(
-            `itineraries[${index}][itinerary_title]`,
-            day.title || ""
-          );
+          `itineraries[${index}][itinerary_title]`,
+          day.title || ""
+        );
 
+        submitData.append(
+          `itineraries[${index}][description]`,
+          day.description || ""
+        );
+
+        if (day.id) {
           submitData.append(
-            `itineraries[${index}][description]`,
-            day.description || ""
+            `itineraries[${index}][id]`,
+            day.id
           );
+        }
 
-          if (day.id) {
-            submitData.append(
-              `itineraries[${index}][id]`,
-              day.id
-            );
-          }
-
-          // new changed image
-          if (day.file instanceof File) {
-            submitData.append(
-              `itineraries[${index}][image]`,
-              day.file
-            );
-          }
-
-          // old existing image
-          else if (day.existing_image) {
-            submitData.append(
-              `itineraries[${index}][existing_image]`,
-              day.existing_image
-            );
-          }
+        if (day.file instanceof File) {
+          submitData.append(
+            `itineraries[${index}][image]`,
+            day.file
+          );
+        } else if (day.existing_image) {
+          submitData.append(
+            `itineraries[${index}][existing_image]`,
+            day.existing_image
+          );
+        }
       });
 
       if (formData.main_banner) {
@@ -502,9 +518,9 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
 
   return (
     <main className="page-container">
-    
 
-<div className="px-8 max-w-[1400px] mx-auto w-full mb-0 gap-8">
+
+      <div className="px-8 max-w-[1400px] mx-auto w-full mb-0 gap-8">
         <div className="flex items-center justify-start gap-3">
           <BackButton
             // label="Back to Blogs"
@@ -538,24 +554,51 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                 <h2 className="card-title">Basic Information</h2>
               </div>
 
-              <div className="form-grid">
-                <InputComp
-                  label="Tour Title"
-                  name="title"
-                  value={formData.title}
+              <div
+                className="form-grid"
+              // className="flex flex-col gap-4"
+              >
+                <div>
+                  <InputComp
+                    label="Tour Title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    formClass=""
+                    placeholder="Tour Package Name"
+                  />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.title[0]}
+                    </p>
+                  )}
+                </div>
+                <SelectOption
+                  label="Status"
+                  name="status"
+                  value={formData.status}
                   onChange={handleChange}
-                  formClass="full"
-                  placeholder="Tour Package Name"
+                  child={
+                    <>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </>
+                  }
                 />
-
-                <TextArea
-                  label="Description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  formClass="full"
-                />
-
+                <div className="full">
+                  <TextArea
+                    label="Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    formClass="full"
+                  />
+                  {errors.description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.description[0]}
+                    </p>
+                  )}
+                </div>
                 {/* <SelectOption
                   label="Category"
                   name="category"
@@ -573,18 +616,7 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                   }
                 /> */}
 
-                <SelectOption
-                  label="Status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  child={
-                    <>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </>
-                  }
-                />
+
 
                 <div className="form-group full">
                   <label className="form-label">Vehicle Category</label>
@@ -636,6 +668,11 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                       </label>
                     ))}
                   </div>
+                  {errors.vehicles && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.vehicles[0]}
+                    </p>
+                  )}
                 </div>
 
                 {/* <SelectOption
@@ -751,9 +788,9 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                           className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl group"
                         >
                           <div className="flex items-center gap-4">
-                           {data.image && (
+                            {data.image && (
                               <img
-                               src={`${API_URL}${data.image}`}
+                                src={`${API_URL}${data.image}`}
                                 alt="preview"
                                 className="w-20 h-20 object-cover rounded-lg"
                               />
@@ -780,12 +817,12 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                                 //   file: null,
                                 // });
                                 setItineraryForm({
-                                   id: data.id,
-                                    title: data.title,
-                                    description: data.description,
-                                    image: data.image || "",
-                                    existing_image: data.existing_image || "",
-                                    file: null,
+                                  id: data.id,
+                                  title: data.title,
+                                  description: data.description,
+                                  image: data.image || "",
+                                  existing_image: data.existing_image || "",
+                                  file: null,
                                 });
                                 setCurrentEditItineraryIdx(idx);
                               }}
@@ -961,13 +998,20 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                 </h2>
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <InputComp
-                  label="Base Price"
-                  name="base_price"
-                  type="number"
-                  value={formData.base_price}
-                  onChange={handleChange}
-                />
+                <div className="">
+                  <InputComp
+                    label="Base Price"
+                    name="base_price"
+                    type="number"
+                    value={formData.base_price}
+                    onChange={handleChange}
+                  />
+                  {errors.base_price && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.base_price[0]}
+                    </p>
+                  )}
+                </div>
                 <InputComp
                   label="Offer Price"
                   name="offer_price"
@@ -975,6 +1019,11 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                   value={formData.offer_price}
                   onChange={handleChange}
                 />
+                {errors.offer_price && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.offer_price[0]}
+                  </p>
+                )}
               </div>
 
               <div className="pt-4 border-t space-y-4">
@@ -1009,6 +1058,11 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                       +
                     </button>
                   </div>
+                  {errors.total_seats && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.total_seats[0]}
+                    </p>
+                  )}
                 </div>
               </div>
             </section>
@@ -1123,6 +1177,11 @@ const TourForm = ({ onSave, editData, onCancel ,vehicleCategories = []}) => {
                 onChange={handleMainBannerUpload}
               />
             </section>
+            {errors.main_banner && (
+              <p className="text-red-500 text-sm mt-2">
+                {errors.main_banner[0]}
+              </p>
+            )}
           </div>
         </div>
 

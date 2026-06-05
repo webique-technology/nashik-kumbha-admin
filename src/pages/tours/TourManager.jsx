@@ -17,6 +17,7 @@ const EditTourWrapper = ({
   handleSave,
   navigate,
   vehicleCategories,
+  errors
 }) => {
   const { id } = useParams();
 
@@ -34,6 +35,7 @@ const EditTourWrapper = ({
     <TourForm
       onSave={handleSave}
       editData={editData}
+      errors={errors}
       vehicleCategories={vehicleCategories}
       onCancel={() => navigate("/dashboard/tours")}
     />
@@ -52,6 +54,7 @@ const TourManager = () => {
 
   const [vehicleCategories, setVehicleCategories] = useState([]);
   const [searchTitle, setSearchTitle] = useState("");
+  const [errors, setErrors] = useState({});
 
   const handleView = (tour) => {
     setSelectedTour(tour);
@@ -112,9 +115,11 @@ const TourManager = () => {
 
   const handleSave = async (data) => {
     try {
+      setErrors({});
       if (editData) {
         await api.post(`/tours/${editData.id}`, data);
       } else {
+        setErrors({});
         await api.post("/tours", data);
       }
 
@@ -122,11 +127,14 @@ const TourManager = () => {
       setEditData(null);
       navigate("/dashboard/tours");
     } catch (error) {
-      console.log("save error:", error);
+      if (error.response?.status === 422) {
+        setErrors(error.response.data.errors || {});
+      }
     }
   };
 
   const handleEdit = async (tour) => {
+     setErrors({});
     await fetchSingleTour(tour.id);
     navigate(`/dashboard/tours/edit/${tour.id}`);
   };
@@ -213,6 +221,7 @@ const TourManager = () => {
     element={
       <TourForm
         onSave={handleSave}
+        errors={errors}
         vehicleCategories={vehicleCategories}
         onCancel={() => navigate("/dashboard/tours")}
       />
@@ -228,6 +237,7 @@ const TourManager = () => {
         handleSave={handleSave}
         navigate={navigate}
         vehicleCategories={vehicleCategories}
+        errors={errors}
       />
     }
   />

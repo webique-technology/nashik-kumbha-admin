@@ -7,77 +7,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView,paginati
   // 👉 State
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [search, setSearch] = useState({
-  //   name: "",
-  //   location: "",
-  //   category: "",
-  // });
-  // const itemsPerPage = 7;
-
-  // const filteredData = (hotels || []).filter((hotel) =>
-  //   (hotel.name || "")
-  //     .toLowerCase()
-  //     .includes(search.name.toLowerCase()) &&
-
-  //   (hotel.location || "")
-  //     .toLowerCase()
-  //     .includes(search.location.toLowerCase()) &&
-
-  //   (hotel.category || "")
-  //     .toLowerCase()
-  //     .includes(search.category.toLowerCase())
-  // );
-
-  // const data = filteredData;
-  // 👉 Pagination logic
-  // const totalItems = data.length;
-  // const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-
-  // const currentData = data.slice(
-  //   startIndex,
-  //   startIndex + itemsPerPage
-  // );
-
-  // 👉 Showing text
-  // const startItem = totalItems === 0 ? 0 : startIndex + 1;
-  // const endItem = Math.min(startIndex + itemsPerPage, totalItems);
-
-  // 👉 Fix page overflow (after delete)
-  // useEffect(() => {
-  //   if (currentPage > totalPages) {
-  //     setCurrentPage(totalPages || 1);
-  //   }
-  // }, [totalPages]);
-
-  // 👉 Smart pagination
-  // const getPageNumbers = () => {
-  //   const pages = [];
-
-  //   if (totalPages <= 7) {
-  //     return Array.from({ length: totalPages }, (_, i) => i + 1);
-  //   }
-
-  //   pages.push(1);
-
-  //   if (currentPage > 3) pages.push("...");
-
-  //   for (
-  //     let i = Math.max(2, currentPage - 1);
-  //     i <= Math.min(totalPages - 1, currentPage + 1);
-  //     i++
-  //   ) {
-  //     pages.push(i);
-  //   }
-
-  //   if (currentPage < totalPages - 2) pages.push("...");
-
-  //   pages.push(totalPages);
-
-  //   return pages;
-  // };
+ 
   const handleDeleteClick = (id) => {
     setSelectedId(id);
     setShowModal(true);

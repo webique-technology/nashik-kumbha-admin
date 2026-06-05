@@ -117,9 +117,6 @@ const TourTable = ({ tourData = [], onAdd, onEdit, onDelete, loading, error, onV
                       </div>
                     </td>
 
-
-
-
                     {/* <td className="p-3">{tour.category}</td> */}
                     <td className="p-3">
                       <div className="flex flex-wrap gap-2">
@@ -137,7 +134,7 @@ const TourTable = ({ tourData = [], onAdd, onEdit, onDelete, loading, error, onV
                       </div>
                     </td>
                     <td className="p-3 font-medium">
-                      ₹{tour.offer_price ? tour.offer_price : tour.base_price}
+                      ₹{tour.base_price ? tour.base_price : tour.base_price}
                     </td>
                     <td className="p-3">
                       <span

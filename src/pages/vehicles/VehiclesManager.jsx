@@ -230,7 +230,7 @@ const VehiclesManager = () => {
   }, [searchName, searchCategory]);
 
   const handleSave = async (data) => {
-
+        setErrors({});
       try {
 
         const formData = new FormData();

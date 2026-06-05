@@ -1,73 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { FiTrash2, FiEdit2, FiEye } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
+const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView ,pagination,fetchBlogs}) => {
 
 
 
   // 👉 State
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
-
-  // 👉 Use blogs OR fallback dummy
-  // const data = blogs.length > 0 ? blogs : dummyBlogs;
-  // const data = blogs;
-  const data = Array.isArray(blogs) ? blogs : [];
-
-  // 👉 Pagination logic
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  // const currentData = data.slice(
-  //   startIndex,
-  //   startIndex + itemsPerPage  
-  // );
-
-  const currentData = Array.isArray(data)
-    ? data.slice(startIndex, startIndex + itemsPerPage)
-    : [];
-
-  // 👉 Showing text
-  const startItem = totalItems === 0 ? 0 : startIndex + 1;
-  const endItem = Math.min(startIndex + itemsPerPage, totalItems);
-
-  // 👉 Fix page overflow (after delete)
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
-    }
-  }, [totalPages]);
-
-  // 👉 Smart pagination
-  const getPageNumbers = () => {
-    const pages = [];
-
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-
-    pages.push(1);
-
-    if (currentPage > 3) pages.push("...");
-
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pages.push(i);
-    }
-
-    if (currentPage < totalPages - 2) pages.push("...");
-
-    pages.push(totalPages);
-
-    return pages;
-  };
+  
   const handleDeleteClick = (id) => {
     setSelectedId(id);
     setShowModal(true);
@@ -105,7 +46,7 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
             </thead>
 
             <tbody className="tbody">
-              {currentData.map((blog) => (
+              {blogs.map((blog) => (
                 <tr className="tr group" key={blog.id}>
 
 
@@ -188,57 +129,57 @@ const BlogTable = ({ blogs, onAdd, onEdit, onDelete, setBlogs, onView }) => {
           </table>
 
           {/* PAGINATION */}
-          {totalPages > 1 && (
+       {pagination?.last_page > 1 && (
             <div className="pagination">
 
               {/* LEFT SIDE */}
               <div className="text-sm text-gray-600">
-                Showing {startItem} - {endItem} of {totalItems} tours
+                Showing {pagination.from} - {pagination.to} of {pagination.total} blogs
               </div>
 
               {/* RIGHT SIDE */}
-
-
               <div className="flex items-center gap-2">
 
-                {/* Prev */}
+                {/* Previous */}
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1  rounded disabled:opacity-50"
+                  onClick={() =>
+                    fetchBlogs(pagination.current_page - 1)
+                  }
+                  disabled={!pagination.prev_page_url}
+                  className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  {<FaChevronLeft />}
+                  <FaChevronLeft />
                 </button>
 
-
-
-                {getPageNumbers().map((page, index) =>
-                  page === "..." ? (
-                    <span key={index} className="px-2">...</span>
-                  ) : (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1 border rounded ${currentPage === page
+                {/* Page Numbers */}
+                {Array.from(
+                  { length: pagination.last_page },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => fetchBlogs(page)}
+                    className={`px-3 py-1 border rounded ${
+                      pagination.current_page === page
                         ? "bg-primary text-white"
                         : "bg-secondary border-gray-300 hover:bg-gray-100"
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
 
                 {/* Next */}
                 <button
                   onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                    fetchBlogs(pagination.current_page + 1)
                   }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1  rounded disabled:opacity-50"
+                  disabled={!pagination.next_page_url}
+                  className="px-3 py-1 rounded disabled:opacity-50"
                 >
-                  {<FaChevronRight />}
+                  <FaChevronRight />
                 </button>
+
               </div>
 
             </div>

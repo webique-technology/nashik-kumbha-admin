@@ -141,7 +141,7 @@ const TourEnquiry = () => {
         </div> */}
 
               <div className="text-sm text-gray-600">
-                Showing Page {currentPage} of {totalPages}
+                Showing {pagination.from} - {pagination.to} of {pagination.total}
               </div>
 
               <div className="flex items-center gap-1">

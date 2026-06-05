@@ -7,7 +7,7 @@ import api from "../../services/axiosInstance";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 
 
-const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate }) => {
+const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,errors}) => {
   const { id } = useParams();
   useEffect(() => {
     if (id && !editData) {
@@ -22,6 +22,7 @@ const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate }) =>
     <BlogForm
       onSave={handleSave}
       editData={editData}
+       errors={errors}
       onCancel={() => navigate("/dashboard/blogs")}
     />
   );
@@ -35,27 +36,59 @@ const BlogManager = () => {
       setSelectedTour(tour);
       setViewModal(true);
     };
+  const [pagination, setPagination] = useState({});
+  const [errors, setErrors] = useState({});
 
   const [blogs, setBlogs] = useState([]);
   // const [page, setPage] = useState("table");
   const [editData, setEditData] = useState(null);
   const navigate = useNavigate();
 
-    const fetchBlogs = async () => {
-    try {
-        const response = await api.get("/blogs");
+    // const fetchBlogs = async () => {
+    // try {
+    //     const response = await api.get("/blogs");
 
-        console.log("blogs:", response.data);
+    //     console.log("blogs:", response.data);
 
-        setBlogs(response.data.data.data);
+    //     setBlogs(response.data.data.data);
 
-      } catch (error) {
-        console.log("Blog fetch error:", error);
-      }
-    };
+    //   } catch (error) {
+    //     console.log("Blog fetch error:", error);
+    //   }
+    // };
+
+    const fetchBlogs = async (
+        page = 1,
+        title = "",
+        category = ""
+      ) => {
+        try {
+          const response = await api.get("/blogs", {
+            params: {
+              page,
+              title,
+              category,
+            },
+          });
+
+          setBlogs(response.data.data.data);
+
+          setPagination({
+            current_page: response.data.data.current_page,
+            last_page: response.data.data.last_page,
+            total: response.data.data.total,
+            from: response.data.data.from,
+            to: response.data.data.to,
+            next_page_url: response.data.data.next_page_url,
+            prev_page_url: response.data.data.prev_page_url,
+          });
+        } catch (error) {
+          console.log("Blog fetch error:", error);
+        }
+      };
 
     useEffect(() => {
-      fetchBlogs();
+      fetchBlogs(1);
     }, []);
 
   // const [blogs, setBlogs] = useState(initialBlogs);
@@ -164,7 +197,8 @@ const blogFields = [
         console.log("response:", response.data);
 
         // REFRESH BLOGS
-        fetchBlogs();
+        fetchBlogs(pagination.current_page || 1);
+        setErrors({});
 
         // BACK TO TABLE
         // setPage("table");
@@ -175,6 +209,10 @@ const blogFields = [
       } catch (error) {
 
         console.log("save error:", error);
+
+        if (error.response?.status === 422) {
+          setErrors(error.response.data.errors || {});
+        }
 
       }
   };
@@ -207,7 +245,7 @@ const blogFields = [
     try {
       const response = await api.delete(`/blogs/${id}`);
       console.log("delete response:", response.data);
-      fetchBlogs();
+      fetchBlogs(pagination.current_page);
     } catch (error) {
       console.log("delete error:", error);
     }
@@ -266,6 +304,8 @@ const blogFields = [
               onDelete={handleDelete}
               setBlogs={setBlogs}
               onView={handleView}
+              pagination={pagination}
+              fetchBlogs={fetchBlogs}
             />
           }
         />
@@ -276,6 +316,7 @@ const blogFields = [
           element={
             <BlogForm
               onSave={handleSave}
+               errors={errors}
               onCancel={() => navigate("/dashboard/blogs")}
             />
           }
@@ -290,6 +331,7 @@ const blogFields = [
               editData={editData}
               handleSave={handleSave}
               navigate={navigate}
+              errors={errors}
             />
           }
         />

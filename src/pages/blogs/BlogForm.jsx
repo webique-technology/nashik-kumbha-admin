@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import BackButton from "../../components/ui/BackButton";
 
 
-const BlogForm = ({ onSave, editData, onCancel }) => {
+const BlogForm = ({ onSave, editData, onCancel ,errors = {}}) => {
   const editorRef = useRef();
 
   const [formData, setFormData] = useState({
@@ -161,6 +161,11 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                     }
                     placeholder="Enter title..."
                   />
+                  {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.title[0]}
+                    </p>
+                  )}
                 </div>
                  <div>
                   <label className="block-label">Article Category</label>
@@ -266,7 +271,11 @@ const BlogForm = ({ onSave, editData, onCancel }) => {
                   ></div>
 
                 </div>
-
+                    {errors.description && (
+                      <p className="text-red-500 text-sm mt-2">
+                        {errors.description[0]}
+                      </p>
+                    )}
                 {/* FOOTER */}
                 <div className="block-footer">
 
