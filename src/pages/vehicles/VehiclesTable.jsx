@@ -5,37 +5,9 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 const API_URL = import.meta.env.VITE_API_URL;
 
 // const VehiclesTable = ({ hotels, onAdd, onEdit, onDelete, onView }) => {
-const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd, onEdit, onDelete, onView }) => {
+const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd, onEdit, onDelete, onView ,searchName,setSearchName,searchCategory,setSearchCategory}) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  // const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState({
-    name: "",
-    location: "",
-    category: "",
-  });
-
-  // const itemsPerPage = 7;
-
-  // const filteredData = hotels.filter((hotel) =>
-  //   hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
-  //   hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
-  //   hotel.category.toLowerCase().includes(search.category.toLowerCase())
-  // );
-
-  const filteredData = vehicles.filter((vehicle) =>
-    (vehicle.name || "")
-      .toLowerCase()
-      .includes(search.name.toLowerCase()) &&
-    (vehicle.location || "")
-      .toLowerCase()
-      .includes(search.location.toLowerCase())
-    &&
-    (vehicle.category?.category || "")
-      .toLowerCase()
-      .includes(search.category.toLowerCase())
-  );
-  const currentData = filteredData;
 
   const handleDeleteClick = (id) => {
     setSelectedId(id);
@@ -63,9 +35,9 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
         <div className="flex gap-3">
           <input
             placeholder="Search by Name"
-            value={search.name}
+            value={searchName}
             onChange={(e) =>
-              setSearch({ ...search, name: e.target.value })
+              setSearchName(e.target.value)
             }
             className="input"
           />
@@ -86,9 +58,9 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
           </select> */}
 
           <select
-            value={search.category}
+            value={searchCategory}
             onChange={(e) =>
-              setSearch({ ...search, category: e.target.value })
+              setSearchCategory(e.target.value)
             }
             className="input"
           >
@@ -118,7 +90,7 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
             </thead>
 
             <tbody className="tbody">
-              {currentData.map((vehicle) => (
+              {vehicles.map((vehicle) => (
                 <tr key={vehicle.id} className="tr group">
                   <td className="p-3 w-3/12">
                     <div className="flex items-center gap-3">
@@ -233,7 +205,7 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
 
                 <button
                   onClick={() =>  fetchVehicles(
-                        pagination.current_page - 1
+                        pagination.current_page - 1,searchName,searchCategory
                       )
                     }
                   disabled={!pagination.prev_page_url}
@@ -248,7 +220,7 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
                     <button
                       key={i}
                       onClick={() =>
-                        fetchVehicles(i + 1)
+                        fetchVehicles(i + 1 ,searchName, searchCategory)
                       }
                       className={`px-3 py-1 border rounded ${
                         pagination.current_page === i + 1
@@ -264,7 +236,7 @@ const VehiclesTable = ({ vehicles, categories, pagination, fetchVehicles, onAdd,
                 <button
                   onClick={() =>
                       fetchVehicles(
-                      pagination.current_page + 1
+                      pagination.current_page + 1,fetchVehicles,searchCategory
                     )
                   }
                  disabled={!pagination.next_page_url}

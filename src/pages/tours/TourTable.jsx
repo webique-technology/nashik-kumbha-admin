@@ -2,64 +2,24 @@ import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FiTrash2, FiEdit2, FiEye } from "react-icons/fi";
 
-const TourTable = ({
-  tourData = [],
-  onAdd,
-  onEdit,
-  onDelete,
-  loading,
-  error,
-  onView,
-}) => {
+const TourTable = ({ tourData = [], onAdd, onEdit, onDelete, loading, error, onView, pagination, fetchTours,searchTitle ,setSearchTitle}) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState({ title: "", category: "" });
 
-  const itemsPerPage = 7;
-  const safeTourData = Array.isArray(tourData) ? tourData : [];
+  // const safeTourData = Array.isArray(tourData) ? tourData : [];
+
 
   // FILTER DATA
-  const filteredData = safeTourData.filter((tour) => {
-    const titleMatch =
-      tour?.title?.toLowerCase().includes(search.title.toLowerCase()) ?? false;
-    const categoryMatch =
-      search.category === "" ? true : tour?.category === search.category;
-    return titleMatch && categoryMatch;
-  });
+  // const filteredData = safeTourData.filter((tour) => {
+  //   const titleMatch =
+  //     tour?.title?.toLowerCase().includes(search.title.toLowerCase()) ?? false;
+  //   const categoryMatch =
+  //     search.category === "" ? true : tour?.category === search.category;
+  //   return titleMatch && categoryMatch;
+  // });
 
-  // PAGINATION
-  const totalItems = filteredData.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage);
-  const startItem = totalItems === 0 ? 0 : startIndex + 1;
-  const endItem = Math.min(startIndex + itemsPerPage, totalItems);
-
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
-    }
-  }, [totalPages, currentPage]);
-
-  const getPageNumbers = () => {
-    const pages = [];
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
-    pages.push(1);
-    if (currentPage > 3) pages.push("...");
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pages.push(i);
-    }
-    if (currentPage < totalPages - 2) pages.push("...");
-    pages.push(totalPages);
-    return pages;
-  };
 
   const handleDeleteClick = (id) => {
     setSelectedId(id);
@@ -95,13 +55,15 @@ const TourTable = ({
           <input
             type="text"
             placeholder="Search by Title"
-            value={search.title}
+            // value={search.title}
+            value={searchTitle}
             onChange={(e) =>
-              setSearch((prev) => ({ ...prev, title: e.target.value }))
+              // setSearch((prev) => ({ ...prev, title: e.target.value }))
+               setSearchTitle(e.target.value)
             }
             className="border p-2 rounded w-full"
           />
-          <select
+          {/* <select
             value={search.category}
             onChange={(e) =>
               setSearch((prev) => ({ ...prev, category: e.target.value }))
@@ -112,7 +74,7 @@ const TourTable = ({
             <option value="Religious Tourism">Religious Tourism</option>
             <option value="Eco-Tourism">Eco-Tourism</option>
             <option value="Culinary Tourism">Culinary Tourism</option>
-          </select>
+          </select> */}
         </div>
 
         {/* TABLE */}
@@ -129,8 +91,8 @@ const TourTable = ({
               </tr>
             </thead>
             <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((tour, index) => (
+              {tourData.length > 0 ? (
+                tourData.map((tour, index) => (
                   <tr
                     key={tour.id || index}
                     className="border-b hover:bg-gray-50 transition"
@@ -228,43 +190,53 @@ const TourTable = ({
         </div>
 
         {/* PAGINATION CONTROLS */}
-        {totalPages > 1 && (
-          <div className="flex justify-between items-center mt-5">
-            <div className="text-sm text-gray-600">
-              Showing {startItem} - {endItem} of {totalItems}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 border rounded disabled:opacity-30"
-              >
-                <FaChevronLeft />
-              </button>
-              {getPageNumbers().map((page, i) => (
+        {pagination?.last_page > 1 && (
+            <div className="flex justify-between items-center mt-5">
+              <div className="text-sm text-gray-600">
+                Showing {pagination.from} - {pagination.to} of{" "}
+                {pagination.total}
+              </div>
+
+              <div className="flex items-center gap-2">
                 <button
-                  key={i}
-                  disabled={page === "..."}
+                  disabled={!pagination.prev_page_url}
                   onClick={() =>
-                    typeof page === "number" && setCurrentPage(page)
+                    fetchTours(pagination.current_page - 1,searchTitle)
                   }
-                  className={`px-3 py-1 border rounded ${currentPage === page ? "bg-primary text-white" : "hover:bg-gray-100"}`}
+                  className="p-2 border rounded disabled:opacity-30"
                 >
-                  {page}
+                  <FaChevronLeft />
                 </button>
-              ))}
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="p-2 border rounded disabled:opacity-30"
-              >
-                <FaChevronRight />
-              </button>
+
+                {Array.from(
+                  { length: pagination.last_page },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => fetchTours(page, searchTitle)}
+                    className={`px-3 py-1 border rounded ${
+                      page === pagination.current_page
+                        ? "bg-primary text-white"
+                        : ""
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                <button
+                  disabled={!pagination.next_page_url}
+                  onClick={() =>
+                    fetchTours(pagination.current_page + 1,searchTitle)
+                  }
+                  className="p-2 border rounded disabled:opacity-30"
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
 
       {/* DELETE CONFIRMATION MODAL */}

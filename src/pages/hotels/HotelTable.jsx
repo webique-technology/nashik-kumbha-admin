@@ -1,88 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { FiTrash2, FiEdit2, FiEye } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
+
+
+const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView,pagination,fetchHotels,searchTitle,setSearchTitle,searchCategory,setSearchCategory ,searchLocation,setSearchLocation}) => {
   // 👉 State
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState({
-    name: "",
-    location: "",
-    category: "",
-  });
-  const itemsPerPage = 7;
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [search, setSearch] = useState({
+  //   name: "",
+  //   location: "",
+  //   category: "",
+  // });
+  // const itemsPerPage = 7;
 
-  // 👉 Use blogs OR fallback dummy
-  // const filteredData = hotels.filter((hotel) =>
-  //   hotel.name.toLowerCase().includes(search.name.toLowerCase()) &&
-  //   hotel.location.toLowerCase().includes(search.location.toLowerCase()) &&
-  //   hotel.category.toLowerCase().includes(search.category.toLowerCase())
+  // const filteredData = (hotels || []).filter((hotel) =>
+  //   (hotel.name || "")
+  //     .toLowerCase()
+  //     .includes(search.name.toLowerCase()) &&
+
+  //   (hotel.location || "")
+  //     .toLowerCase()
+  //     .includes(search.location.toLowerCase()) &&
+
+  //   (hotel.category || "")
+  //     .toLowerCase()
+  //     .includes(search.category.toLowerCase())
   // );
 
-  const filteredData = (hotels || []).filter((hotel) =>
-    (hotel.name || "")
-      .toLowerCase()
-      .includes(search.name.toLowerCase()) &&
-
-    (hotel.location || "")
-      .toLowerCase()
-      .includes(search.location.toLowerCase()) &&
-
-    (hotel.category || "")
-      .toLowerCase()
-      .includes(search.category.toLowerCase())
-  );
-
-  const data = filteredData;
+  // const data = filteredData;
   // 👉 Pagination logic
-  const totalItems = data.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  // const totalItems = data.length;
+  // const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  // const startIndex = (currentPage - 1) * itemsPerPage;
 
-  const currentData = data.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // const currentData = data.slice(
+  //   startIndex,
+  //   startIndex + itemsPerPage
+  // );
 
   // 👉 Showing text
-  const startItem = totalItems === 0 ? 0 : startIndex + 1;
-  const endItem = Math.min(startIndex + itemsPerPage, totalItems);
+  // const startItem = totalItems === 0 ? 0 : startIndex + 1;
+  // const endItem = Math.min(startIndex + itemsPerPage, totalItems);
 
   // 👉 Fix page overflow (after delete)
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages || 1);
-    }
-  }, [totalPages]);
+  // useEffect(() => {
+  //   if (currentPage > totalPages) {
+  //     setCurrentPage(totalPages || 1);
+  //   }
+  // }, [totalPages]);
 
   // 👉 Smart pagination
-  const getPageNumbers = () => {
-    const pages = [];
+  // const getPageNumbers = () => {
+  //   const pages = [];
 
-    if (totalPages <= 7) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
+  //   if (totalPages <= 7) {
+  //     return Array.from({ length: totalPages }, (_, i) => i + 1);
+  //   }
 
-    pages.push(1);
+  //   pages.push(1);
 
-    if (currentPage > 3) pages.push("...");
+  //   if (currentPage > 3) pages.push("...");
 
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pages.push(i);
-    }
+  //   for (
+  //     let i = Math.max(2, currentPage - 1);
+  //     i <= Math.min(totalPages - 1, currentPage + 1);
+  //     i++
+  //   ) {
+  //     pages.push(i);
+  //   }
 
-    if (currentPage < totalPages - 2) pages.push("...");
+  //   if (currentPage < totalPages - 2) pages.push("...");
 
-    pages.push(totalPages);
+  //   pages.push(totalPages);
 
-    return pages;
-  };
+  //   return pages;
+  // };
   const handleDeleteClick = (id) => {
     setSelectedId(id);
     setShowModal(true);
@@ -110,17 +105,17 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
         <div className="flex gap-3 ">
           <input
             placeholder="Search by Name"
-            value={search.name}
+            value={searchTitle}
             onChange={(e) =>
-              setSearch({ ...search, name: e.target.value })
+              setSearchTitle(e.target.value)
             }
             className="input"
           />
 
           <select
-            value={search.location}
+            value={searchLocation}
             onChange={(e) =>
-              setSearch({ ...search, location: e.target.value })
+              setSearchLocation(e.target.value)
             }
             className="input"
           >
@@ -133,9 +128,9 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
           </select>
 
           <select
-            value={search.category}
+            value={searchCategory}
             onChange={(e) =>
-              setSearch({ ...search, category: e.target.value })
+             setSearchCategory(e.target.value)
             }
             className="input"
           >
@@ -165,7 +160,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
             </thead>
 
             <tbody className="tbody">
-              {currentData.map((hotel) => (
+              {hotels.map((hotel) => (
 
 
                 <tr className="tr group" key={hotel.id}>
@@ -268,69 +263,74 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView }) => {
                   </td>
                 </tr>
 
-
-
-
-
-
               ))}
             </tbody>
           </table>
 
           {/* PAGINATION */}
-          {totalPages > 1 && (
-            <div className="pagination">
-
-              {/* LEFT SIDE */}
+        {pagination?.last_page > 1 && (
+            <div className="flex justify-between items-center mt-5">
               <div className="text-sm text-gray-600">
-                Showing {startItem} - {endItem} of {totalItems} tours
+                Showing {pagination.from} - {pagination.to} of {pagination.total}
               </div>
-
-              {/* RIGHT SIDE */}
-
 
               <div className="flex items-center gap-2">
 
-                {/* Prev */}
+                {/* Previous */}
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1  rounded disabled:opacity-50"
+                  onClick={() =>
+                    fetchHotels(
+                      pagination.current_page - 1,
+                      searchTitle,
+                      searchCategory,searchLocation
+                    )
+                  }
+                  disabled={!pagination.prev_page_url}
+                  className="p-2 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {<FaChevronLeft />}
+                  <FaChevronLeft />
                 </button>
 
-
-
-                {getPageNumbers().map((page, index) =>
-                  page === "..." ? (
-                    <span key={index} className="px-2">...</span>
-                  ) : (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1 border rounded ${currentPage === page
+                {/* Page Numbers */}
+                {Array.from(
+                  { length: pagination.last_page || 0 },
+                  (_, i) => i + 1
+                ).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() =>
+                      fetchHotels(
+                        page,
+                        searchTitle,
+                        searchCategory,searchLocation
+                      )
+                    }
+                    className={`px-3 py-1 border rounded ${
+                      pagination.current_page === page
                         ? "bg-primary text-white"
-                        : "bg-secondary border-gray-300 hover:bg-gray-100"
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
 
                 {/* Next */}
                 <button
                   onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                    fetchHotels(
+                      pagination.current_page + 1,
+                      searchTitle,
+                      searchCategory,searchLocation
+                    )
                   }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1  rounded disabled:opacity-50"
+                  disabled={!pagination.next_page_url}
+                  className="p-2 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {<FaChevronRight />}
+                  <FaChevronRight />
                 </button>
-              </div>
 
+              </div>
             </div>
           )}
         </div>

@@ -56,15 +56,52 @@ const HotelManager = () => {
 
   const [hotels, setHotels] = useState([]);
   const [editData, setEditData] = useState(null);
+  const [pagination, setPagination] = useState({});
+  const [searchTitle, setSearchTitle] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
 
   // ================= FETCH ALL HOTELS =================
-  const fetchHotels = async () => {
+  // const fetchHotels = async () => {
+  //   try {
+  //     const response = await api.get("/hotels");
+
+  //     console.log("hotels:", response.data);
+
+  //     setHotels(response?.data?.data?.data || []);
+  //   } catch (error) {
+  //     console.log("hotel fetch error:", error);
+  //   }
+  // };
+
+  const fetchHotels = async (
+    page = 1,
+    title = searchTitle,
+    category = searchCategory,
+    location = searchLocation
+  ) => {
     try {
-      const response = await api.get("/hotels");
+      const response = await api.get("/hotels", {
+        params: {
+          page,
+          title,
+          category,location
+        },
+      });
 
-      console.log("hotels:", response.data);
+      const result = response.data.data;
 
-      setHotels(response?.data?.data?.data || []);
+      setHotels(result.data);
+
+      setPagination({
+        current_page: result.current_page,
+        last_page: result.last_page,
+        total: result.total,
+        from: result.from,
+        to: result.to,
+        next_page_url: result.next_page_url,
+        prev_page_url: result.prev_page_url,
+      });
     } catch (error) {
       console.log("hotel fetch error:", error);
     }
@@ -83,9 +120,21 @@ const HotelManager = () => {
     }
   };
 
+  // useEffect(() => {
+  //   fetchHotels(1);
+  // }, []);
   useEffect(() => {
-    fetchHotels();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchHotels(
+        1,
+        searchTitle,
+        searchCategory,
+        searchLocation
+      );
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTitle, searchCategory , searchLocation]);
 
   // ================= VIEW =================
   const handleView = (hotel) => {
@@ -178,7 +227,7 @@ const HotelManager = () => {
     try {
       await api.delete(`/hotels/${id}`);
 
-      fetchHotels();
+      fetchHotels(  pagination.current_page, searchTitle,searchCategory , searchLocation);
     } catch (error) {
       console.log("hotel delete error:", error);
     }
@@ -215,6 +264,14 @@ const HotelManager = () => {
               }
               onDelete={handleDelete}
               onView={handleView}
+              pagination={pagination}
+              fetchHotels={fetchHotels}
+              searchTitle={searchTitle}
+              setSearchTitle={setSearchTitle}
+              searchCategory={searchCategory}
+              setSearchCategory={setSearchCategory}
+              searchLocation={searchLocation}
+              setSearchLocation={setSearchLocation}
             />
           }
         />

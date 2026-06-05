@@ -60,6 +60,8 @@ const VehiclesManager = () => {
   const location = useLocation();
   const { id } = useParams();
   const [errors, setErrors] = useState({});
+  const [searchName, setSearchName] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
 
   const [viewModal, setViewModal] = useState(false);
   const [selectedTour, setSelectedTour] = useState(null);
@@ -112,11 +114,9 @@ const VehiclesManager = () => {
   //   }
   // };
 
-  const fetchVehicles = async (page = 1) => {
-    try {
-      const response = await api.get(
-        `/vehicles?page=${page}`
-      );
+  const fetchVehicles = async (page = 1, name = searchName, category = searchCategory) => {
+    try { 
+     const response = await api.get("/vehicles", { params: { page, name, category } })
 
       setVehicles(response.data.data.data);
 
@@ -216,10 +216,18 @@ const VehiclesManager = () => {
   { key: "status", label: "Status" },
 ];
 
+  // useEffect(() => {
+  //   fetchVehicles();
+  //    fetchCategories();
+  // }, []);
   useEffect(() => {
-    fetchVehicles();
-     fetchCategories();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchVehicles(1, searchName, searchCategory );
+      fetchCategories();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchName, searchCategory]);
 
   const handleSave = async (data) => {
 
@@ -323,6 +331,10 @@ const VehiclesManager = () => {
             onView={handleView}
             pagination={pagination}
             fetchVehicles={fetchVehicles}
+            searchName={searchName}
+            setSearchName={setSearchName}
+            searchCategory={searchCategory}
+            setSearchCategory={setSearchCategory}
           />
         }
       />

@@ -42,6 +42,7 @@ const EditTourWrapper = ({
 
 const TourManager = () => {
   const navigate = useNavigate();
+  const [pagination, setPagination] = useState({});
 
   const [tours, setTours] = useState([]);
   const [editData, setEditData] = useState(null);
@@ -50,16 +51,26 @@ const TourManager = () => {
   const [selectedTour, setSelectedTour] = useState(null);
 
   const [vehicleCategories, setVehicleCategories] = useState([]);
+  const [searchTitle, setSearchTitle] = useState("");
 
   const handleView = (tour) => {
     setSelectedTour(tour);
     setViewModal(true);
   };
 
-  const fetchTours = async () => {
+  const fetchTours = async (page = 1,title = "") => {
     try {
-      const response = await api.get("/tours");
+       const response = await api.get("/tours", {params: { page, title,}, });
       setTours(response.data.data.data);
+      setPagination({
+        current_page: response.data.data.current_page,
+        last_page: response.data.data.last_page,
+        total: response.data.data.total,
+        from: response.data.data.from,
+        to: response.data.data.to,
+        next_page_url: response.data.data.next_page_url,
+        prev_page_url: response.data.data.prev_page_url,
+      });
     } catch (error) {
       console.log("tour fetch error:", error);
     }
@@ -84,10 +95,20 @@ const TourManager = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTours();
-    fetchVehicleCategories();
-  }, []);
+  // useEffect(() => {
+  //   fetchTours();
+  //   fetchVehicleCategories();
+  // }, []);
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        fetchTours(
+          1,
+          searchTitle,
+        );
+        fetchVehicleCategories();
+      }, 500);
+      return () => clearTimeout(timer);
+    }, [searchTitle]);
 
   const handleSave = async (data) => {
     try {
@@ -179,7 +200,10 @@ const TourManager = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           onView={handleView}
-          
+          pagination={pagination}
+          fetchTours={fetchTours}
+          searchTitle={searchTitle}
+          setSearchTitle={setSearchTitle}
         />
     }
   />
