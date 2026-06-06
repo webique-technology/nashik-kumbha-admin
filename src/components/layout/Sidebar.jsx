@@ -55,8 +55,8 @@ const menuItems = [
     children: [
       { name: "Home Page Settings", path: "/dashboard/home-settings" },
       { name: "Contact Enquiry Details", path: "/dashboard/enquiry-details" },
-      { name: "Privacy Policy", path: "/dashboard/privacypolicy" },
-      { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, // keep same as route OR fix both
+      { name: "Terms & Conditions", path: "/dashboard/privacypolicy" },
+      // { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, 
     ],
   },
 ];

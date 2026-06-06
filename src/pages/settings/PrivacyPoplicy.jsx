@@ -1,63 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
+// import axios from "axios";
+import api from "../../services/axiosInstance";
 import "react-quill-new/dist/quill.snow.css";
 
-const PrivacyPoplicy = () => {
+// Configure your base URL if not already done globally
+// axios.defaults.baseURL = 'http://your-api-domain.com/api';
+
+const PrivacyPolicy = () => {
   const [description, setDescription] = useState("");
   const [policy, setPolicy] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!description) return;
+  // 1. Fetch Privacy Policy on component mount
+  useEffect(() => {
+    fetchPrivacyPolicy();
+  }, []);
 
-    if (isEditing) {
-      // ✅ EDIT → replace content
-      setPolicy({ description });
-      setIsEditing(false);
-    } else {
-      // ✅ ADD → append content
-      setPolicy((prev) => ({
-        description: (prev?.description || "") + "<p><br/></p>" + description,
-      }));
+  const fetchPrivacyPolicy = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/privacy-policy");
+      // Checking if data exists and has the 'content' field from Laravel
+      if (response.data && response.data.content) {
+        setPolicy(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching privacy policy:", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setDescription("");
+  // 2. Handle Submit (Save / Update)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!description || description === "<p><br/></p>") return;
+
+    try {
+      // The backend validates 'content', so we pass the state value under that key
+      const response = await api.post("/privacy-policy", {
+        content: description,
+      });
+
+      if (response.data && response.data.data) {
+        // Update local preview state with returned database record
+        setPolicy(response.data.data);
+        setIsEditing(false);
+        setDescription(""); // Clear editor after successful saving
+      }
+    } catch (error) {
+      console.error("Error saving privacy policy:", error);
+      alert("Failed to save privacy policy. Please try again.");
+    }
   };
 
   const handleEdit = () => {
-    setDescription(policy.description);
-    setIsEditing(true); // 🔥 IMPORTANT
+    if (policy) {
+      setDescription(policy.content);
+      setIsEditing(true);
+    }
   };
 
   const handleDelete = () => {
+    // Note: Since your backend doesn't have a specific delete route provided,
+    // this clears the local visual state. If you need a hard delete, 
+    // you would trigger an axios.delete request here.
     setPolicy(null);
     setDescription("");
     setIsEditing(false);
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-lg font-medium">Loading Privacy Policy...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container h-screen">
       <div className="p-8 max-w-[1400px] mx-auto">
 
         {/* ✅ Preview */}
-        {policy && (
+        {policy && policy.content && (
           <div className="mb-6 bg-white shadow-md rounded-xl p-6 border">
 
             <div className="flex justify-end mb-3 gap-2">
               <button
+                type="button"
                 onClick={handleEdit}
                 className="px-3 py-1 text-sm bg-yellow-400 text-white rounded"
               >
                 Edit
               </button>
 
-              <button
+              {/* <button
+                type="button"
                 onClick={handleDelete}
                 className="px-3 py-1 text-sm bg-red-500 text-white rounded"
               >
                 Delete
-              </button>
+              </button> */}
             </div>
 
             <div
@@ -72,7 +118,7 @@ const PrivacyPoplicy = () => {
                 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:mb-3
                 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mb-2
               "
-              dangerouslySetInnerHTML={{ __html: policy.description }}
+              dangerouslySetInnerHTML={{ __html: policy.content }}
             />
           </div>
         )}
@@ -83,7 +129,7 @@ const PrivacyPoplicy = () => {
           className="bg-white shadow-xl rounded-2xl p-6 space-y-4"
         >
           <h2 className="text-xl font-semibold">
-            {isEditing ? "Edit Privacy Policy" : "Add Privacy Policy"}
+            {isEditing || policy ? "Edit Privacy Policy" : "Add Privacy Policy"}
           </h2>
 
           <ReactQuill
@@ -105,7 +151,7 @@ const PrivacyPoplicy = () => {
             type="submit"
             className="bg-primary text-white px-6 py-3 rounded-lg font-semibold"
           >
-            {isEditing ? "Update Content" : "Add Content"}
+            {isEditing || policy ? "Update Content" : "Add Content"}
           </button>
         </form>
       </div>
@@ -113,4 +159,4 @@ const PrivacyPoplicy = () => {
   );
 };
 
-export default PrivacyPoplicy;
+export default PrivacyPolicy;
