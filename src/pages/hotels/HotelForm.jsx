@@ -291,7 +291,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                     Location
                   </label>
 
-                  <select
+                  {/* <select
                     name="location"
                     value={formData.location || ""}
                     onChange={handleChange}
@@ -310,7 +310,15 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                     <option value="Goa">
                       Goa
                     </option>
-                  </select>
+                  </select> */}
+                   <input
+                    type="text"
+                    name="location"
+                    value={formData.location || ""}
+                    onChange={handleChange}
+                    placeholder="Location"
+                    className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
+                  />
                   {errors.location && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.location[0]}

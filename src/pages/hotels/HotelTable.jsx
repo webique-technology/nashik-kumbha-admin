@@ -42,7 +42,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView,paginati
             className="input"
           />
 
-          <select
+          {/* <select
             value={searchLocation}
             onChange={(e) =>
               setSearchLocation(e.target.value)
@@ -55,7 +55,7 @@ const HotelTable = ({ hotels, onAdd, onEdit, onDelete, setBlogs, onView,paginati
             <option>Pune</option>
             <option>Goa</option>
             <option>Nashik</option>
-          </select>
+          </select> */}
 
           <select
             value={searchCategory}
