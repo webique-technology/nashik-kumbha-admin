@@ -9,6 +9,7 @@ const EnquriyDeatils = () => {
     const [searchTravellers, setSearchTravellers] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [enquiries, setEnquiries] = useState([]);
+    const [pagination, setPagination] = useState({});
 
     const [loading, setLoading] = useState(true);
     const rowsPerPage = 10;
@@ -17,14 +18,19 @@ const EnquriyDeatils = () => {
 
     const fetchEnquiries = async (page = 1) => {
         try {
-            const response = await api.get(`/tour-enquiries?page=${page}`);
 
-            console.log("enquiries:", response.data);
+            let url = `/contact-us?page=${page}`;
+
+            if (searchDate) {
+                url += `&date=${searchDate}`;
+            }
+
+            const response = await api.get(url);
 
             setEnquiries(response.data.data.data);
-
             setCurrentPage(response.data.data.current_page);
             setTotalPages(response.data.data.last_page);
+            setPagination(response.data.data);
 
         } catch (error) {
             console.log("Enquiry fetch error:", error);
@@ -33,29 +39,10 @@ const EnquriyDeatils = () => {
 
     useEffect(() => {
         fetchEnquiries(currentPage);
-    }, [currentPage]);
+    }, [currentPage, searchDate]);
 
 
-const filteredData = useMemo(() => {
-  return enquiries.filter((item) => {
-    const date = item.preferred_dates || "";
-    const month = date.split("-")[1];
-
-    return (
-      (searchDate === "" || date === searchDate) &&
-      (selectedMonth === "" || month === selectedMonth)
-    );
-  });
-}, [enquiries, searchDate, selectedMonth]);
-
-    // 📄 Pagination Logic
-    // const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-    // const startIndex = (currentPage - 1) * rowsPerPage;
-    // const currentData = filteredData.slice(
-    //   startIndex,
-    //   startIndex + rowsPerPage
-    // );
-    const currentData = filteredData;
+    const currentData = enquiries;
     return (
         <div className='page-container'>
             <div className='inner-page-container'>
@@ -72,7 +59,10 @@ const filteredData = useMemo(() => {
                             type="date"
                             className="input"
                             value={searchDate}
-                            onChange={(e) => setSearchDate(e.target.value)}
+                            onChange={(e) => {
+                                setSearchDate(e.target.value);
+                                setCurrentPage(1);
+                            }}
                         />
                         {/* <select
                             className="input"
@@ -118,13 +108,13 @@ const filteredData = useMemo(() => {
                                             </td>
                                            
                                
-                                            <td className="td p-3">{item.tour_name}</td>
-                                            <td className="td p-3">{item.date}</td>
+                                            <td className="td p-3">{item.inquiry_type}</td>
+                                            <td className="td p-3">{item.created_at}</td>
                                             <td className="td p-3 w-4/12">
 
                                                 {item.special_requirements?.length > 70
                                                     ? `${item.special_requirements.slice(0, 70)}...`
-                                                    : item.special_requirements}
+                                                    : item.your_message}
                                             </td>
 
 
@@ -142,15 +132,8 @@ const filteredData = useMemo(() => {
 
                         {/* 📄 Pagination */}
                         <div className="pagination">
-                            {/* <div className="text-sm text-gray-600"> */}
-                            {/* Showing {filteredData.length === 0 ? 0 : startIndex + 1} -{" "} */}
-                            {/* Showing Page {currentPage} of {totalPages}
-          {Math.min(startIndex + rowsPerPage, filteredData.length)} of{" "}
-          {filteredData.length}
-        </div> */}
-
                             <div className="text-sm text-gray-600">
-                                Showing Page {currentPage} of {totalPages}
+                                Showing {pagination.from || 0}- {pagination.to || 0} of {pagination.total || 0}
                             </div>
 
                             <div className="flex items-center gap-1">
