@@ -9,6 +9,7 @@ const VehicleEnquiry = () => {
     const [searchTravellers, setSearchTravellers] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [enquiries, setEnquiries] = useState([]);
+    const [pagination, setPagination] = useState({});
 
     const [loading, setLoading] = useState(true);
     const rowsPerPage = 10;
@@ -17,17 +18,24 @@ const VehicleEnquiry = () => {
 
     const fetchEnquiries = async (page = 1) => {
         try {
-            const response = await api.get(`/tour-enquiries?page=${page}`);
+            // const response = await api.get(`/vehicle-enquiries?page=${page}`);
+            let url = `/vehicle-enquiries?page=${page}`;
 
-            console.log("tour enquiries:", response.data);
+            if (searchDate) {
+                url += `&date=${searchDate}`;
+            }
+
+            const response = await api.get(url);
+
 
             setEnquiries(response.data.data.data);
-
             setCurrentPage(response.data.data.current_page);
             setTotalPages(response.data.data.last_page);
+            setPagination(response.data.data);
+
 
         } catch (error) {
-            console.log("tour enquiry fetch error:", error);
+            console.log("vehicle enquiry fetch error:", error);
         }
     };
 
@@ -36,17 +44,17 @@ const VehicleEnquiry = () => {
     }, [currentPage]);
 
 
-    const filteredData = useMemo(() => {
-        return enquiries.filter((item) => {
-            const date = item.preferred_dates || "";
-            const month = date.split("-")[1];
+    // const filteredData = useMemo(() => {
+    //     return enquiries.filter((item) => {
+    //         const date = item.preferred_dates || "";
+    //         const month = date.split("-")[1];
 
-            return (
-                (searchDate === "" || date === searchDate) &&
-                (selectedMonth === "" || month === selectedMonth)
-            );
-        });
-    }, [enquiries, searchDate, selectedMonth]);
+    //         return (
+    //             (searchDate === "" || date === searchDate) &&
+    //             (selectedMonth === "" || month === selectedMonth)
+    //         );
+    //     });
+    // }, [enquiries, searchDate, selectedMonth]);
 
     // 📄 Pagination Logic
     // const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -55,24 +63,27 @@ const VehicleEnquiry = () => {
     //   startIndex,
     //   startIndex + rowsPerPage
     // );
-    const currentData = filteredData;
+    const currentData = enquiries;
     return (
         <div className='page-container'>
             <div className='inner-page-container'>
-                <div class="header">
+                <div className="header">
                     <div>
-                        <h2 class="title text-on-surface">Vehicle Enquiry</h2>
-                        <p class="subtitle">Manage your Vehicle listings</p>
+                        <h2 className="title text-on-surface">Vehicle Enquiry</h2>
+                        <p className="subtitle">Manage your Vehicle listings</p>
                     </div>
                 </div>
                 <div>
                     {/* 🔍 Search */}
                     <div className="flex gap-3 mb-4 w-4/12">
                         <input
-                            type="date"
+                             type="date"
                             className="input"
                             value={searchDate}
-                            onChange={(e) => setSearchDate(e.target.value)}
+                            onChange={(e) => {
+                                setSearchDate(e.target.value);
+                                setCurrentPage(1);
+                            }}
                         />
                         {/* <select
                             className="input"
@@ -104,6 +115,7 @@ const VehicleEnquiry = () => {
                                     <th className="th">Pickup Date</th>
                                     <th className="th">Return Date</th>
                                     <th className="th">Passengers</th>
+                                    <th className="th">Date of Enquiry</th>
 
                                 </tr>
                             </thead>
@@ -113,13 +125,14 @@ const VehicleEnquiry = () => {
                                         <tr key={item.id} className="thead-row tr group bg-white">
                                             <td className="td p-3">
                                                 <p><span className='font-semibold'>Name:</span> {item.full_name}</p>
-                                                <p><span className='font-semibold'>Email:</span> {item.email}</p>
-                                                <p><span className='font-semibold'>Phone Number:</span> {item.phone_number}</p>
+                                                {/* <p><span className='font-semibold'>Email:</span> {item.email}</p> */}
+                                                <p><span className='font-semibold'>Phone Number:</span> {item.mobile_number}</p>
                                             </td>
 
-                                            <td className="td p-3"></td>
-                                            <td className="td p-3">{item.number_of_travelers}</td>
-                                            <td className="td p-3">{item.preferred_dates}</td>
+                                            <td className="td p-3">{item.pickup_date}</td>
+                                            <td className="td p-3">{item.return_date}</td>
+                                            <td className="td p-3">{item.passengers}</td>
+                                            <td className="td p-3">{item.created_at}</td>
 
 
 
@@ -145,7 +158,7 @@ const VehicleEnquiry = () => {
         </div> */}
 
                             <div className="text-sm text-gray-600">
-                                Showing Page {currentPage} of {totalPages}
+                                Showing {pagination.from || 0}- {pagination.to || 0} of {pagination.total || 0}
                             </div>
 
                             <div className="flex items-center gap-1">

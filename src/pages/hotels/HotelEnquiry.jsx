@@ -9,6 +9,7 @@ const HotelEnquiry = () => {
     const [selectedMonth, setSelectedMonth] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [enquiries, setEnquiries] = useState([]);
+    const [pagination, setPagination] = useState({});
 
     const [loading, setLoading] = useState(true);
     const rowsPerPage = 10;
@@ -17,14 +18,19 @@ const HotelEnquiry = () => {
 
     const fetchEnquiries = async (page = 1) => {
         try {
-            const response = await api.get(`/tour-enquiries?page=${page}`);
+            // const response = await api.get(`/hotel-enquiries?page=${page}`);
+            let url = `/hotel-enquiries?page=${page}`;
 
-            console.log("Hotel enquiries:", response.data);
+            if (searchDate) {
+                url += `&date=${searchDate}`;
+            }
+
+            const response = await api.get(url);
 
             setEnquiries(response.data.data.data);
-
             setCurrentPage(response.data.data.current_page);
             setTotalPages(response.data.data.last_page);
+            setPagination(response.data.data);
 
         } catch (error) {
             console.log("Hotel enquiry fetch error:", error);
@@ -36,17 +42,17 @@ const HotelEnquiry = () => {
     }, [currentPage]);
 
 
-const filteredData = useMemo(() => {
-  return enquiries.filter((item) => {
-    const date = item.preferred_dates || "";
-    const month = date.split("-")[1];
+// const filteredData = useMemo(() => {
+//   return enquiries.filter((item) => {
+//     const date = item.preferred_dates || "";
+//     const month = date.split("-")[1];
 
-    return (
-      (searchDate === "" || date === searchDate) &&
-      (selectedMonth === "" || month === selectedMonth)
-    );
-  });
-}, [enquiries, searchDate, selectedMonth]);
+//     return (
+//       (searchDate === "" || date === searchDate) &&
+//       (selectedMonth === "" || month === selectedMonth)
+//     );
+//   });
+// }, [enquiries, searchDate, selectedMonth]);
 
 
 
@@ -57,14 +63,14 @@ const filteredData = useMemo(() => {
     //   startIndex,
     //   startIndex + rowsPerPage
     // );
-    const currentData = filteredData;
+    const currentData = enquiries;
     return (
         <div className='page-container'>
             <div className='inner-page-container'>
-                <div class="header">
+                <div className="header">
                     <div>
-                        <h2 class="title text-on-surface">Hotel Enquiry</h2>
-                        <p class="subtitle">Manage your Hotel listings</p>
+                        <h2 className="title text-on-surface">Hotel Enquiry</h2>
+                        <p className="subtitle">Manage your Hotel listings</p>
                     </div>
                 </div>
                 <div>
@@ -74,7 +80,10 @@ const filteredData = useMemo(() => {
                             type="date"
                             className="input"
                             value={searchDate}
-                            onChange={(e) => setSearchDate(e.target.value)}
+                            onChange={(e) => {
+                                setSearchDate(e.target.value);
+                                setCurrentPage(1);
+                            }}
                         />
                         {/* <select
                             className="input"
@@ -108,6 +117,7 @@ const filteredData = useMemo(() => {
                                     <th className="th">Check-out Date</th>
                                     <th className="th">Adults</th>
                                     <th className="th">Children</th>
+                                    <th className="th">Date of Enquiry</th>
                                 </tr>
                             </thead>
                             <tbody className='tbody'>
@@ -117,14 +127,15 @@ const filteredData = useMemo(() => {
                                             <td className="td p-3">
                                                 <p><span className='font-semibold'>Name:</span> {item.full_name}</p>
                                                 <p><span className='font-semibold'>Email:</span> {item.email}</p>
-                                                <p><span className='font-semibold'>Phone Number:</span> {item.phone_number}</p>
+                                                <p><span className='font-semibold'>Phone Number:</span> {item.mobile_number}</p>
                                             </td>
-                                            <td className="td p-3">{item.email}</td>
-                                            <td className="td p-3">{item.preferred_dates}</td>
-                                            <td className="td p-3">{item.phone_number}</td>
-                                            <td className="td p-3">{item.number_of_travelers}</td>
+                                            <td className="td p-3">{item.room_type}</td>
+                                            <td className="td p-3">{item.check_in_date}</td>
+                                            <td className="td p-3">{item.check_out_date}</td>
+                                            <td className="td p-3">{item.adults}</td>
 
-                                            <td className="td p-3">{item.tour_name}</td>
+                                            <td className="td p-3">{item.children}</td>
+                                            <td className="td p-3">{item.created_at}</td>
                                             {/* <td className="td p-3 w-4/12">
 
                                                 {item.special_requirements?.length > 70
@@ -155,7 +166,7 @@ const filteredData = useMemo(() => {
         </div> */}
 
                             <div className="text-sm text-gray-600">
-                                Showing Page {currentPage} of {totalPages}
+                                Showing {pagination.from || 0}- {pagination.to || 0} of {pagination.total || 0}
                             </div>
 
                             <div className="flex items-center gap-1">
