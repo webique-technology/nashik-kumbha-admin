@@ -90,6 +90,8 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
     base_price: "",
     offer_price: "",
     total_seats: 12,
+    start_date: "",
+    end_date: "",
     highlights: [],
     route: [],
     vehicles: [],
@@ -117,13 +119,7 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
 
   const topUploadRef = useRef();
   const itineraryFileRef = useRef();
-  // const vehicleCategories = [
-  //   "Sedan",
-  //   "SUV",
-  //   "Tempo Traveller",
-  //   "Mini Bus",
-  //   "Luxury Bus",
-  // ];
+  
   const handleVehicleCategory = (category) => {
     const exists = (formData.vehicles || []).includes(category);
 
@@ -148,6 +144,9 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
         status: editData.status || "active",
         location: editData.location || "",
         // vehicles: editData.vehicles || [],
+        start_date: editData.start_date || "",
+        end_date: editData.end_date || "",
+
         base_price: editData.base_price || "",
         offer_price: editData.offer_price || "",
 
@@ -188,10 +187,8 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
             file: null,
           })) || [],
 
-        // IMPORTANT FIX
         preview: API_URL + editData.image_url || "",
 
-        // IMPORTANT
         main_banner: null,
 
         seo_meta: {
@@ -212,6 +209,8 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
         base_price: "",
         offer_price: "",
         total_seats: 12,
+        start_date: "",
+        end_date: "",
         highlights: [],
         itineraries: [],
         route: [],
@@ -443,10 +442,13 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
       submitData.append("description", formData.description);
       submitData.append("category", formData.category);
       submitData.append("status", formData.status);
-      submitData.append("location", formData.location);
+      // submitData.append("location", formData.location);
       submitData.append("base_price", formData.base_price);
       submitData.append("offer_price", formData.offer_price || "0");
       submitData.append("total_seats", formData.total_seats);
+
+      submitData.append("start_date", formData.start_date);
+      submitData.append("end_date", formData.end_date);
 
       // METADATA
       submitData.append("seo_meta[title]", formData.seo_meta.title);
@@ -1067,6 +1069,48 @@ const TourForm = ({ onSave, editData, onCancel, vehicleCategories = [], errors =
               </div>
             </section>
 
+               <section className="bg-surface-container-lowest rounded-xl p-6 shadow-sm ring-1 ring-black/[0.03]">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="material-symbols-outlined text-primary">
+                 calendar_month
+                </span>
+                <h2 className="text-lg font-bold tracking-tight">
+                  Duration
+                </h2>
+              </div>
+              
+              <div className="pt-4 border-t mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <InputComp
+                    label="Start Date"
+                    name="start_date"
+                    type="date"
+                    value={formData.start_date}
+                    onChange={handleChange}
+                  />
+
+                  <InputComp
+                    label="End Date"
+                    name="end_date"
+                    type="date"
+                    value={formData.end_date}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {errors.start_date && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.start_date[0]}
+                  </p>
+                )}
+
+                {errors.end_date && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.end_date[0]}
+                  </p>
+                )}
+              </div>
+            </section>
 
 
             <div className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
