@@ -14,14 +14,27 @@ const Header = ({ isOpen, toggleSidebar }) => {
 
   const pageTitles = {
     "/": "Dashboard",
-    "/dashboard/add-tour": "Tour Manager",
-    "/dashboard/tour-enquriy": "Tour Enquiry",
-    "/dashboard/vehicle": "Vehicles Manager",
-    "/dashboard/hotels": "Hotel Manager",
-    "/dashboard/blog-table": "Blog Manager",
-    "/dashboard/settings": "Settingsqqq",
+    "/dashboard/tours/add": "Tour Manager",
+     "/dashboard/tours": "Tour Manager",
 
-    "/dashboard/home-page-settings": "Home Page Settings",
+    "/dashboard/tour-enquriy": "Tour Enquiry",
+
+    "/dashboard/vehicle": "Vehicles Manager",
+    "/dashboard/vehicle/add": "Vehicles Manager",
+    "/dashboard/vehicle-enquriy": "Vehicles Enquriy",
+
+    "/dashboard/hotel": "Hotel Manager",
+    "/dashboard/hotel/add": "Hotel Manager",
+    "/dashboard/hotel-enquriy": "Hotel Enquriy",
+
+    "/dashboard/blogs": "Blog Manager",
+    "/dashboard/blogs/add": "Blog Manager",
+
+    "/dashboard/settings": "Settingsqqq",
+   
+
+    "/dashboard/home-settings": "Home Page Settings",
+    "/dashboard/enquiry-details": "Contact Enquiry Details",
     "/dashboard/paymentpolicy": "Payment Policy",
     "/dashboard/privacypolicy": "Privacy Policy",
     "/dashboard/settings": "Settings",

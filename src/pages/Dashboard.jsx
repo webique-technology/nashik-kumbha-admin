@@ -67,6 +67,7 @@ const Dashboard = () => {
     tours: dashboardData?.counts?.tours ?? 0,
     vehicles: dashboardData?.counts?.vehicles ?? 0,
     hotels: dashboardData?.counts?.hotels ?? 0,
+    blogs: dashboardData?.counts?.blogs ?? 0,
     visitors: dashboardData?.counts?.visitors ?? 0
   };
   
@@ -105,7 +106,7 @@ const Dashboard = () => {
     {
       id: "tours",
       icon: "deployed_code",
-      title: "package count",
+      title: "Tour package count",
       value: counts.tours,
       iconBg: "#c6e6de", 
       textColor: "#004f45", 
@@ -123,22 +124,31 @@ const Dashboard = () => {
     {
       id: "hotels",
       icon: "bed",
-      title: "hotel bookings/list",
+      title: "hotel count",
       value: counts.hotels,
       iconBg: "#ffdbd1",
       textColor: "#0f172a",
       subtitleColor: "#dc2626", 
     },
     {
-      id: "visitors",
+      id: "blogs",
       icon: "globe_asia",
-      title: "website visitors",
-      value: counts.visitors,
+      title: "Blog count",
+      value: counts.blogs,
       iconBg: "#ffdbd1",
-      textColor: "#ffffff",
+      textColor: "#0f172a",
       subtitleColor: "#dc2626", 
-      backgroundGradient: "bg-primary-gradient",
     },
+    // {
+    //   id: "blogs",
+    //   icon: "globe_asia",
+    //   title: "Blog count",
+    //   value: counts.blogs_count,
+    //   iconBg: "#ffdbd1",
+    //   textColor: "#0f172a",
+    //   subtitleColor: "#dc2626", 
+    //   // backgroundGradient: "bg-primary-gradient",
+    // },
   ];
 
   const packageData = [
