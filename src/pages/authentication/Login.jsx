@@ -71,7 +71,7 @@ export default function Login() {
             <div className="relative mt-1">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">person</span>
               <input
-                required
+                // required
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
@@ -102,7 +102,7 @@ export default function Login() {
               </span>
 
               <input
-                required
+                // required
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
@@ -147,7 +147,7 @@ export default function Login() {
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500 cursor-pointer">
-          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">www.mahakumbhtourstravelsnashik.com/</a>
+          <a href="https://mahakumbhtourstravelsnashik.com/sa" target="_blank">www.mahakumbhtourstravelsnashik.com</a>
         </div>
       </div>
     </main>

@@ -1,77 +1,77 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react';
 import { RxCaretRight } from "react-icons/rx";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { FiUsers } from "react-icons/fi";
 import { Link, useNavigate } from 'react-router-dom';
-import img1 from '../assets/images/admin-hotel.png'
-import img2 from '../assets/images/admin-vehicle.png'
-import img3 from '../assets/images/admin-tour.png'
-import api from "../services/axiosInstance"
-import CountUp from "react-countup";
+import img1 from '../assets/images/admin-hotel.png';
+import img2 from '../assets/images/admin-vehicle.png';
+import img3 from '../assets/images/admin-tour.png';
+import api from "../services/axiosInstance";
 import BackButton from '../components/ui/BackButton';
+
+// Native local animation component to bypass the broken third-party bundler asset resolution
+const LocalCountUp = ({ end, duration = 1.5 }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const startValue = 0;
+    const endValue = Number(end) || 0;
+
+    if (endValue === 0) {
+      setCount(0);
+      return;
+    }
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1);
+      setCount(Math.floor(progress * (endValue - startValue) + startValue));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
+  }, [end, duration]);
+
+  return <>{count.toLocaleString()}</>;
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
   const [searchTravellers, setSearchTravellers] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [enquiries, setEnquiries] = useState([]);
-  const [counts, setCounts] = useState({});
+  const [dashboardData, setDashboardData] = useState(null);
+
   const rowsPerPage = 3;
 
-  const [totalPages, setTotalPages] = useState(1);
-
-  const fetchEnquiries = async (page = 1) => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await api.get(`/tour-enquiries?page=${page}`);
-
-      console.log("tour enquiries:", response.data);
-
-      setEnquiries(response.data.data.data);
-
-      setCurrentPage(response.data.data.current_page);
-      setTotalPages(response.data.data.last_page);
-
+      setLoading(true);
+      const response = await api.get("/dashboard");
+      setDashboardData(response.data);
     } catch (error) {
-      console.log("tour enquiry fetch error:", error);
+      console.log("Dashboard fetch error:", error);
+    } finally {
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchEnquiries(currentPage);
-  }, [currentPage]);
 
   useEffect(() => {
-    const duration = 1500;
-    const interval = 20;
-
-    const timers = secondaryMetrics.map((item) => {
-      const endValue = parseInt(item.value, 10);
-      let current = 0;
-
-      const step = Math.ceil(endValue / (duration / interval));
-
-      return setInterval(() => {
-        current += step;
-
-        if (current >= endValue) {
-          current = endValue;
-        }
-
-        setCounts((prev) => ({
-          ...prev,
-          [item.id]: current,
-        }));
-
-        if (current >= endValue) {
-          clearInterval(timer);
-        }
-      }, interval);
-
-      var timer;
-    });
-
-    return () => timers.forEach(clearInterval);
+    fetchDashboardData();
   }, []);
+
+  const counts = {
+    tours: dashboardData?.counts?.tours ?? 0,
+    vehicles: dashboardData?.counts?.vehicles ?? 0,
+    hotels: dashboardData?.counts?.hotels ?? 0,
+    visitors: dashboardData?.counts?.visitors ?? 0
+  };
+  
+  const enquiries = dashboardData?.recent_enquiries || [];
+  const feedData = dashboardData?.recent_activities || [];
 
   const filteredData = useMemo(() => {
     return enquiries.filter((item) => {
@@ -90,6 +90,7 @@ const Dashboard = () => {
   }, [enquiries, searchName, searchTravellers]);
 
   const currentData = filteredData.slice(0, rowsPerPage);
+  
   const colors = [
     "#a14112c2", // green
     "#d1571b", // blue
@@ -98,96 +99,47 @@ const Dashboard = () => {
     "#d1571b", // purple
     "#d1571b", // cyan
     "#d1571b", // pink
-
   ];
-
-  const mainMetric = {
-    id: 0,
-    label: "Total Revenue (Monthly)",
-    value: "$142,850.00",
-    trend: "+12.5% from last month",
-    trendIcon: "trending_up",
-    backgroundGradient: "bg-primary-gradient",
-    mainIcon: "payments",
-  };
 
   const secondaryMetrics = [
     {
-      id: 1,
+      id: "tours",
       icon: "deployed_code",
       title: "package count",
-      value: "1284",
-      iconBg: "#c6e6de", // background color for the icon
-      textColor: "#004f45", // color for the icon text
-      subtitleColor: "#004f45", // color for the subtitle
+      value: counts.tours,
+      iconBg: "#c6e6de", 
+      textColor: "#004f45", 
+      subtitleColor: "#004f45", 
     },
     {
-      id: 2,
+      id: "vehicles",
       icon: "airport_shuttle",
       title: "vehicle count",
-      value: "42",
+      value: counts.vehicles,
       iconBg: "#ffdbd1",
       textColor: "#0f172a",
-      subtitleColor: "#dc2626", // red for urgent
+      subtitleColor: "#dc2626", 
     },
     {
-      id: 3,
+      id: "hotels",
       icon: "bed",
       title: "hotel bookings/list",
-      value: "42",
+      value: counts.hotels,
       iconBg: "#ffdbd1",
       textColor: "#0f172a",
-      subtitleColor: "#dc2626", // red for urgent
+      subtitleColor: "#dc2626", 
     },
     {
-      id: 4,
+      id: "visitors",
       icon: "globe_asia",
-      title: "website visitiors",
-      value: "42",
+      title: "website visitors",
+      value: counts.visitors,
       iconBg: "#ffdbd1",
       textColor: "#ffffff",
-      subtitleColor: "#dc2626", // red for urgent
+      subtitleColor: "#dc2626", 
       backgroundGradient: "bg-primary-gradient",
     },
   ];
-
-  // data/horizonData.js
-
-
-  const dashboardData = {
-    featured: {
-      tag: "Featured",
-      category: "Maldives Escape",
-      title: "Emerald Lagoon Retreat & Spa",
-      price: "$4,200",
-      description:
-        "A curated 7-day experience featuring overwater bungalows, private chef dining, and snorkeling tours.",
-      rating: "4.9",
-      reviews: "128 reviews",
-      trend: "+15% Booking rate",
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCAdu2VUPtWzVTFHdd0VdCpL0kqqg4lP3yqABfUpqz-WxXHIwa60Uf-7NzErO-pc0m2okH8lZICSI08LxVKjAcjtbONPom4F6SJKWLB7mgocjbfsP0qT_KkKPj8Qh80D631GxUZAhPDgD8u0ntfPlCcxpnN_TcSo6lL6_Kh3t3ESGirQBTyhYWBEJ-DT3s5FJ95VO8JN8vv4RbvVZcydFRH9N5fm7niIx31dFluLUwxOTjIrXU5IGYqWFvScHyUoKPDm1uuEEZqj2o",
-    },
-
-    hotels: [
-      {
-        id: 1,
-        name: "The Azure Boutique",
-        location: "Santorini, Greece • Edited 2h ago",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuAEm_xDDDMssm3e6oCUbQJ2dMv4SW5ZaV2nU7xOP_E_i5oZXO0014OOPau_Eh6OyfNeHStz0AAUASmg8PMaCz2p8m1OQ93eY8l8MPAJZm1fwcws4pE0slw4VK4nvcJ8bXlSogYcEEme0qFph0OmlKE3u7WwMuQjPL3wSDPE4fO_JKJnzey8LD4Hi_KhiQSnCcofYMM8uy-Sdnm0tWzpmswk_9t1X86XnOepdrrvpYfHEefcGEx-tQfah-E4Ol5J3j9ExaLPIhSAWi4",
-        status: "active",
-      },
-      {
-        id: 2,
-        name: "Peak Vista Lodge",
-        location: "Aspen, Colorado • Edited 5h ago",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuD4hCnU-SN-r8Zc3J4Z3joCn1bBwJHiROi_oVegH6Nu5vaW83-mk5ftwy9I6b8KuW90S7TdzktfMVwvaF84-bl8Kl7KtkRhHwt_wwynGmM24z-NNvlRpuRpEW0JjTifj6mHbI5vmKG9kRz77qmi3-Ikm5oVB2X_4Kmk4PCgbiGvSCvdNXmnxHXeCS97zMAs7a9UknUvyI0_79yy5DhD4KD2tYTlvtunibyEIkcEflhZcM7FS5UePAa0ftQ5-_4rghEBBzryiYYrJQ4",
-        status: "draft",
-      },
-    ],
-  };
 
   const packageData = [
     {
@@ -211,7 +163,6 @@ const Dashboard = () => {
     },
   ];
 
-
   const rentalCar = [
     {
       id: 1,
@@ -223,57 +174,18 @@ const Dashboard = () => {
     },
   ];
 
-
-  const feedData = [
-    {
-      id: 1,
-      icon: "history_edu",
-      title: "How Lorem Ipsum Can Be Used?",
-      desc: "When using Lorem Ipsum for creating dummy content for your newly created website, you can select the text formats you wa",
-      time: "10 mins ago",
-      type: "primary",
-    },
-    {
-      id: 2,
-      icon: "shopping_bag",
-      title: "test blog",
-      desc: "1914 translation by H. Rackham On the other hand we denounce with righteous indignation and dislike men who are so begu",
-      time: "28 mins ago",
-      type: "secondary",
-    },
-    {
-      id: 3,
-      icon: "report",
-      title: "food blog1",
-      desc: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ea",
-      time: "1h ago",
-      type: "tertiary",
-    },
-  ];
-
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-500 font-medium">Loading Dashboard Data...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-
-
       <div className="p-8 space-y-8">
-
         <section className="metrics-grid grid-cols-1 md:grid-cols-4">
-          {/* Main Metric */}
-          {/* <div className="main-metric-card md:col-span-2">
-            <div className="main-metric-content">
-              <p className="main-metric-label">{mainMetric.label}</p>
-              <h3 className="main-metric-value">{mainMetric.value}</h3>
-              <div className="main-metric-trend">
-                <span className="material-symbols-outlined">{mainMetric.trendIcon}</span>
-                <span>{mainMetric.trend}</span>
-              </div>
-            </div>
-            <div className="main-metric-icon">
-              <span className="material-symbols-outlined">{mainMetric.mainIcon}</span>
-            </div>
-          </div> */}
-
           {/* Secondary Metrics */}
           {secondaryMetrics.map((item) => (
             <div
@@ -293,7 +205,7 @@ const Dashboard = () => {
                   className="secondary-metric-value"
                   style={{ color: item.textColor }}
                 >
-                  {(counts[item.id] || 0).toLocaleString()}
+                  <LocalCountUp end={item.value} duration={1.5} />
                 </h3>
               </div>
 
@@ -316,34 +228,25 @@ const Dashboard = () => {
                   className="overflow-hidden rounded-xl bg-gray-50 border border-[#e8e8e8]"
                 >
                   <div className="flex flex-col md:flex-row">
-                    {/* Image Section */}
                     <div className="relative md:w-40 flex-shrink-0">
                       <img
                         src={pkg.image}
                         alt={pkg.title}
                         className="h-64 w-full object-cover md:h-full"
                       />
-
-                      {/* Vehicle Badge */}
-                      {/* <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow">
-                        {pkg.vehicle}
-                      </div> */}
                     </div>
 
-                    {/* Content Section */}
                     <div className="flex flex-1 flex-col justify-between p-4">
                       <div>
                         <h3 className="mb-3 text-xl font-bold text-slate-900">
                           {pkg.title}
                         </h3>
-
                         {pkg.description && (
                           <p className="mb-4 text-sm text-slate-600">
                             {pkg.description}
                           </p>
                         )}
                       </div>
-
                       <div>
                         <button
                           onClick={() => navigate("/dashboard/tours")}
@@ -366,52 +269,36 @@ const Dashboard = () => {
                   className="overflow-hidden rounded-xl bg-gray-50 border border-[#e8e8e8]"
                 >
                   <div className="flex flex-col md:flex-row">
-                    {/* Image */}
                     <div className="relative md:w-40 flex-shrink-0">
                       <img
                         src={pkg.image}
                         alt={pkg.title}
                         className="h-64 w-full object-cover md:h-full"
                       />
-
-                      {/* <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow">
-                        {pkg.vehicle}
-                      </div> */}
                     </div>
 
-                    {/* Content */}
                     <div className="flex flex-1 flex-col justify-between p-4">
                       <div>
                         <div>
                           <h3 className="mb-3 text-xl font-bold text-slate-900">
                             {pkg.title}
                           </h3>
-
                           {pkg.description && (
                             <p className="mb-4 text-slate-600 text-sm">
                               {pkg.description}
                             </p>
                           )}
-
-
                         </div>
                       </div>
-
-
-
                       <div>
                         <button
-                          onClick={() => navigate("/dashboard/hotel")}
+                          onClick={() => navigate("/dashboard/vehicle")}
                           className="flex items-center gap-2 bg-gray-200 border border-gray-300 py-1 rounded-md px-2 text-xs cursor-pointer 
                           font-medium text-gray-600 transition hover:opacity-90"
                         >
                           View Details..
                         </button>
                       </div>
-
-
-
-
                     </div>
                   </div>
                 </div>
@@ -425,36 +312,28 @@ const Dashboard = () => {
                   className="overflow-hidden rounded-xl bg-gray-50 border border-[#e8e8e8]"
                 >
                   <div className="flex flex-col md:flex-row">
-                    {/* Image */}
                     <div className="relative md:w-40 flex-shrink-0">
                       <img
                         src={pkg.image}
                         alt={pkg.title}
                         className="h-64 w-full object-cover md:h-full"
                       />
-
-                      {/* <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow">
-                        {pkg.vehicle}
-                      </div> */}
                     </div>
 
-                    {/* Content */}
                     <div className="flex flex-1 flex-col justify-between p-4">
                       <div>
                         <h3 className="mb-4 text-xl font-bold text-slate-900">
                           {pkg.title}
                         </h3>
-
                         {pkg.description && (
                           <p className="mb-4 text-sm text-slate-600">
                             {pkg.description}
                           </p>
                         )}
                       </div>
-
                       <div>
                         <button
-                          onClick={() => navigate("/dashboard/vehicle")}
+                          onClick={() => navigate("/dashboard/hotel")}
                           className="flex items-center gap-2 bg-gray-200 border border-gray-300 py-1 rounded-md px-2 text-xs cursor-pointer 
                           font-medium text-gray-600 transition hover:opacity-90"
                         >
@@ -470,9 +349,8 @@ const Dashboard = () => {
         </div>
 
         <div className="dashboard-grid">
-          {/* LEFT */}
+          {/* LEFT - Tour Enquiry */}
           <div className="dashboard-left">
-
             <h3 className='mb-3 text-xl font-bold text-slate-900'>Tour Enquiry</h3>
             <div className="table-wrapper bg-surface-container-lowest">
               <table className="table">
@@ -500,7 +378,7 @@ const Dashboard = () => {
                         <td className="td p-3">
                           {item.special_requirements?.length > 70
                             ? `${item.special_requirements.slice(0, 70)}...`
-                            : item.special_requirements}
+                            : item.special_requirements || "None"}
                         </td>
                       </tr>
                     ))
@@ -513,9 +391,6 @@ const Dashboard = () => {
                   )}
                 </tbody>
               </table>
-
-              {/* 📄 Pagination */}
-
             </div>
             <div className='flex justify-end'>
               <Link
@@ -527,54 +402,66 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT - Real-time Activities Feed */}
           <div className="dashboard-right">
-
-
             <div className="feed-card">
-
               <h3 className="feed-title">Real-time Feed</h3>
-
               <div className="feed-timeline">
-                {feedData.map((item) => (
-                  <div key={item.id} className="feed-item">
+                {feedData.length > 0 ? (
+                  feedData.map((item, index) => {
+                    // Safe regex extraction to remove raw HTML tag remnants and space entities
+                    const cleanDescription = item.description 
+                      ? item.description.replace(/<\/?[^>]+(>|$)/g, "").replace(/&nbsp;/g, " ") 
+                      : "";
 
-                    {/* Icon */}
-                    <div
-                      className={`feed-icon ${item.type === "primary"
-                        ? "feed-icon-primary"
-                        : item.type === "secondary"
-                          ? "feed-icon-secondary"
-                          : "feed-icon-tertiary"
-                        }`}
-                    >
-                      <span className="material-symbols-outlined text-[12px] font-bold">
-                        {item.icon}
-                      </span>
-                    </div>
+                    const shortDescription = cleanDescription.length > 110 
+                      ? `${cleanDescription.slice(0, 110)}...` 
+                      : cleanDescription;
 
-                    {/* Content */}
-                    <div>
-                      <p className="feed-heading">{item.title}</p>
-                      <p className="feed-desc">{item.desc}</p>
-                      <p className="feed-time">{item.time}</p>
-                    </div>
+                    return (
+                      <div key={item.id || index} className="feed-item">
+                        {/* Icon */}
+                        <div
+                          className={`feed-icon ${
+                            index % 3 === 0
+                              ? "feed-icon-primary"
+                              : index % 3 === 1
+                                ? "feed-icon-secondary"
+                                : "feed-icon-tertiary"
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-[12px] font-bold">
+                            {item.icon || "history_edu"}
+                          </span>
+                        </div>
 
-                  </div>
-                ))}
+                        <div>
+                          <p className="feed-heading">{item.title}</p>
+                          <p className="feed-desc">
+                            {shortDescription}
+                          </p>
+                          <p className="feed-time">
+                            {item.created_at ? new Date(item.created_at).toLocaleDateString() : "Just now"}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-sm text-gray-500 text-center p-4">No recent activity</p>
+                )}
               </div>
 
               <button onClick={() => navigate("/dashboard/blogs")} className="feed-btn cursor-pointer">
                 Show All Activity
               </button>
-
             </div>
           </div>
         </div>
 
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
