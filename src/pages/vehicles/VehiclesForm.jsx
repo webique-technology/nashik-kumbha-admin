@@ -328,7 +328,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], errors = {}, onCancel
                   </div>
                 </div> */}
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label className="form-label">Location</label>
                   <select
                     name="location"
@@ -348,7 +348,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], errors = {}, onCancel
                         {errors.location[0]}
                       </p>
                     )}
-                </div>
+                </div> */}
 
                 <div className="form-group">
                   <label className="form-label">Status</label>
