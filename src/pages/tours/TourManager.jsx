@@ -10,6 +10,7 @@ import TourTable from "./TourTable";
 import TourForm from "./TourForm";
 import api from "../../services/axiosInstance";
 import ViewModal from "../../viewmodel/ViewModal";
+import NotFound from "../404";
 
 const EditTourWrapper = ({
   fetchSingleTour,
@@ -241,6 +242,7 @@ const TourManager = () => {
       />
     }
   />
+  <Route path="*" element={<NotFound />} />
 </Routes>
 
       <ViewModal

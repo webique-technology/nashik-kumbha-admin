@@ -3,6 +3,7 @@ import HotelForm from "./HotelForm";
 import HotelTable from "./HotelTable";
 import ViewModal from "../../viewmodel/ViewModal";
 import api from "../../services/axiosInstance";
+import NotFound from "../404";
 import {
   Routes,
   Route,
@@ -351,6 +352,7 @@ const HotelManager = () => {
             />
           }
         />
+         <Route path="*" element={<NotFound />} />
       </Routes>
 
       {/* VIEW MODAL */}

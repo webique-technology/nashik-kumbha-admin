@@ -3,7 +3,7 @@ import { FaArrowLeft } from "react-icons/fa";
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-950 overflow-hidden relative">
+        <div className="min-h-screen flex items-center justify-center bg-white overflow-hidden relative">
 
             {/* Background Blobs */}
             <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -11,7 +11,7 @@ export default function NotFound() {
 
             <div className="relative z-10 max-w-2xl mx-auto px-6">
 
-                <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-10 text-center shadow-2xl">
+                <div className="backdrop-blur-xl bg-primary border border-white/20 rounded-3xl p-10 text-center shadow-2xl">
 
                     {/* 404 Text */}
                     <h1 className="text-8xl md:text-9xl font-black text-white tracking-wider">
@@ -19,7 +19,7 @@ export default function NotFound() {
                     </h1>
 
                     {/* Divider */}
-                    <div className="w-24 h-1 bg-blue-400 mx-auto my-6 rounded-full"></div>
+                    <div className="w-24 h-1 bg-blue-100 mx-auto my-6 rounded-full"></div>
 
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         Oops! Lost in the Journey
@@ -33,7 +33,7 @@ export default function NotFound() {
                     {/* Illustration */}
                     <div className="my-10">
                         <div className="text-8xl animate-bounce">
-                            🤖
+                            ☹️
                         </div>
                     </div>
 
@@ -42,18 +42,18 @@ export default function NotFound() {
 
                         <Link
                             to="/dashboard"
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all duration-300 hover:scale-105"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl rounded-lg btn-primary-packages border border-white/30 text-white font-semibold transition-all duration-300 hover:scale-105"
                         >
                             <FaArrowLeft />
                             Back to Dashboard
                         </Link>
 
-                        <button
+                        {/* <button
                             onClick={() => window.history.back()}
                             className="px-6 py-3 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-all duration-300"
                         >
                             Go Back
-                        </button>
+                        </button> */}
 
                     </div>
 

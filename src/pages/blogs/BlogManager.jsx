@@ -5,6 +5,7 @@ import img1 from '../../assets/images/hoelOne.jpg'
 import ViewModal from "../../viewmodel/ViewModal";
 import api from "../../services/axiosInstance";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
+import NotFound from "../404";
 
 
 const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,errors}) => {
@@ -335,7 +336,7 @@ const blogFields = [
             />
           }
         />
-
+          <Route path="*" element={<NotFound />} />
       </Routes>
 
       <ViewModal

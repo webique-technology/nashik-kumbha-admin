@@ -5,6 +5,7 @@ import VehiclesTable from "./VehiclesTable";
 import VehiclesForm from "./VehiclesForm";
 import api from "../../services/axiosInstance";
 import ViewModal from "../../viewmodel/ViewModal";
+import NotFound from "../404";
 
 
 export const CATEGORY_OPTIONS = [
@@ -364,7 +365,7 @@ const VehiclesManager = () => {
           />
         }
       />
-
+        <Route path="*" element={<NotFound />} />
     </Routes>
 
     <ViewModal
