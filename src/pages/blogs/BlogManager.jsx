@@ -6,6 +6,7 @@ import ViewModal from "../../viewmodel/ViewModal";
 import api from "../../services/axiosInstance";
 import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import NotFound from "../404";
+import useAlert from "../../hooks/useAlert";
 
 
 const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,errors}) => {
@@ -44,6 +45,7 @@ const BlogManager = () => {
   // const [page, setPage] = useState("table");
   const [editData, setEditData] = useState(null);
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
     // const fetchBlogs = async () => {
     // try {
@@ -181,6 +183,10 @@ const blogFields = [
               },
             }
           );
+           showAlert(
+              "Blog updated successfully",
+              "success"
+            );
 
         } else {
           // ADD
@@ -193,6 +199,11 @@ const blogFields = [
               },
             }
           );
+          showAlert(
+            "Blog created successfully",
+            "success"
+          );
+
         }
 
         console.log("response:", response.data);
@@ -246,9 +257,17 @@ const blogFields = [
     try {
       const response = await api.delete(`/blogs/${id}`);
       console.log("delete response:", response.data);
+      showAlert(
+        "Blog deleted successfully",
+        "success"
+      );
       fetchBlogs(pagination.current_page);
     } catch (error) {
       console.log("delete error:", error);
+        showAlert(
+          "Failed to delete blog",
+          "error"
+        );
     }
   };
 

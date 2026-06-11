@@ -6,7 +6,7 @@ import VehiclesForm from "./VehiclesForm";
 import api from "../../services/axiosInstance";
 import ViewModal from "../../viewmodel/ViewModal";
 import NotFound from "../404";
-
+import useAlert from "../../hooks/useAlert";
 
 export const CATEGORY_OPTIONS = [
   { id: "crista", label: "Crista" },
@@ -58,6 +58,7 @@ const EditVehicleWrapper = ({
 
 const VehiclesManager = () => {
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const location = useLocation();
   const { id } = useParams();
   const [errors, setErrors] = useState({});
@@ -269,6 +270,10 @@ const VehiclesManager = () => {
               },
             }
           );
+            showAlert(
+              "Vehicle updated successfully",
+              "success"
+            );
 
         } else {
 
@@ -281,6 +286,11 @@ const VehiclesManager = () => {
                 "Content-Type": "multipart/form-data",
               },
             }
+          );
+
+          showAlert(
+            "Vehicle created successfully",
+            "success"
           );
 
         }
@@ -309,9 +319,18 @@ const VehiclesManager = () => {
   const handleDelete = async (id) => {
       try {
         const response = await api.delete(`/vehicles/${id}`);
+          showAlert(
+            "Vehicle deleted successfully",
+            "success"
+          );
         console.log("delete response:", response.data);
         fetchVehicles(pagination.current_page);
       } catch (error) {
+        showAlert(
+          "Failed to delete vehicle",
+          "error"
+        );
+
         console.log("delete error:", error);
       }
   };

@@ -3,6 +3,7 @@ import HotelForm from "./HotelForm";
 import HotelTable from "./HotelTable";
 import ViewModal from "../../viewmodel/ViewModal";
 import api from "../../services/axiosInstance";
+import useAlert from "../../hooks/useAlert";
 import NotFound from "../404";
 import {
   Routes,
@@ -52,7 +53,7 @@ const EditHotelWrapper = ({
 
 const HotelManager = () => {
   const navigate = useNavigate();
-
+  const { showAlert } = useAlert();
   const [viewModal, setViewModal] = useState(false);
   const [selectedHotel, setSelectedHotel] =
     useState(null);
@@ -247,12 +248,23 @@ const HotelManager = () => {
               "Content-Type": "multipart/form-data",
             },
           });
+          showAlert(
+            "Hotel updated successfully",
+            "success"
+          );
+
         } else {
           await api.post("/hotels", payload, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           });
+
+          showAlert(
+            "Hotel created successfully",
+            "success"
+          );
+
         }
 
         await fetchHotels();
@@ -275,9 +287,18 @@ const HotelManager = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/hotels/${id}`);
+      showAlert(
+        "Hotel deleted successfully",
+        "success"
+      );
 
       fetchHotels(  pagination.current_page, searchTitle,searchCategory , searchLocation);
     } catch (error) {
+        showAlert(
+          "Failed to delete hotel",
+          "error"
+        );
+
       console.log("hotel delete error:", error);
     }
   };
