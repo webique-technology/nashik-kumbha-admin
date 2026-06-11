@@ -37,7 +37,7 @@ const EditTourWrapper = ({
       editData={editData}
       errors={errors}
       vehicleCategories={vehicleCategories}
-      onCancel={() => navigate("/dashboard/tours")}
+      onCancel={() => navigate("/tours")}
     />
   );
 };
@@ -125,7 +125,7 @@ const TourManager = () => {
 
       fetchTours();
       setEditData(null);
-      navigate("/dashboard/tours");
+      navigate("/tours");
     } catch (error) {
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors || {});
@@ -136,7 +136,7 @@ const TourManager = () => {
   const handleEdit = async (tour) => {
      setErrors({});
     await fetchSingleTour(tour.id);
-    navigate(`/dashboard/tours/edit/${tour.id}`);
+    navigate(`/tours/edit/${tour.id}`);
   };
 
   const handleDelete = async (id) => {
@@ -197,14 +197,14 @@ const TourManager = () => {
     element={
       // <TourTable
       //   tours={tours}
-      //   onAdd={() => navigate("/dashboard/tour/add")}
+      //   onAdd={() => navigate("/tour/add")}
       //   onEdit={handleEdit}
       //   onDelete={handleDelete}
       //   onView={handleView}
       // />
       <TourTable
           tourData={tours}
-          onAdd={() => navigate("/dashboard/tours/add")}
+          onAdd={() => navigate("/tours/add")}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onView={handleView}
@@ -223,7 +223,7 @@ const TourManager = () => {
         onSave={handleSave}
         errors={errors}
         vehicleCategories={vehicleCategories}
-        onCancel={() => navigate("/dashboard/tours")}
+        onCancel={() => navigate("/tours")}
       />
     }
   />

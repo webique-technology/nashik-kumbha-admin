@@ -259,7 +259,7 @@ const Dashboard = () => {
                       </div>
                       <div>
                         <button
-                          onClick={() => navigate("/dashboard/tours")}
+                          onClick={() => navigate("/tours")}
                           className="flex items-center gap-2 bg-gray-200 border border-gray-300 py-1 rounded-md px-2 text-xs cursor-pointer 
                           font-medium text-gray-600 transition hover:opacity-90"
                         >
@@ -302,7 +302,7 @@ const Dashboard = () => {
                       </div>
                       <div>
                         <button
-                          onClick={() => navigate("/dashboard/vehicle")}
+                          onClick={() => navigate("/vehicle")}
                           className="flex items-center gap-2 bg-gray-200 border border-gray-300 py-1 rounded-md px-2 text-xs cursor-pointer 
                           font-medium text-gray-600 transition hover:opacity-90"
                         >
@@ -343,7 +343,7 @@ const Dashboard = () => {
                       </div>
                       <div>
                         <button
-                          onClick={() => navigate("/dashboard/hotel")}
+                          onClick={() => navigate("/hotel")}
                           className="flex items-center gap-2 bg-gray-200 border border-gray-300 py-1 rounded-md px-2 text-xs cursor-pointer 
                           font-medium text-gray-600 transition hover:opacity-90"
                         >
@@ -404,7 +404,7 @@ const Dashboard = () => {
             </div>
             <div className='flex justify-end'>
               <Link
-                to="/dashboard/tour-enquriy"
+                to="/tour-enquriy"
                 className="px-4 py-2 bg-transparent icon-color font-semibold underline rounded inline-block"
               >
                 Go to Tour Enquiry
@@ -462,7 +462,7 @@ const Dashboard = () => {
                 )}
               </div>
 
-              <button onClick={() => navigate("/dashboard/blogs")} className="feed-btn cursor-pointer">
+              <button onClick={() => navigate("/blogs")} className="feed-btn cursor-pointer">
                 Show All Activity
               </button>
             </div>

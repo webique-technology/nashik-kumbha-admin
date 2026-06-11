@@ -44,7 +44,7 @@ const EditHotelWrapper = ({
       onSave={handleSave}
       editData={editData}
       errors={errors}
-      onCancel={() => navigate("/dashboard/hotel")}
+      onCancel={() => navigate("/hotel")}
     />
   );
 };
@@ -208,7 +208,7 @@ const HotelManager = () => {
 
   //     setEditData(null);
 
-  //     navigate("/dashboard/hotel");
+  //     navigate("/hotel");
   //   } catch (error) {
   //     console.log("hotel save error:", error);
   //   }
@@ -259,7 +259,7 @@ const HotelManager = () => {
         setErrors({});
         setEditData(null);
 
-        navigate("/dashboard/hotel");
+        navigate("/hotel");
       } catch (error) {
 
         if (error.response?.status === 422) {
@@ -303,11 +303,11 @@ const HotelManager = () => {
             <HotelTable
               hotels={hotels}
               onAdd={() =>
-                navigate("/dashboard/hotel/add")
+                navigate("/hotel/add")
               }
               onEdit={(hotel) =>
                 navigate(
-                  `/dashboard/hotel/edit/${hotel.id}`
+                  `/hotel/edit/${hotel.id}`
                 )
               }
               onDelete={handleDelete}
@@ -332,7 +332,7 @@ const HotelManager = () => {
               onSave={handleSave}
                errors={errors}
               onCancel={() =>
-                navigate("/dashboard/hotel")
+                navigate("/hotel")
               }
             />
           }

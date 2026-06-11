@@ -262,7 +262,7 @@ const VehiclesForm = ({ onSave, editData, categories = [], errors = {}, onCancel
         <div className="flex items-center justify-start gap-3">
           <BackButton
             // label="Back to Blogs"
-            to="/dashboard/vehicle"
+            to="/vehicle"
             className="bg-primary text-white cursor-pointer"
           />
           <div>

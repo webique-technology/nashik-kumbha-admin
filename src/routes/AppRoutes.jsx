@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import NotFound from "../pages/404";
 
 import Dashboard from "../pages/Dashboard";
 // import Packages from "../pages/tours/Packages";
@@ -25,38 +27,43 @@ export default function AppRoutes() {
   return (
     <Routes>
 
-      {/* ✅ Login Pages */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/forget-password" element={<ForgetPassword />} />
+      {/* Public Routes */}
+           <Route path="/login" element={<Login />} />
+           <Route path="/forget-password" element={<ForgetPassword />} />
+     
+           {/* Default */}
+           {/* <Route path="/" element={<Navigate to="/login" replace />} /> */}
+           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+     
+           {/* Protected Routes */}
+           <Route element={<ProtectedRoute />}>
+     
+             {/* <Route path="/" element={<MainLayout />}> */}
+             <Route element={<MainLayout />}>
 
-      {/* ✅ DEFAULT → LOGIN */}
-      <Route path="/" element={<Navigate to="/login" />} />
-
-      {/* ✅ DASHBOARD LAYOUT */}
-      <Route path="/dashboard" element={<MainLayout />}>
-        <Route index element={<Dashboard />} />
-
-        {/* <Route path="packages" element={<Packages />} /> */}
-        {/* <Route path="hotels" element={<HotelManager />} /> */}
-        {/* <Route path="vehicle" element={<VehiclesManager />} /> */}
-        <Route path="hotel/*" element={<HotelManager />} />
-        <Route path="vehicle/*" element={<VehiclesManager />} />
-        {/* <Route path="blog-table" element={<BlogManager />} /> */}
-
-        <Route path="blogs/*" element={<BlogManager />} />
-
-        <Route path="tour-enquriy" element={<TourEnquiry />} />
-        <Route path="vehicle-enquriy" element={<VehicleEnquiry />} />
-        <Route path="hotel-enquriy" element={<HotelEnquiry />} />
-        <Route path="enquiry-details" element={<EnquriyDeatils />} />
-        <Route path="paymentpolicy" element={<PaymentPolicy />} />
-        <Route path="privacypolicy" element={<PrivacyPoplicy />} />
-        {/* <Route path="tour-manager" element={<TourManager />} /> */}
-        <Route path="tours/*" element={<TourManager />} />
-         <Route path="home-settings" element={<HomePageSettings/>}/>
-        {/* <Route path="add-tour" element={<AddTour />} /> */}
-      </Route>
-
+               {/* <Route index element={<Dashboard />} /> */}
+               <Route path="/dashboard" element={<Dashboard />} />
+               
+               <Route path="hotel/*" element={<HotelManager />} />
+               <Route path="vehicle/*" element={<VehiclesManager />} />
+               <Route path="blogs/*" element={<BlogManager />} />
+               <Route path="tours/*" element={<TourManager />} />
+     
+               <Route path="tour-enquriy" element={<TourEnquiry />} />
+               <Route path="vehicle-enquriy" element={<VehicleEnquiry />} />
+               <Route path="hotel-enquriy" element={<HotelEnquiry />} />
+     
+               <Route path="enquiry-details" element={<EnquriyDeatils />} />
+               <Route path="paymentpolicy" element={<PaymentPolicy />} />
+               <Route path="privacypolicy" element={<PrivacyPoplicy />} />
+               <Route path="home-settings" element={<HomePageSettings />} />
+             </Route>
+     
+           </Route>
+     
+           {/* Invalid Route */}
+           <Route path="*" element={<NotFound />} />
+           {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
     </Routes>
   );
 }

@@ -50,7 +50,7 @@ const EditVehicleWrapper = ({
           editData={editData}
           categories={categories}
           errors={errors}
-          onCancel={() => navigate("/dashboard/vehicle")}
+          onCancel={() => navigate("/vehicle")}
         />
       );
   };
@@ -288,7 +288,7 @@ const VehiclesManager = () => {
         fetchVehicles();
         setErrors({});
         setEditData(null);
-        navigate("/dashboard/vehicle");
+        navigate("/vehicle");
 
       } catch (error) {
          console.log("vehicle save error:", error);
@@ -302,7 +302,7 @@ const VehiclesManager = () => {
 
   const handleEdit = async (vehicle) => {
     await fetchSingleVehicle(vehicle.id);
-    navigate(`/dashboard/vehicle/edit/${vehicle.id}`);
+    navigate(`/vehicle/edit/${vehicle.id}`);
   };
 
   const handleDelete = async (id) => {
@@ -325,7 +325,7 @@ const VehiclesManager = () => {
           <VehiclesTable
             vehicles={vehicles}
             categories={categories}
-            onAdd={() => navigate("/dashboard/vehicle/add")}
+            onAdd={() => navigate("/vehicle/add")}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleView}
@@ -346,7 +346,7 @@ const VehiclesManager = () => {
             onSave={handleSave}
             categories={categories}
             errors={errors}
-            onCancel={() => navigate("/dashboard/vehicle")}
+            onCancel={() => navigate("/vehicle")}
           />
         }
       />

@@ -14,30 +14,30 @@ const Header = ({ isOpen, toggleSidebar }) => {
 
   const pageTitles = {
     "/": "Dashboard",
-    "/dashboard/tours/add": "Tour Manager",
-     "/dashboard/tours": "Tour Manager",
+    "/tours/add": "Tour Manager",
+     "/tours": "Tour Manager",
 
-    "/dashboard/tour-enquriy": "Tour Enquiry",
+    "/tour-enquriy": "Tour Enquiry",
 
-    "/dashboard/vehicle": "Vehicles Manager",
-    "/dashboard/vehicle/add": "Vehicles Manager",
-    "/dashboard/vehicle-enquriy": "Vehicles Enquriy",
+    "/vehicle": "Vehicles Manager",
+    "/vehicle/add": "Vehicles Manager",
+    "/vehicle-enquriy": "Vehicles Enquriy",
 
-    "/dashboard/hotel": "Hotel Manager",
-    "/dashboard/hotel/add": "Hotel Manager",
-    "/dashboard/hotel-enquriy": "Hotel Enquriy",
+    "/hotel": "Hotel Manager",
+    "/hotel/add": "Hotel Manager",
+    "/hotel-enquriy": "Hotel Enquriy",
 
-    "/dashboard/blogs": "Blog Manager",
-    "/dashboard/blogs/add": "Blog Manager",
+    "/blogs": "Blog Manager",
+    "/blogs/add": "Blog Manager",
 
-    "/dashboard/settings": "Settingsqqq",
+    "/settings": "Settingsqqq",
    
 
-    "/dashboard/home-settings": "Home Page Settings",
-    "/dashboard/enquiry-details": "Contact Enquiry Details",
-    "/dashboard/paymentpolicy": "Payment Policy",
-    "/dashboard/privacypolicy": "Privacy Policy",
-    "/dashboard/settings": "Settings",
+    "/home-settings": "Home Page Settings",
+    "/enquiry-details": "Contact Enquiry Details",
+    "/paymentpolicy": "Payment Policy",
+    "/privacypolicy": "Privacy Policy",
+    "/settings": "Settings",
   };
 
   const lowerMenu = [

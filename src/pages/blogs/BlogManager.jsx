@@ -23,7 +23,7 @@ const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,erro
       onSave={handleSave}
       editData={editData}
        errors={errors}
-      onCancel={() => navigate("/dashboard/blogs")}
+      onCancel={() => navigate("/blogs")}
     />
   );
 };
@@ -202,7 +202,7 @@ const blogFields = [
 
         // BACK TO TABLE
         // setPage("table");
-        navigate("/dashboard/blogs");
+        navigate("/blogs");
 
         setEditData(null);
 
@@ -233,7 +233,7 @@ const blogFields = [
   
   const handleEdit = async (blog) => {
     await fetchSingleBlog(blog.id);
-    navigate(`/dashboard/blogs/edit/${blog.id}`);
+    navigate(`/blogs/edit/${blog.id}`);
   };
 
   // DELETE (WORKS ON DUMMY TOO NOW)
@@ -257,7 +257,7 @@ const blogFields = [
   //       // <BlogTable
   //       //   blogs={blogs}
   //       //   // onAdd={() => setPage("form")}
-  //       //   onAdd={() => navigate("/dashboard/blogs/add")}
+  //       //   onAdd={() => navigate("/blogs/add")}
   //       //   onEdit={handleEdit}
   //       //   onDelete={handleDelete}
   //       //   setBlogs={setBlogs}
@@ -265,7 +265,7 @@ const blogFields = [
   //       // />
   //       <BlogTable
   //         blogs={blogs}
-  //         onAdd={() => navigate("/dashboard/blogs/add")}
+  //         onAdd={() => navigate("/blogs/add")}
   //         onEdit={handleEdit}
   //         onDelete={handleDelete}
   //         setBlogs={setBlogs}
@@ -299,7 +299,7 @@ const blogFields = [
           element={
             <BlogTable
               blogs={blogs}
-              onAdd={() => navigate("/dashboard/blogs/add")}
+              onAdd={() => navigate("/blogs/add")}
               onEdit={handleEdit}
               onDelete={handleDelete}
               setBlogs={setBlogs}
@@ -317,7 +317,7 @@ const blogFields = [
             <BlogForm
               onSave={handleSave}
                errors={errors}
-              onCancel={() => navigate("/dashboard/blogs")}
+              onCancel={() => navigate("/blogs")}
             />
           }
         />

@@ -20,8 +20,8 @@ const menuItems = [
     name: "Tour Packages",
     icon: <FiCompass />,
     children: [
-      { name: "Tour Manager", path: "/dashboard/tours" },
-      { name: "Tour Enquiry", path: "/dashboard/tour-enquriy" }, // keep same as route OR fix both
+      { name: "Tour Manager", path: "/tours" },
+      { name: "Tour Enquiry", path: "/tour-enquriy" }, // keep same as route OR fix both
     ],
   },
 
@@ -31,8 +31,8 @@ const menuItems = [
     name: "Vehicle",
     icon: <FiTruck />,
     children: [
-      { name: "Vehicle Manager", path: "/dashboard/vehicle" },
-      { name: "Vehicle Enquiry", path: "/dashboard/vehicle-enquriy" }, // keep same as route OR fix both
+      { name: "Vehicle Manager", path: "/vehicle" },
+      { name: "Vehicle Enquiry", path: "/vehicle-enquriy" }, // keep same as route OR fix both
     ],
   },
 
@@ -41,22 +41,22 @@ const menuItems = [
     name: "Hotel Listings",
     icon: <FiHotel />,
     children: [
-      { name: "Hotel Manager", path: "/dashboard/hotel" },
-      { name: "Hotel Enquiry", path: "/dashboard/hotel-enquriy" }, // keep same as route OR fix both
+      { name: "Hotel Manager", path: "/hotel" },
+      { name: "Hotel Enquiry", path: "/hotel-enquriy" }, // keep same as route OR fix both
     ],
   },
 
-  { name: "Blog", icon: <FiEdit />, path: "/dashboard/blogs" },
+  { name: "Blog", icon: <FiEdit />, path: "/blogs" },
 
 
     {
     name: "Settings",
     icon: <FiCompass />,
     children: [
-      { name: "Home Page Settings", path: "/dashboard/home-settings" },
-      { name: "Contact Enquiry Details", path: "/dashboard/enquiry-details" },
-      { name: "Terms & Conditions", path: "/dashboard/privacypolicy" },
-      // { name: "Payment Policy", path: "/dashboard/paymentpolicy" }, 
+      { name: "Home Page Settings", path: "/home-settings" },
+      { name: "Contact Enquiry Details", path: "/enquiry-details" },
+      { name: "Terms & Conditions", path: "/privacypolicy" },
+      // { name: "Payment Policy", path: "/paymentpolicy" }, 
     ],
   },
 ];
@@ -94,8 +94,8 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
         {/* Hide text when closed */}
         {isOpen && (
           <div className="nav-item flex flex-col items-start gap-2">
-            <h2 className="editorial-title icon-color text-xl">Nashik Kumbh</h2>
-            <p className="editorial-subtitle">Meera Travels</p>
+            <h2 className="editorial-title icon-color text-xl">MAHAKUMBH</h2>
+            <p className="editorial-subtitle">Tours & Travels</p>
           </div>
         )}
       </div>

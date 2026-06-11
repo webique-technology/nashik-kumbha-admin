@@ -170,7 +170,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
         <div className="flex items-center justify-start gap-3">
           <BackButton
             // label="Back to Blogs"
-            to="/dashboard/hotel"
+            to="/hotel"
             className="bg-primary text-white cursor-pointer"
           />
           <div>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../../services/axiosInstance'; // Import your custom instance
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import { useEffect } from "react";
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -49,6 +51,14 @@ export default function Login() {
       setLoading(false);
     }
   };
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const goToForgotPassword = () => {
     navigate("/forget-password");
