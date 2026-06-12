@@ -61,7 +61,7 @@ const TourTable = ({ tourData = [], onAdd, onEdit, onDelete, loading, error, onV
               // setSearch((prev) => ({ ...prev, title: e.target.value }))
                setSearchTitle(e.target.value)
             }
-            className="border p-2 rounded w-full"
+            className="border input"
           />
           {/* <select
             value={search.category}

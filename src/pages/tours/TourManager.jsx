@@ -11,6 +11,7 @@ import TourForm from "./TourForm";
 import api from "../../services/axiosInstance";
 import ViewModal from "../../viewmodel/ViewModal";
 import NotFound from "../404";
+import useAlert from "../../hooks/useAlert";
 
 const EditTourWrapper = ({
   fetchSingleTour,
@@ -56,6 +57,7 @@ const TourManager = () => {
   const [vehicleCategories, setVehicleCategories] = useState([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [errors, setErrors] = useState({});
+  const { showAlert } = useAlert();
 
   const handleView = (tour) => {
     setSelectedTour(tour);
@@ -119,9 +121,17 @@ const TourManager = () => {
       setErrors({});
       if (editData) {
         await api.post(`/tours/${editData.id}`, data);
+        showAlert(
+              "Tour updated successfully",
+              "success"
+        );
       } else {
         setErrors({});
         await api.post("/tours", data);
+        showAlert(
+              "Tour created successfully",
+              "success"
+        );
       }
 
       fetchTours();
@@ -143,8 +153,16 @@ const TourManager = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/tours/${id}`);
+       showAlert(
+              "Tour deleted successfully",
+              "success"
+        );
       fetchTours();
     } catch (error) {
+      showAlert(
+          "Failed to delete tour",
+          "error"
+        );
       console.log("delete error:", error);
     }
   };

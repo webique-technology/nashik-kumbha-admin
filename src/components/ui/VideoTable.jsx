@@ -3,6 +3,7 @@ import { FiEye, FiEdit2, FiTrash2, FiUploadCloud } from "react-icons/fi";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import api from "../../services/axiosInstance";
 const API_URL = import.meta.env.VITE_API_URL;
+import useAlert from "../../hooks/useAlert";
 
 export default function VideoTable() {
     const [carouselData, setCarouselData] = useState([]);
@@ -19,6 +20,7 @@ export default function VideoTable() {
 
     const [modalType, setModalType] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
+    const { showAlert } = useAlert();
     
     // State to hold Laravel validation errors
     const [errors, setErrors] = useState({});
@@ -129,10 +131,18 @@ export default function VideoTable() {
         try {
             if (modalType === "add") {
                 await api.post("/videos/store", formData);
+                showAlert(
+                    "Videos created successfully",
+                    "success"
+                );
             }
 
             if (modalType === "edit") {
                 await api.post(`/videos/update/${selectedItem.id}`, formData);
+                 showAlert(
+                    "Videos updated successfully",
+                    "success"
+                );
             }
 
             closeModal();
@@ -151,6 +161,10 @@ export default function VideoTable() {
         try {
             await api.delete(`/videos/delete/${selectedItem.id}`);
             closeModal();
+            showAlert(
+                "Videos deleted successfully",
+                "success"
+            );
             fetchVideos(currentPage);
         } catch (error) {
             console.log("Delete error:", error);

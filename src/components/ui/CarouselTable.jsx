@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import api from "../../services/axiosInstance";
 const API_URL = import.meta.env.VITE_API_URL;
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import useAlert from "../../hooks/useAlert";
+
 import {
     FiEye,
     FiEdit2,
@@ -33,6 +35,7 @@ export default function CarouselTable() {
 
     const [pagination, setPagination] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
+    const { showAlert } = useAlert();
 
     // Fetch carousels on mount
     useEffect(() => {
@@ -93,12 +96,20 @@ export default function CarouselTable() {
                 await api.post("/carousel/store", formData, {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
+                showAlert(
+                    "Carousel created successfully",
+                    "success"
+                );
                 console.log("Carousel created successfully");
             } else if (modalType === "edit") {
                 // Using POST for updates with files bypassing structural PUT limitations
                 await api.post(`/carousel/update/${selectedItem.id}`, formData, {
                     headers: { "Content-Type": "multipart/form-data" }
                 });
+                showAlert(
+                    "Carousel updated successfully",
+                    "success"
+                );
                 console.log("Carousel updated successfully");
             }
             
@@ -106,6 +117,10 @@ export default function CarouselTable() {
             closeModal();
             setCurrentPage(1);
         } catch (error) {
+            showAlert(
+                    "Carousel error occure",
+                    "success"
+            );
             console.log("Carousel save error:", error);
             // Check if error response details validation properties match Laravel rules
             if (error.response && error.response.data && error.response.data.errors) {
@@ -117,6 +132,10 @@ export default function CarouselTable() {
     const handleDelete = async () => {
         try {
             await api.delete(`/carousel/delete/${selectedItem.id}`);
+            showAlert(
+                "Carousel deleted successfully",
+                "success"
+            );
             console.log("Carousel deleted successfully");
             
             // Adjust pagination context if last element is deleted
@@ -127,6 +146,10 @@ export default function CarouselTable() {
             fetchCarousels(currentPage);
             closeModal();
         } catch (error) {
+            showAlert(
+                "Failed to delete carousel",
+                "error"
+            );
             console.log("Carousel deletion error:", error);
         }
     };

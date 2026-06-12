@@ -3,6 +3,7 @@ import ReactQuill from "react-quill-new";
 // import axios from "axios";
 import api from "../../services/axiosInstance";
 import "react-quill-new/dist/quill.snow.css";
+import useAlert from "../../hooks/useAlert";
 
 // Configure your base URL if not already done globally
 // axios.defaults.baseURL = 'http://your-api-domain.com/api';
@@ -12,6 +13,7 @@ const PrivacyPolicy = () => {
   const [policy, setPolicy] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert();
 
   // 1. Fetch Privacy Policy on component mount
   useEffect(() => {
@@ -43,7 +45,10 @@ const PrivacyPolicy = () => {
       const response = await api.post("/privacy-policy", {
         content: description,
       });
-
+      showAlert(
+                    "Privacy-policy updated successfully",
+                    "success"
+                );
       if (response.data && response.data.data) {
         // Update local preview state with returned database record
         setPolicy(response.data.data);
