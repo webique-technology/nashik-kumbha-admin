@@ -98,12 +98,12 @@ export default function Login() {
                 Password
               </label>
 
-              <p
+              {/* <p
                 className="text-xs font-bold uppercase text-blue-600 cursor-pointer hover:underline"
                 onClick={goToForgotPassword}
               >
                 Forgot password
-              </p>
+              </p> */}
             </div>
 
             <div className="relative mt-1">
