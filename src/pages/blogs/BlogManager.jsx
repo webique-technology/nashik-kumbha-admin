@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import BlogTable from "./BlogTable";
 import BlogForm from "./BlogForm";
 import img1 from '../../assets/images/hoelOne.jpg'
@@ -9,7 +9,7 @@ import NotFound from "../404";
 import useAlert from "../../hooks/useAlert";
 
 
-const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,errors}) => {
+const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate, errors }) => {
   const { id } = useParams();
   useEffect(() => {
     if (id && !editData) {
@@ -24,7 +24,7 @@ const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,erro
     <BlogForm
       onSave={handleSave}
       editData={editData}
-       errors={errors}
+      errors={errors}
       onCancel={() => navigate("/blogs")}
     />
   );
@@ -33,11 +33,11 @@ const EditBlogWrapper = ({ fetchSingleBlog, editData, handleSave, navigate ,erro
 const BlogManager = () => {
 
   const [viewModal, setViewModal] = useState(false);
-    const [selectedTour, setSelectedTour] = useState(null);
-    const handleView = (tour) => {
-      setSelectedTour(tour);
-      setViewModal(true);
-    };
+  const [selectedTour, setSelectedTour] = useState(null);
+  const handleView = (tour) => {
+    setSelectedTour(tour);
+    setViewModal(true);
+  };
   const [pagination, setPagination] = useState({});
   const [errors, setErrors] = useState({});
 
@@ -47,186 +47,199 @@ const BlogManager = () => {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
 
-    // const fetchBlogs = async () => {
-    // try {
-    //     const response = await api.get("/blogs");
+  // const fetchBlogs = async () => {
+  // try {
+  //     const response = await api.get("/blogs");
 
-    //     console.log("blogs:", response.data);
+  //     console.log("blogs:", response.data);
 
-    //     setBlogs(response.data.data.data);
+  //     setBlogs(response.data.data.data);
 
-    //   } catch (error) {
-    //     console.log("Blog fetch error:", error);
-    //   }
-    // };
+  //   } catch (error) {
+  //     console.log("Blog fetch error:", error);
+  //   }
+  // };
 
-    const fetchBlogs = async (
-        page = 1,
-        title = "",
-        category = ""
-      ) => {
-        try {
-          const response = await api.get("/blogs", {
-            params: {
-              page,
-              title,
-              category,
-            },
-          });
+  const fetchBlogs = async (
+    page = 1,
+    title = "",
+    category = ""
+  ) => {
+    try {
+      const response = await api.get("/blogs", {
+        params: {
+          page,
+          title,
+          category,
+        },
+      });
 
-          setBlogs(response.data.data.data);
+      setBlogs(response.data.data.data);
 
-          setPagination({
-            current_page: response.data.data.current_page,
-            last_page: response.data.data.last_page,
-            total: response.data.data.total,
-            from: response.data.data.from,
-            to: response.data.data.to,
-            next_page_url: response.data.data.next_page_url,
-            prev_page_url: response.data.data.prev_page_url,
-          });
-        } catch (error) {
-          console.log("Blog fetch error:", error);
-        }
-      };
+      setPagination({
+        current_page: response.data.data.current_page,
+        last_page: response.data.data.last_page,
+        total: response.data.data.total,
+        from: response.data.data.from,
+        to: response.data.data.to,
+        next_page_url: response.data.data.next_page_url,
+        prev_page_url: response.data.data.prev_page_url,
+      });
+    } catch (error) {
+      console.log("Blog fetch error:", error);
+    }
+  };
 
-    useEffect(() => {
-      fetchBlogs(1);
-    }, []);
+  useEffect(() => {
+    fetchBlogs(1);
+  }, []);
 
   // const [blogs, setBlogs] = useState(initialBlogs);
-  
-const blogFields = [
-  { key: "title", label: "Title" },
-  // { key: "description", label: "Description" },
 
-  {
-    key: "description",
-    label: "Description",
-    render: (value) => (
-      <div
-        className="prose max-w-full text-sm"
-        dangerouslySetInnerHTML={{ __html: value }}
-      />
-    ),
-  },
+  const blogFields = [
+    { key: "title", label: "Title" },
+    // { key: "description", label: "Description" },
 
-  // {
-  //   key: "status",
-  //   label: "Status",
-  //   render: (value) => (
-  //     <span className={value ? "text-green-600" : "text-red-600"}>
-  //       {value ? "Active" : "Inactive"}
-  //     </span>
-  //   ),
-  // },
+    {
+      key: "description",
+      label: "Description",
+      render: (value) => (
+        <div
+          className="prose max-w-full text-sm"
+          dangerouslySetInnerHTML={{ __html: value }}
+        />
+      ),
+    },
 
-  // {
-  //   key: "content",
-  //   label: "Content",
-  //   render: (value) => (
-  //     <div
-  //       className="prose text-sm"
-  //       dangerouslySetInnerHTML={{ __html: value }}
-  //     />
-  //   ),
-  // },
-];
+    // {
+    //   key: "status",
+    //   label: "Status",
+    //   render: (value) => (
+    //     <span className={value ? "text-green-600" : "text-red-600"}>
+    //       {value ? "Active" : "Inactive"}
+    //     </span>
+    //   ),
+    // },
 
-//   // 👉 ADD / EDIT
-// const handleSave = (data) => {
-//   const placeholderImage = "https://picsum.photos/80"; // small image
+    // {
+    //   key: "content",
+    //   label: "Content",
+    //   render: (value) => (
+    //     <div
+    //       className="prose text-sm"
+    //       dangerouslySetInnerHTML={{ __html: value }}
+    //     />
+    //   ),
+    // },
+  ];
 
-//   if (editData) {
-//     // UPDATE
-//     setBlogs((prev) =>
-//       prev.map((item) => (item.id === data.id ? data : item))
-//     );
-//   } else {
-//     // ADD (with fallback image)
-//     setBlogs((prev) => [
-//       {
-//         ...data,
-//         id: Date.now(),
-//         status: true,
-//         image: data.image || placeholderImage, // ✅ fix
-//       },
-//       ...prev, // ✅ also fixing 2nd requirement here
-//     ]);
-//   }
+  //   // 👉 ADD / EDIT
+  // const handleSave = (data) => {
+  //   const placeholderImage = "https://picsum.photos/80"; // small image
 
-//   setPage("table");
-//   setEditData(null);
-// };
+  //   if (editData) {
+  //     // UPDATE
+  //     setBlogs((prev) =>
+  //       prev.map((item) => (item.id === data.id ? data : item))
+  //     );
+  //   } else {
+  //     // ADD (with fallback image)
+  //     setBlogs((prev) => [
+  //       {
+  //         ...data,
+  //         id: Date.now(),
+  //         status: true,
+  //         image: data.image || placeholderImage, // ✅ fix
+  //       },
+  //       ...prev, // ✅ also fixing 2nd requirement here
+  //     ]);
+  //   }
+
+  //   setPage("table");
+  //   setEditData(null);
+  // };
 
   const handleSave = async (data) => {
-      try {
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("category", data.category);
-        formData.append("description", data.description);
+    try {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("category", data.category);
+      formData.append("description", data.description);
 
-        if (data.image instanceof File) {
-          formData.append("image", data.image);
-        }
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
 
-        let response;
-        // UPDATE
-        if (editData) {
+      let response;
+      // UPDATE
+      if (editData) {
 
-          response = await api.post(
-            `/blogs/${editData.id}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-           showAlert(
-              "Blog updated successfully",
-              "success"
-            );
+        response = await api.post(
+          `/blogs/${editData.id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        showAlert(
+          "Blog updated successfully",
+          "success"
+        );
 
-        } else {
-          // ADD
-          response = await api.post(
-            "/blogs",
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-          showAlert(
-            "Blog created successfully",
-            "success"
-          );
+        // Trigger translation in background
+        api.post(
+          `/blogs/translate/${editData.id}`
+        ).catch(err => {
+          console.log("Translation Error:", err);
+        });
 
-        }
+      } else {
+        // ADD
+        response = await api.post(
+          "/blogs",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        showAlert(
+          "Blog created successfully",
+          "success"
+        );
 
-        console.log("response:", response.data);
-
-        // REFRESH BLOGS
-        fetchBlogs(pagination.current_page || 1);
-        setErrors({});
-
-        // BACK TO TABLE
-        // setPage("table");
-        navigate("/blogs");
-
-        setEditData(null);
-
-      } catch (error) {
-
-        console.log("save error:", error);
-
-        if (error.response?.status === 422) {
-          setErrors(error.response.data.errors || {});
-        }
+        api.post(
+          `/blogs/translate/${response.data.data.id}`
+        ).catch(err => {
+          console.log("Translation Error:", err);
+        });
 
       }
+
+      console.log("response:", response.data);
+
+      // REFRESH BLOGS
+      fetchBlogs(pagination.current_page || 1);
+      setErrors({});
+
+      // BACK TO TABLE
+      // setPage("table");
+      navigate("/blogs");
+
+      setEditData(null);
+
+    } catch (error) {
+
+      console.log("save error:", error);
+
+      if (error.response?.status === 422) {
+        setErrors(error.response.data.errors || {});
+      }
+
+    }
   };
 
   const fetchSingleBlog = async (id) => {
@@ -242,7 +255,7 @@ const blogFields = [
   //   setEditData(blog);
   //   setPage("form");
   // };
-  
+
   const handleEdit = async (blog) => {
     await fetchSingleBlog(blog.id);
     navigate(`/blogs/edit/${blog.id}`);
@@ -252,7 +265,7 @@ const blogFields = [
   // const handleDelete = (id) => {
   //   setBlogs((prev) => prev.filter((b) => b.id !== id));
   // };
-  
+
   const handleDelete = async (id) => {
     try {
       const response = await api.delete(`/blogs/${id}`);
@@ -264,10 +277,10 @@ const blogFields = [
       fetchBlogs(pagination.current_page);
     } catch (error) {
       console.log("delete error:", error);
-        showAlert(
-          "Failed to delete blog",
-          "error"
-        );
+      showAlert(
+        "Failed to delete blog",
+        "error"
+      );
     }
   };
 
@@ -336,7 +349,7 @@ const blogFields = [
           element={
             <BlogForm
               onSave={handleSave}
-               errors={errors}
+              errors={errors}
               onCancel={() => navigate("/blogs")}
             />
           }
@@ -355,7 +368,7 @@ const blogFields = [
             />
           }
         />
-          <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       <ViewModal
