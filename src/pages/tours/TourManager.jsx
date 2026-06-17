@@ -64,9 +64,9 @@ const TourManager = () => {
     setViewModal(true);
   };
 
-  const fetchTours = async (page = 1,title = "") => {
+  const fetchTours = async (page = 1, title = "") => {
     try {
-       const response = await api.get("/tours", {params: { page, title,}, });
+      const response = await api.get("/tours", { params: { page, title, }, });
       setTours(response.data.data.data);
       setPagination({
         current_page: response.data.data.current_page,
@@ -105,33 +105,83 @@ const TourManager = () => {
   //   fetchTours();
   //   fetchVehicleCategories();
   // }, []);
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        fetchTours(
-          1,
-          searchTitle,
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchTours(
+        1,
+        searchTitle,
+      );
+      fetchVehicleCategories();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTitle]);
+
+  const translateTour = async (
+    tourId
+  ) => {
+
+    const languages = [
+      "hi",
+      "mr",
+      "ta",
+      "te",
+      "gu",
+      "ml",
+      "sa"
+    ];
+
+    for (
+      const lang of languages
+    ) {
+
+      try {
+
+        await api.post(
+          `/tours/translate/${tourId}`,
+          {
+            lang
+          }
         );
-        fetchVehicleCategories();
-      }, 500);
-      return () => clearTimeout(timer);
-    }, [searchTitle]);
+
+        console.log(
+          `${lang} translated`
+        );
+
+      } catch (error) {
+
+        console.log(
+          `${lang} failed`,
+          error
+        );
+      }
+    }
+  };
 
   const handleSave = async (data) => {
     try {
+      let response;
       setErrors({});
       if (editData) {
-        await api.post(`/tours/${editData.id}`, data);
+        response = await api.post(`/tours/${editData.id}`, data);
         showAlert(
-              "Tour updated successfully",
-              "success"
+          "Tour updated successfully",
+          "success"
         );
+        const tourId = editData.id;
+        setTimeout(() => {
+           translateTour(tourId);
+        }, 1000);
       } else {
         setErrors({});
-        await api.post("/tours", data);
+        response = await api.post("/tours", data);
         showAlert(
-              "Tour created successfully",
-              "success"
+          "Tour created successfully",
+          "success"
         );
+        const tourId = response.data.data.id;
+        setTimeout(() => {
+           translateTour(tourId);
+        }, 1000);
       }
 
       fetchTours();
@@ -145,7 +195,7 @@ const TourManager = () => {
   };
 
   const handleEdit = async (tour) => {
-     setErrors({});
+    setErrors({});
     await fetchSingleTour(tour.id);
     navigate(`/tours/edit/${tour.id}`);
   };
@@ -153,16 +203,16 @@ const TourManager = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/tours/${id}`);
-       showAlert(
-              "Tour deleted successfully",
-              "success"
-        );
+      showAlert(
+        "Tour deleted successfully",
+        "success"
+      );
       fetchTours();
     } catch (error) {
       showAlert(
-          "Failed to delete tour",
-          "error"
-        );
+        "Failed to delete tour",
+        "error"
+      );
       console.log("delete error:", error);
     }
   };
@@ -211,57 +261,57 @@ const TourManager = () => {
   return (
     <>
       <Routes>
-  <Route
-    index
-    element={
-      // <TourTable
-      //   tours={tours}
-      //   onAdd={() => navigate("/tour/add")}
-      //   onEdit={handleEdit}
-      //   onDelete={handleDelete}
-      //   onView={handleView}
-      // />
-      <TourTable
-          tourData={tours}
-          onAdd={() => navigate("/tours/add")}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onView={handleView}
-          pagination={pagination}
-          fetchTours={fetchTours}
-          searchTitle={searchTitle}
-          setSearchTitle={setSearchTitle}
+        <Route
+          index
+          element={
+            // <TourTable
+            //   tours={tours}
+            //   onAdd={() => navigate("/tour/add")}
+            //   onEdit={handleEdit}
+            //   onDelete={handleDelete}
+            //   onView={handleView}
+            // />
+            <TourTable
+              tourData={tours}
+              onAdd={() => navigate("/tours/add")}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onView={handleView}
+              pagination={pagination}
+              fetchTours={fetchTours}
+              searchTitle={searchTitle}
+              setSearchTitle={setSearchTitle}
+            />
+          }
         />
-    }
-  />
 
-  <Route
-    path="add"
-    element={
-      <TourForm
-        onSave={handleSave}
-        errors={errors}
-        vehicleCategories={vehicleCategories}
-        onCancel={() => navigate("/tours")}
-      />
-    }
-  />
+        <Route
+          path="add"
+          element={
+            <TourForm
+              onSave={handleSave}
+              errors={errors}
+              vehicleCategories={vehicleCategories}
+              onCancel={() => navigate("/tours")}
+            />
+          }
+        />
 
-  <Route
-    path="edit/:id"
-    element={
-      <EditTourWrapper
-        fetchSingleTour={fetchSingleTour}
-        editData={editData}
-        handleSave={handleSave}
-        navigate={navigate}
-        vehicleCategories={vehicleCategories}
-        errors={errors}
-      />
-    }
-  />
-  <Route path="*" element={<NotFound />} />
-</Routes>
+        <Route
+          path="edit/:id"
+          element={
+            <EditTourWrapper
+              fetchSingleTour={fetchSingleTour}
+              editData={editData}
+              handleSave={handleSave}
+              navigate={navigate}
+              vehicleCategories={vehicleCategories}
+              errors={errors}
+            />
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
       <ViewModal
         isOpen={viewModal}
