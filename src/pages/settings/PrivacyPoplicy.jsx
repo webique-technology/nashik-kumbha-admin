@@ -46,14 +46,48 @@ const PrivacyPolicy = () => {
         content: description,
       });
       showAlert(
-                    "Privacy-policy updated successfully",
-                    "success"
-                );
+        "Privacy-policy updated successfully",
+        "success"
+      );
       if (response.data && response.data.data) {
         // Update local preview state with returned database record
-        setPolicy(response.data.data);
+        const savedPolicy = response.data.data;
+        setPolicy(savedPolicy);
         setIsEditing(false);
         setDescription(""); // Clear editor after successful saving
+        // Auto translate after save
+        const languages = [
+          "hi",
+          "mr",
+          "ta",
+          "te",
+          "gu",
+          "ml",
+          "sa"
+        ];
+
+        for (const lang of languages) {
+
+          try {
+
+            await api.post(
+              `/policies/translate/${savedPolicy.id}`,
+              {
+                lang
+              }
+            );
+
+            console.log(`${lang} translated`);
+
+          } catch (error) {
+
+            console.error(
+              `${lang} translation failed`,
+              error
+            );
+          }
+        }
+
       }
     } catch (error) {
       console.error("Error saving privacy policy:", error);
