@@ -8,7 +8,7 @@ import { LuTrees } from "react-icons/lu";
 import { useParams } from "react-router-dom";
 import BackButton from "../../components/ui/BackButton";
 
-const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
+const HotelForm = ({ onSave, editData, onCancel, errors = {}, }) => {
   const { id } = useParams();
 
   const [previewImages, setPreviewImages] = useState([]);
@@ -26,7 +26,18 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
     // { id: "train", label: "Train", icon: <IoTrainOutline /> },
   ];
 
+  const roomOptions = [
+    { id: "single_room", label: "Single Room" },
+    { id: "double_room", label: "Double Room" },
+    { id: "twin_room", label: "Twin Room" },
+    { id: "triple_room", label: "Triple Room" },
+    { id: "family_room", label: "Family Room" },
+    { id: "suite_room", label: "Suite Room" },
+    { id: "deluxe_room", label: "Deluxe Room" },
+  ];
+
   const [selected, setSelected] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -39,6 +50,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
     offer_price: "",
     images: [],
     features: [],
+    room_type: [],
   });
 
   // ================= PREFILL EDIT =================
@@ -55,6 +67,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
         offer_price: editData.offer_price || "",
         images: editData.images || [],
         features: editData.features || [],
+        room_type: editData.room_type || [],
       });
 
       const mappedFeatures = (editData.features || []).map((feature) => {
@@ -65,6 +78,16 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
       }).filter(Boolean);
 
       setSelected(mappedFeatures);
+
+      const mappedRooms = (editData.room_type || [])
+        .map((room) =>
+          roomOptions.find(
+            (opt) => opt.label.toLowerCase() === room.toLowerCase()
+          )
+        )
+        .filter(Boolean);
+
+      setSelectedRooms(mappedRooms);
 
       // setSelected(editData.features || []);
 
@@ -98,9 +121,29 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
     }
   };
 
+  const handleRoomToggle = (option) => {
+    const exists = selectedRooms.find(
+      (item) => item.id === option.id
+    );
+
+    if (exists) {
+      setSelectedRooms((prev) =>
+        prev.filter((item) => item.id !== option.id)
+      );
+    } else {
+      setSelectedRooms((prev) => [...prev, option]);
+    }
+  };
+
   // ================= FEATURE DELETE =================
   const handleDeleteFeature = (id) => {
     setSelected((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
+  };
+
+  const handleDeleteRoom = (id) => {
+    setSelectedRooms((prev) =>
       prev.filter((item) => item.id !== id)
     );
   };
@@ -153,6 +196,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
       ...formData,
       images,
       features: selected.map((f) => f.label),
+      room_type: selectedRooms.map((r) => r.label),
     };
 
     if (id) {
@@ -311,7 +355,7 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                       Goa
                     </option>
                   </select> */}
-                   <input
+                  <input
                     type="text"
                     name="location"
                     value={formData.location || ""}
@@ -320,18 +364,74 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                     className="form-input w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
                   {errors.location && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.location[0]}
-                      </p>
-                    )}
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.location[0]}
+                    </p>
+                  )}
                 </div>
 
               </div>
             </section>
 
-            {/* FEATURES */}
+           
             <section className="bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-black/[0.03]">
+              {/* ROOM TYPES */}
+              <div className="mb-8">
 
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="material-symbols-outlined text-primary">
+                    hotel
+                  </span>
+
+                  <h2 className="text-lg font-bold tracking-tight">
+                    Room Types
+                  </h2>
+                </div>
+
+                <div className="flex gap-4 flex-wrap mb-5">
+                  {roomOptions.map((opt) => (
+                    <label
+                      key={opt.id}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedRooms.some(
+                          (item) => item.id === opt.id
+                        )}
+                        onChange={() => handleRoomToggle(opt)}
+                      />
+
+                      <span>{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {selectedRooms.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between bg-green-100 text-green-800 px-3 py-2 rounded-lg gap-3 group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiCheckCircle className="text-green-600" />
+
+                        <span>{item.label}</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRoom(item.id)}
+                        className="text-red-500 opacity-0 group-hover:opacity-100 transition"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+                {/* FEATURES */}
               <div className="flex items-center gap-3 mb-5">
                 <span className="material-symbols-outlined text-primary">
                   schedule
@@ -418,11 +518,11 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                   </label>
                 ))}
 
-              {errors.meals && (
-                <p className="text-red-500 text-sm mt-2">
-                  {errors.meals[0]}
-                </p>
-              )}
+                {errors.meals && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors.meals[0]}
+                  </p>
+                )}
               </div>
             </section>
           </div>
@@ -448,10 +548,10 @@ const HotelForm = ({ onSave, editData, onCancel,errors = {}, }) => {
                     className="w-full px-4 py-3 rounded-lg bg-surface-container-low"
                   />
                   {errors.base_price && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.base_price[0]}
-                  </p>
-                )}
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.base_price[0]}
+                    </p>
+                  )}
                 </div>
 
                 <div>

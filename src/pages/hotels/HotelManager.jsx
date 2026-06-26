@@ -67,7 +67,7 @@ const HotelManager = () => {
   const [errors, setErrors] = useState({});
 
   // ================= FETCH ALL HOTELS =================
-  
+
   const fetchHotels = async (
     page = 1,
     title = searchTitle,
@@ -79,7 +79,7 @@ const HotelManager = () => {
         params: {
           page,
           title,
-          category,location
+          category, location
         },
       });
 
@@ -128,7 +128,7 @@ const HotelManager = () => {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [searchTitle, searchCategory , searchLocation]);
+  }, [searchTitle, searchCategory, searchLocation]);
 
   // ================= VIEW =================
   const handleView = (hotel) => {
@@ -217,71 +217,74 @@ const HotelManager = () => {
   // };
 
   const handleSave = async (formData) => {
-      setErrors({});
+    setErrors({});
 
-      try {
-        const payload = new FormData();
+    try {
+      const payload = new FormData();
 
-        payload.append("title", formData.title || "");
-        payload.append("rating", formData.rating || "");
-        payload.append("category", formData.category || "");
-        payload.append("meals", formData.meals || "");
-        payload.append("location", formData.location || "");
-        payload.append("base_price", formData.base_price || "");
-        payload.append("offer_price", formData.offer_price || "");
+      payload.append("title", formData.title || "");
+      payload.append("rating", formData.rating || "");
+      payload.append("category", formData.category || "");
+      payload.append("meals", formData.meals || "");
+      payload.append("location", formData.location || "");
+      payload.append("base_price", formData.base_price || "");
+      payload.append("offer_price", formData.offer_price || "");
 
-        formData.features.forEach((feature) => {
-          payload.append("features[]", feature);
+      formData.features.forEach((feature) => {
+        payload.append("features[]", feature);
+      });
+      formData.room_type.forEach((room) => {
+        payload.append("room_type[]", room);
+      });
+
+      if (formData.images?.length) {
+        formData.images.forEach((img) => {
+          if (img instanceof File) {
+            payload.append("images[]", img);
+          }
+        });
+      }
+
+      if (editData?.id) {
+        await api.post(`/hotels/${editData.id}`, payload, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        showAlert(
+          "Hotel updated successfully",
+          "success"
+        );
+
+      } else {
+        await api.post("/hotels", payload, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
 
-        if (formData.images?.length) {
-          formData.images.forEach((img) => {
-            if (img instanceof File) {
-              payload.append("images[]", img);
-            }
-          });
-        }
+        showAlert(
+          "Hotel created successfully",
+          "success"
+        );
 
-        if (editData?.id) {
-          await api.post(`/hotels/${editData.id}`, payload, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          showAlert(
-            "Hotel updated successfully",
-            "success"
-          );
-
-        } else {
-          await api.post("/hotels", payload, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-          showAlert(
-            "Hotel created successfully",
-            "success"
-          );
-
-        }
-
-        await fetchHotels();
-
-        setErrors({});
-        setEditData(null);
-
-        navigate("/hotel");
-      } catch (error) {
-
-        if (error.response?.status === 422) {
-          setErrors(error.response.data.errors || {});
-        }
-
-        console.log(error);
       }
-    };
+
+      await fetchHotels();
+
+      setErrors({});
+      setEditData(null);
+
+      navigate("/hotel");
+    } catch (error) {
+
+      if (error.response?.status === 422) {
+        setErrors(error.response.data.errors || {});
+      }
+
+      console.log(error);
+    }
+  };
 
   // ================= DELETE =================
   const handleDelete = async (id) => {
@@ -292,12 +295,12 @@ const HotelManager = () => {
         "success"
       );
 
-      fetchHotels(  pagination.current_page, searchTitle,searchCategory , searchLocation);
+      fetchHotels(pagination.current_page, searchTitle, searchCategory, searchLocation);
     } catch (error) {
-        showAlert(
-          "Failed to delete hotel",
-          "error"
-        );
+      showAlert(
+        "Failed to delete hotel",
+        "error"
+      );
 
       console.log("hotel delete error:", error);
     }
@@ -352,7 +355,7 @@ const HotelManager = () => {
           element={
             <HotelForm
               onSave={handleSave}
-               errors={errors}
+              errors={errors}
               onCancel={() =>
                 navigate("/hotel")
               }
@@ -373,7 +376,7 @@ const HotelManager = () => {
             />
           }
         />
-         <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       {/* VIEW MODAL */}
